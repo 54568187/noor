@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>چالش‌های نور | ورود و ثبت‌نام</title>
+
+    <!-- فونت وزیرمتن -->
+    <link
+      href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- آیکون‌ها -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Vazirmatn", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                dark: "#000000",
+                light: "#171717",
+                gold: "#fbbf24",
+                goldHover: "#f59e0b",
+                accent: "#fbbf24",
+              },
+            },
+            transitionTimingFunction: {
+              slide: "cubic-bezier(0.645, 0.045, 0.355, 1.000)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+      body {
+        font-family: "Vazirmatn", sans-serif;
+        background: linear-gradient(135deg, #000000 0%, #111111 100%);
+        min-height: 100vh;
+        color: white;
+        overflow-x: hidden;
+      }
+
+      /* انیمیشن سریع برای متن داخل اسلایدر */
+      .text-fade-enter-active,
+      .text-fade-leave-active {
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+      .text-fade-enter-from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      .text-fade-leave-to {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      /* انیمیشن کند و نرم برای محو شدن فرم‌ها زیر اسلایدر تا صفحه سیاه نشود */
+      .form-fade-enter-active,
+      .form-fade-leave-active {
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+      .form-fade-enter-from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      .form-fade-leave-to {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+
+      /* انیمیشن سیستم اعلان‌ها (Toast Notifications) */
+      .toast-enter-active,
+      .toast-leave-active {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .toast-enter-from {
+        opacity: 0;
+        transform: translateX(150px) scale(0.9);
+      }
+      .toast-leave-to {
+        opacity: 0;
+        transform: translateX(150px) scale(0.9);
+      }
+
+      /* استایل اینپوت‌های OTP */
+      .otp-input:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+      }
+
+      /* کاستوم اسکرول‌بار */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #f59e0b;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center p-4 min-h-screen">
+    <!-- افکت نوری پس زمینه کل صفحه -->
+    <div
+      class="fixed top-[-10%] left-[-10%] w-96 h-96 bg-brand-gold opacity-10 rounded-full blur-[100px] pointer-events-none"
+    ></div>
+    <div
+      class="fixed bottom-[-10%] right-[-10%] w-96 h-96 bg-brand-goldHover opacity-10 rounded-full blur-[100px] pointer-events-none"
+    ></div>
+
+    <div
+      id="app"
+      class="w-full flex items-center justify-center relative z-10 py-10"
+    >
+      <!-- ====== کانتینر سیستم اعلان‌ها (Toast Container) ====== -->
+      <div
+        class="fixed top-4 right-4 z-50 flex flex-col gap-3 w-80 max-w-[calc(100vw-32px)]"
+      >
+        <transition-group name="toast">
+          <div
+            v-for="toast in toasts"
+            :key="toast.id"
+            class="bg-neutral-900/95 backdrop-blur-md border border-gray-700/50 rounded-2xl p-4 shadow-[0_20px_40px_rgba(0,0,0,0.5)] flex items-start gap-3 relative overflow-hidden"
+            :class="getToastBorderClass(toast.type)"
+          >
+            <!-- نوار رنگی عمودی در سمت راست (RTL) -->
+            <div
+              class="absolute top-0 right-0 bottom-0 w-1.5"
+              :class="getToastBgClass(toast.type)"
+            ></div>
+
+            <!-- آیکون متناسب با نوع اعلان -->
+            <div class="shrink-0 mt-0.5 mr-1">
+              <i :class="getToastIconClass(toast.type)" class="text-xl"></i>
+            </div>
+
+            <!-- متن اعلان -->
+            <div class="flex-1 pr-1 text-right">
+              <h4 class="font-bold text-white text-sm">{{ toast.title }}</h4>
+              <p class="text-gray-400 text-xs mt-1 leading-relaxed">
+                {{ toast.message }}
+              </p>
+            </div>
+
+            <!-- دکمه بستن -->
+            <button
+              @click="removeToast(toast.id)"
+              class="text-gray-500 hover:text-white transition-colors shrink-0"
+            >
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+        </transition-group>
+      </div>
+
+      <!-- ====== کانتینر اصلی ====== -->
+      <div
+        class="relative w-full max-w-5xl md:h-[650px] bg-brand-light/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:block"
+      >
+        <!-- ====== کنترل‌های موبایل ====== -->
+        <div
+          class="md:hidden flex justify-center p-4 border-b border-gray-700 bg-brand-dark/50"
+        >
+          <button
+            @click="switchMode('login')"
+            class="w-1/2 py-2 font-bold transition-colors"
+            :class="mode === 'login' ? 'text-brand-gold border-b-2 border-brand-gold' : 'text-gray-400'"
+          >
+            ورود
+          </button>
+          <button
+            @click="switchMode('register')"
+            class="w-1/2 py-2 font-bold transition-colors"
+            :class="mode === 'register' ? 'text-brand-gold border-b-2 border-brand-gold' : 'text-gray-400'"
+          >
+            ثبت‌نام
+          </button>
+        </div>
+
+        <!-- ====== فرم‌های سمت راست (ورود، تایید پیامک) ====== -->
+        <div
+          class="w-full md:absolute md:top-0 md:right-0 md:w-1/2 md:h-full p-6 md:p-12 flex flex-col justify-center transition-all duration-1000 ease-slide"
+          :class="!isOverlayRight ? 'opacity-100 z-10 translate-x-0 relative' : 'hidden md:flex md:opacity-0 -z-10 translate-x-[20%] absolute'"
+        >
+          <div class="w-full max-w-sm mx-auto">
+            <transition name="form-fade" mode="out-in">
+              <!-- فرم ورود -->
+              <div v-if="mode === 'login'" key="login" class="w-full">
+                <div class="text-center mb-8">
+                  <div
+                    class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-brand-dark border-2 border-brand-gold mb-6 shadow-[0_0_20px_rgba(245,158,11,0.3)] relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-brand-gold blur-md opacity-20 rounded-full"
+                    ></div>
+                    <i
+                      class="fa-solid fa-moon text-brand-gold text-4xl relative z-10"
+                    ></i>
+                  </div>
+                  <h2 class="text-3xl font-bold text-white tracking-wide">
+                    خوش آمدید!
+                  </h2>
+                  <p class="text-gray-400 text-sm mt-3">
+                    برای ادامه مسیر نورانی خود وارد شوید
+                  </p>
+                </div>
+                <div class="space-y-5">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                      >شماره موبایل یا نام کاربری</label
+                    >
+                    <div class="relative">
+                      <span
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 transition-colors"
+                        :class="loginErrors.identifier ? 'text-red-500' : 'text-gray-400'"
+                        ><i class="fa-solid fa-user"></i
+                      ></span>
+                      <input
+                        v-model="loginForm.identifier"
+                        @blur="validateLoginField('identifier')"
+                        @input="onLoginInput('identifier')"
+                        type="text"
+                        class="w-full bg-brand-dark/50 border rounded-xl py-3.5 pl-4 pr-11 text-sm text-white placeholder-gray-500 outline-none transition-colors"
+                        :class="loginErrors.identifier ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-600 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold'"
+                        placeholder="0912... یا Username"
+                      />
+                    </div>
+                    <p
+                      v-if="loginErrors.identifier"
+                      class="text-red-500 text-xs mt-1.5 text-right font-medium animate-[pulse_1s_ease-in-out]"
+                    >
+                      {{ loginErrors.identifier }}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                      >رمز عبور</label
+                    >
+                    <div class="relative">
+                      <span
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 transition-colors"
+                        :class="loginErrors.password ? 'text-red-500' : 'text-gray-400'"
+                        ><i class="fa-solid fa-lock"></i
+                      ></span>
+                      <input
+                        v-model="loginForm.password"
+                        @blur="validateLoginField('password')"
+                        @input="onLoginInput('password')"
+                        :type="showPassword ? 'text' : 'password'"
+                        class="w-full bg-brand-dark/50 border rounded-xl py-3.5 pl-11 pr-11 text-sm text-white placeholder-gray-500 outline-none transition-colors"
+                        :class="loginErrors.password ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-600 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold'"
+                        placeholder="••••••••"
+                      />
+                      <button
+                        @click="showPassword = !showPassword"
+                        type="button"
+                        class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 hover:text-brand-gold transition-colors"
+                      >
+                        <i
+                          class="fa-solid"
+                          :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                        ></i>
+                      </button>
+                    </div>
+                    <p
+                      v-if="loginErrors.password"
+                      class="text-red-500 text-xs mt-1.5 text-right font-medium animate-[pulse_1s_ease-in-out]"
+                    >
+                      {{ loginErrors.password }}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                      >کد امنیتی</label
+                    >
+                    <div class="flex items-center gap-3">
+                      <div class="relative flex-1">
+                        <span
+                          class="absolute inset-y-0 right-0 flex items-center pr-4 transition-colors"
+                          :class="loginErrors.captcha ? 'text-red-500' : 'text-gray-400'"
+                          ><i class="fa-solid fa-shield-halved"></i
+                        ></span>
+                        <input
+                          v-model="loginForm.captchaInput"
+                          @blur="validateLoginField('captcha')"
+                          @input="onLoginInput('captcha')"
+                          type="text"
+                          dir="ltr"
+                          class="w-full bg-brand-dark/50 border rounded-xl py-3.5 pl-4 pr-11 text-sm text-white placeholder-gray-500 outline-none transition-colors text-left font-mono tracking-widest"
+                          :class="loginErrors.captcha ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-600 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold'"
+                          placeholder="کد تصویر"
+                        />
+                      </div>
+                      <div
+                        class="flex items-center gap-2 bg-brand-dark/70 p-1.5 border border-gray-600 rounded-xl"
+                      >
+                        <canvas
+                          ref="captchaCanvas"
+                          width="100"
+                          height="40"
+                          class="rounded-lg cursor-pointer bg-brand-dark"
+                          @click="generateCaptcha"
+                          title="تغییر تصویر (کلیک کنید)"
+                        ></canvas>
+                        <button
+                          @click="generateCaptcha"
+                          type="button"
+                          class="text-gray-400 hover:text-brand-gold transition-colors px-2 py-1"
+                          title="تغییر کپچا"
+                        >
+                          <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p
+                      v-if="loginErrors.captcha"
+                      class="text-red-500 text-xs mt-1.5 text-right font-medium animate-[pulse_1s_ease-in-out]"
+                    >
+                      {{ loginErrors.captcha }}
+                    </p>
+                    <div class="text-left mt-3">
+                      <a
+                        href="#"
+                        class="text-sm text-brand-gold hover:text-brand-goldHover transition-colors"
+                        >رمز عبور را فراموش کردم؟</a
+                      >
+                    </div>
+                  </div>
+
+                  <button
+                    @click="handleLogin"
+                    :disabled="isLoading"
+                    class="w-full mt-2 py-3.5 px-4 bg-brand-gold hover:bg-brand-goldHover text-brand-dark font-bold text-base rounded-xl transition-all shadow-[0_4px_14px_0_rgba(245,158,11,0.39)] flex justify-center items-center gap-2"
+                  >
+                    <span v-if="!isLoading">ورود به پلتفرم</span>
+                    <i
+                      v-else
+                      class="fa-solid fa-circle-notch fa-spin text-xl"
+                    ></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- مرحله 2: OTP (جا‌به‌جا شده با اسلایدر به روش پینگ‌پونگی) -->
+              <div
+                v-else-if="mode === 'register' && regStep === 2"
+                key="step2"
+                class="space-y-6 text-center w-full"
+              >
+                <div
+                  class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-brand-dark border-2 border-brand-gold mb-2 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+                >
+                  <i
+                    class="fa-solid fa-shield-halved text-4xl text-brand-gold"
+                  ></i>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white mb-2 tracking-wide">
+                    کد تایید را وارد کنید
+                  </h3>
+                  <p class="text-sm text-gray-400">
+                    کد ۵ رقمی ارسال شده به
+                    <span dir="ltr" class="text-brand-gold font-bold px-1"
+                      >{{ regForm.phone }}</span
+                    >
+                    را وارد کنید.
+                  </p>
+                </div>
+                <div class="flex justify-center gap-3 py-4" dir="ltr">
+                  <input
+                    v-for="(digit, index) in otp"
+                    :key="'otp'+index"
+                    :ref="el => { if(el) otpRefs[index] = el }"
+                    v-model="otp[index]"
+                    @input="handleOtpInput($event, index)"
+                    @keydown.delete="handleOtpDelete($event, index)"
+                    type="text"
+                    maxlength="1"
+                    class="otp-input w-14 h-16 text-center text-2xl font-bold bg-brand-dark/80 border border-gray-600 rounded-xl text-white transition-all outline-none"
+                  />
+                </div>
+                <div class="text-sm font-medium text-gray-400 mb-2">
+                  <span v-if="countdown > 0"
+                    >ارسال مجدد تا
+                    <span class="text-brand-gold font-mono text-base px-1"
+                      >{{ formatTime(countdown) }}</span
+                    >
+                    دیگر</span
+                  >
+                  <button
+                    v-else
+                    @click="startCountdown"
+                    class="text-brand-gold hover:text-brand-goldHover transition-colors border-b border-brand-gold border-dashed"
+                  >
+                    ارسال مجدد کد
+                  </button>
+                </div>
+                <div class="flex gap-4">
+                  <button
+                    @click="regStep = 1"
+                    class="w-1/3 py-3.5 bg-brand-dark border border-gray-600 hover:border-gray-400 text-white font-bold text-base rounded-xl transition-all"
+                  >
+                    اصلاح شماره
+                  </button>
+                  <button
+                    @click="verifyOtp"
+                    :disabled="!isOtpValid || isLoading"
+                    class="w-2/3 py-3.5 bg-brand-gold hover:bg-brand-goldHover disabled:opacity-50 disabled:cursor-not-allowed text-brand-dark font-bold text-base rounded-xl transition-all shadow-[0_4px_14px_0_rgba(245,158,11,0.39)] flex justify-center items-center gap-2"
+                  >
+                    <span v-if="!isLoading">تایید هویت</span>
+                    <i
+                      v-else
+                      class="fa-solid fa-circle-notch fa-spin text-xl"
+                    ></i>
+                  </button>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </div>
+
+        <!-- ====== فرم‌های سمت چپ (مرحله 1 ثبت‌نام) ====== -->
+        <div
+          class="w-full md:absolute md:top-0 md:left-0 md:w-1/2 md:h-full p-6 md:p-12 flex flex-col justify-center transition-all duration-1000 ease-slide"
+          :class="isOverlayRight ? 'opacity-100 z-10 translate-x-0 relative' : 'hidden md:flex md:opacity-0 -z-10 -translate-x-[20%] absolute'"
+        >
+          <div class="w-full max-w-sm mx-auto">
+            <transition name="form-fade" mode="out-in">
+              <!-- مرحله 1: اطلاعات پایه -->
+              <div
+                v-if="mode === 'register' && regStep === 1"
+                key="step1"
+                class="space-y-5 w-full"
+              >
+                <div class="text-center mb-6 hidden md:block">
+                  <h2 class="text-3xl font-bold text-white tracking-wide">
+                    ایجاد حساب
+                  </h2>
+                  <p class="text-gray-400 text-sm mt-3">
+                    اطلاعات اولیه خود را وارد کنید
+                  </p>
+                </div>
+
+                <!-- فیلدهای ثبت‌نام -->
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                      >شماره موبایل</label
+                    >
+                    <div class="relative">
+                      <span
+                        class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm transition-colors"
+                        :class="regErrors.phone ? 'text-red-500' : 'text-gray-400'"
+                        ><i class="fa-solid fa-mobile-screen"></i
+                      ></span>
+                      <input
+                        v-model="regForm.phone"
+                        @blur="validateRegField('phone')"
+                        @input="onRegInput('phone')"
+                        type="tel"
+                        dir="ltr"
+                        class="w-full bg-brand-dark/50 border rounded-xl py-3 pl-3 pr-10 text-sm text-white placeholder-gray-500 outline-none transition-colors text-left"
+                        :class="regErrors.phone ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-600 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold'"
+                        placeholder="09..."
+                      />
+                    </div>
+                    <p
+                      v-if="regErrors.phone"
+                      class="text-red-500 text-xs mt-1.5 text-right font-medium animate-[pulse_1s_ease-in-out]"
+                    >
+                      {{ regErrors.phone }}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                      >نام کاربری</label
+                    >
+                    <div class="relative">
+                      <span
+                        class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm transition-colors"
+                        :class="regErrors.username ? 'text-red-500' : 'text-gray-400'"
+                        ><i class="fa-solid fa-at"></i
+                      ></span>
+                      <input
+                        v-model="regForm.username"
+                        @blur="validateRegField('username')"
+                        @input="onRegInput('username')"
+                        type="text"
+                        dir="ltr"
+                        class="w-full bg-brand-dark/50 border rounded-xl py-3 pl-3 pr-10 text-sm text-white placeholder-gray-500 outline-none transition-colors text-left"
+                        :class="regErrors.username ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-600 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold'"
+                        placeholder="Username"
+                      />
+                    </div>
+                    <p
+                      v-if="regErrors.username"
+                      class="text-red-500 text-xs mt-1.5 text-right font-medium animate-[pulse_1s_ease-in-out]"
+                    >
+                      {{ regErrors.username }}
+                    </p>
+                  </div>
+
+                  <div class="grid grid-cols-1 gap-4">
+                    <div>
+                      <label
+                        class="block text-sm font-medium text-gray-300 mb-2"
+                        >رمز عبور</label
+                      >
+                      <div class="relative">
+                        <span
+                          class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm transition-colors"
+                          :class="regErrors.password ? 'text-red-500' : 'text-gray-400'"
+                          ><i class="fa-solid fa-lock"></i
+                        ></span>
+                        <input
+                          v-model="regForm.password"
+                          @blur="validateRegField('password')"
+                          @input="onRegInput('password')"
+                          type="password"
+                          class="w-full bg-brand-dark/50 border rounded-xl py-3 pl-3 pr-10 text-sm text-white placeholder-gray-500 outline-none transition-colors text-left"
+                          dir="ltr"
+                          :class="regErrors.password ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-600 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold'"
+                          placeholder="••••••"
+                        />
+                      </div>
+                      <p
+                        v-if="regErrors.password"
+                        class="text-red-500 text-xs mt-1.5 text-right font-medium animate-[pulse_1s_ease-in-out]"
+                      >
+                        {{ regErrors.password }}
+                      </p>
+                    </div>
+                    <div>
+                      <label
+                        class="block text-sm font-medium text-gray-300 mb-2"
+                        >تکرار رمز عبور</label
+                      >
+                      <div class="relative">
+                        <span
+                          class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm transition-colors"
+                          :class="regErrors.confirm ? 'text-red-500' : 'text-gray-400'"
+                          ><i class="fa-solid fa-check-double"></i
+                        ></span>
+                        <input
+                          v-model="regForm.confirm"
+                          @blur="validateRegField('confirm')"
+                          @input="onRegInput('confirm')"
+                          type="password"
+                          class="w-full bg-brand-dark/50 border rounded-xl py-3 pl-3 pr-10 text-sm text-white placeholder-gray-500 outline-none transition-colors text-left"
+                          dir="ltr"
+                          :class="regErrors.confirm ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-600 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold'"
+                          placeholder="••••••"
+                        />
+                      </div>
+                      <p
+                        v-if="regErrors.confirm"
+                        class="text-red-500 text-xs mt-1.5 text-right font-medium animate-[pulse_1s_ease-in-out]"
+                      >
+                        {{ regErrors.confirm }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  @click="nextStep"
+                  :disabled="isLoading"
+                  class="w-full mt-6 py-3.5 px-4 bg-brand-gold hover:bg-brand-goldHover disabled:opacity-50 text-brand-dark font-bold text-base rounded-xl transition-all shadow-[0_4px_14px_0_rgba(245,158,11,0.39)] flex justify-center items-center gap-2"
+                >
+                  <span v-if="!isLoading">تایید و ارسال کد پیامکی</span>
+                  <i
+                    v-else
+                    class="fa-solid fa-circle-notch fa-spin text-xl"
+                  ></i>
+                </button>
+              </div>
+            </transition>
+          </div>
+        </div>
+
+        <!-- ====== پنل متحرک رویی (Sliding Overlay) ====== -->
+        <div
+          class="hidden md:flex flex-col justify-center absolute top-0 right-0 w-1/2 h-full z-20 transition-transform duration-1000 ease-slide bg-brand-dark shadow-[0_0_50px_rgba(0,0,0,0.6)] border-brand-gold/20 overflow-hidden"
+          :class="!isOverlayRight ? '-translate-x-full border-r' : 'translate-x-0 border-l'"
+        >
+          <!-- پترن پس‌زمینه محو -->
+          <div
+            class="absolute inset-0 opacity-10 pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjQ1LCAxNTgsIDExLCAwLjA1KSIvPjwvc3ZnPg==')]"
+          ></div>
+
+          <!-- محتوای پنل متحرک هنگام قرارگیری روی ثبت‌نام -->
+          <div
+            class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center transition-all duration-700 delay-150"
+            :class="mode === 'login' ? 'opacity-100 translate-x-0 pointer-events-auto' : 'opacity-0 translate-x-10 pointer-events-none'"
+          >
+            <div
+              class="w-28 h-28 mx-auto bg-brand-dark/50 border-2 border-brand-gold/30 rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.15)] mb-8 relative"
+            >
+              <div
+                class="absolute inset-0 bg-brand-gold opacity-10 blur-md rounded-3xl"
+              ></div>
+              <i
+                class="fa-solid fa-user-astronaut text-6xl text-brand-gold relative z-10"
+              ></i>
+            </div>
+            <h2 class="text-4xl font-bold text-white mb-5">
+              کاربر جدید هستید؟
+            </h2>
+            <p class="text-gray-300 text-lg leading-relaxed mb-12 max-w-sm">
+              با پیوستن به پلتفرم چالش‌های نور، در رقابت‌های جذاب قرآنی شرکت
+              کنید، مدال بگیرید و سطح خود را ارتقا دهید.
+            </p>
+            <button
+              @click="switchMode('register')"
+              class="bg-transparent border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold text-lg py-3.5 px-14 rounded-xl transition-all duration-300 hover:-translate-y-1 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+            >
+              شروع ماجراجویی
+            </button>
+          </div>
+
+          <!-- محتوای پنل متحرک هنگام قرارگیری روی ورود (اسلایدر پویا مراحل) -->
+          <div
+            class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center transition-all duration-700 delay-150"
+            :class="mode === 'register' ? 'opacity-100 translate-x-0 pointer-events-auto' : 'opacity-0 -translate-x-10 pointer-events-none'"
+          >
+            <!-- محتوای داینامیک بر اساس مرحله ثبت‌نام -->
+            <transition name="text-fade" mode="out-in">
+              <div
+                :key="'slider-' + regStep"
+                class="w-full flex flex-col items-center mt-8"
+              >
+                <div
+                  class="w-28 h-28 mx-auto bg-brand-dark/50 border-2 border-brand-gold/30 rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.15)] mb-8 relative"
+                >
+                  <div
+                    class="absolute inset-0 bg-brand-gold opacity-10 blur-md rounded-3xl"
+                  ></div>
+                  <i
+                    :class="['text-6xl text-brand-gold relative z-10', dynamicSlide.icon]"
+                  ></i>
+                </div>
+                <h2 class="text-4xl font-bold text-white mb-5">
+                  {{ dynamicSlide.title }}
+                </h2>
+                <p
+                  class="text-gray-300 text-lg leading-relaxed mb-12 max-w-sm h-24"
+                >
+                  {{ dynamicSlide.description }}
+                </p>
+
+                <!-- نشانگر مراحل فقط در فرم ثبت نام -->
+                <div class="flex gap-2.5 mb-10">
+                  <div
+                    v-for="i in 2"
+                    :key="i"
+                    class="h-2 rounded-full transition-all duration-500"
+                    :class="regStep === i ? 'w-10 bg-brand-gold shadow-[0_0_10px_rgba(245,158,11,0.6)]' : 'w-2.5 bg-gray-600'"
+                  ></div>
+                </div>
+              </div>
+            </transition>
+
+            <!-- دکمه برگشت به لاگین -->
+            <button
+              @click="switchMode('login')"
+              class="bg-transparent border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold text-lg py-3.5 px-14 rounded-xl transition-all duration-300 hover:-translate-y-1 shadow-[0_0_15px_rgba(245,158,11,0.2)] mt-auto mb-10"
+            >
+              قبلاً ثبت‌نام کرده‌ام (ورود به حساب)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref, reactive, computed, nextTick, onMounted, watch } =
+        Vue;
+
+      createApp({
+        setup() {
+          const mode = ref("login");
+          const isLoading = ref(false);
+
+          // اعلان‌ها (Toasts)
+          const toasts = ref([]);
+          let toastIdCounter = 0;
+
+          // فرم ورود
+          const loginForm = reactive({
+            identifier: "",
+            password: "",
+            captchaInput: "",
+          });
+          const showPassword = ref(false);
+          const loginErrors = reactive({
+            identifier: "",
+            password: "",
+            captcha: "",
+          });
+
+          // وضعیت مربوط به کپچای تصویری
+          const captchaCanvas = ref(null);
+          const generatedCaptchaText = ref("");
+
+          // فرم ثبت نام و مراحل
+          const regStep = ref(1);
+          const regForm = reactive({
+            username: "",
+            phone: "",
+            password: "",
+            confirm: "",
+          });
+          const regErrors = reactive({
+            phone: "",
+            username: "",
+            password: "",
+            confirm: "",
+          });
+
+          // وضعیت لمس شدن (Touched)
+          const touched = reactive({
+            regPhone: false,
+            regUsername: false,
+            regPassword: false,
+            regConfirm: false,
+            loginId: false,
+            loginPassword: false,
+            loginCaptcha: false,
+          });
+
+          // OTP
+          const otp = ref(["", "", "", "", ""]);
+          const otpRefs = ref([]);
+          const countdown = ref(0);
+          let timer = null;
+
+          // داده‌های پنل متحرک
+          const registerSlides = {
+            1: {
+              icon: "fa-solid fa-id-card",
+              title: "هویت خود را بسازید",
+              description:
+                "یک نام کاربری خاص انتخاب کنید. این نام در جدول امتیازات (Leaderboard) و رقابت‌ها نمایش داده می‌شود.",
+            },
+            2: {
+              icon: "fa-solid fa-shield-halved",
+              title: "امنیت پیشرفت‌ها",
+              description:
+                "با تایید شماره، مطمئن می‌شویم تمام اطلاعات، سکه‌ها و پیشرفت‌هایی که کسب می‌کنید، برای همیشه امن باقی می‌ماند.",
+            },
+          };
+
+          const dynamicSlide = computed(() => registerSlides[regStep.value]);
+
+          // تشخیص جایگاه پنل متحرک (اسلایدر): آیا باید سمت راست باشد یا چپ؟
+          const isOverlayRight = computed(() => {
+            return mode.value === "register" && regStep.value === 1;
+          });
+
+          // --- سیستم افزودن اعلان جدید (Toast API) ---
+          const showToast = (
+            title,
+            message,
+            type = "success",
+            duration = 4000
+          ) => {
+            const id = ++toastIdCounter;
+            toasts.value.push({ id, title, message, type });
+            setTimeout(() => {
+              removeToast(id);
+            }, duration);
+          };
+
+          const removeToast = (id) => {
+            const idx = toasts.value.findIndex((t) => t.id === id);
+            if (idx !== -1) toasts.value.splice(idx, 1);
+          };
+
+          const getToastIconClass = (type) => {
+            switch (type) {
+              case "success":
+                return "fa-solid fa-circle-check text-emerald-400";
+              case "error":
+                return "fa-solid fa-circle-xmark text-red-400";
+              case "warning":
+                return "fa-solid fa-triangle-exclamation text-amber-400";
+              case "info":
+                return "fa-solid fa-circle-info text-sky-400";
+              default:
+                return "fa-solid fa-circle-info text-white";
+            }
+          };
+
+          const getToastBorderClass = (type) => {
+            switch (type) {
+              case "success":
+                return "border-emerald-500/20";
+              case "error":
+                return "border-red-500/20";
+              case "warning":
+                return "border-amber-500/20";
+              case "info":
+                return "border-sky-500/20";
+              default:
+                return "border-gray-700/50";
+            }
+          };
+
+          const getToastBgClass = (type) => {
+            switch (type) {
+              case "success":
+                return "bg-emerald-500";
+              case "error":
+                return "bg-red-500";
+              case "warning":
+                return "bg-amber-500";
+              case "info":
+                return "bg-sky-500";
+              default:
+                return "bg-gray-700";
+            }
+          };
+
+          // --- سیستم اعتبارسنجی فیلد به فیلد (On Blur) ---
+          const validateRegField = (field) => {
+            touched[
+              "reg" + field.charAt(0).toUpperCase() + field.slice(1)
+            ] = true;
+
+            if (field === "phone") {
+              const p = regForm.phone
+                ? String(regForm.phone).replace(/\s/g, "")
+                : "";
+              if (!p) regErrors.phone = "شماره موبایل الزامی است";
+              else if (p.length !== 11 || !p.startsWith("09"))
+                regErrors.phone = "شماره باید ۱۱ رقم و با ۰۹ شروع شود";
+              else delete regErrors.phone;
+            }
+            if (field === "username") {
+              if (!regForm.username || regForm.username.trim().length < 3)
+                regErrors.username = "نام کاربری باید حداقل ۳ کاراکتر باشد";
+              else delete regErrors.username;
+            }
+            if (field === "password") {
+              if (!regForm.password || regForm.password.length < 6)
+                regErrors.password = "رمز عبور باید حداقل ۶ کاراکتر باشد";
+              else delete regErrors.password;
+
+              if (regForm.confirm) {
+                validateRegField("confirm");
+              }
+            }
+            if (field === "confirm") {
+              if (!regForm.confirm) regErrors.confirm = "تکرار رمز الزامی است";
+              else if (regForm.confirm !== regForm.password)
+                regErrors.confirm = "رمز عبور تطابق ندارد";
+              else delete regErrors.confirm;
+            }
+          };
+
+          const validateLoginField = (field) => {
+            touched[
+              "login" + field.charAt(0).toUpperCase() + field.slice(1)
+            ] = true;
+
+            if (field === "identifier") {
+              const id = loginForm.identifier
+                ? String(loginForm.identifier).trim()
+                : "";
+              if (!id) {
+                loginErrors.identifier =
+                  "شماره موبایل یا نام کاربری الزامی است";
+              } else {
+                const isPhone = /^[0-9]+$/.test(id);
+                if (isPhone && (id.length !== 11 || !id.startsWith("09"))) {
+                  loginErrors.identifier =
+                    "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود";
+                } else if (!isPhone && id.length < 3) {
+                  loginErrors.identifier =
+                    "نام کاربری نامعتبر است (حداقل ۳ کاراکتر)";
+                } else {
+                  delete loginErrors.identifier;
+                }
+              }
+            }
+            if (field === "password") {
+              const pw = loginForm.password ? String(loginForm.password) : "";
+              if (!pw) loginErrors.password = "رمز عبور الزامی است";
+              else if (pw.length < 6)
+                loginErrors.password = "رمز عبور باید حداقل ۶ کاراکتر باشد";
+              else delete loginErrors.password;
+            }
+            if (field === "captcha") {
+              if (!loginForm.captchaInput) {
+                loginErrors.captcha = "کد امنیتی الزامی است";
+              } else if (
+                loginForm.captchaInput.toLowerCase() !==
+                generatedCaptchaText.value.toLowerCase()
+              ) {
+                loginErrors.captcha = "کد امنیتی اشتباه است";
+              } else {
+                delete loginErrors.captcha;
+              }
+            }
+          };
+
+          // سیستم اصلاح آنی ارور در زمان تایپ (تنها در صورتی که فیلد قبلاً ارور داشته باشد)
+          const onRegInput = (field) => {
+            if (regErrors[field]) {
+              validateRegField(field);
+            }
+          };
+
+          const onLoginInput = (field) => {
+            const mappedKey = field === "identifier" ? "identifier" : field;
+            if (loginErrors[mappedKey]) {
+              validateLoginField(field);
+            }
+          };
+
+          const clearRegError = (field) => {
+            delete regErrors[field];
+          };
+
+          const clearLoginError = (field) => {
+            delete loginErrors[field];
+          };
+
+          // تولید کد امنیتی روی Canvas
+          const generateCaptcha = () => {
+            const chars = "0123456789abcdefghijklmnopqrstuvwxyz"; // کدهای تصادفی
+            let captcha = "";
+            for (let i = 0; i < 5; i++) {
+              captcha += chars[Math.floor(Math.random() * chars.length)];
+            }
+            generatedCaptchaText.value = captcha;
+
+            if (captchaCanvas.value) {
+              const ctx = captchaCanvas.value.getContext("2d");
+              ctx.clearRect(0, 0, 100, 40);
+
+              // رسم پس‌زمینه محو
+              ctx.fillStyle = "#0f172a";
+              ctx.fillRect(0, 0, 100, 40);
+
+              // اضافه کردن نویز (نقاط)
+              for (let i = 0; i < 30; i++) {
+                ctx.fillStyle = ["#f59e0b", "#38bdf8", "#475569"][
+                  Math.floor(Math.random() * 3)
+                ];
+                ctx.beginPath();
+                ctx.arc(
+                  Math.random() * 100,
+                  Math.random() * 40,
+                  Math.random() * 1.5,
+                  0,
+                  Math.PI * 2
+                );
+                ctx.fill();
+              }
+
+              // رسم حروف با چرخش‌های تصادفی
+              ctx.font = "bold 22px Vazirmatn, sans-serif";
+              ctx.fillStyle = "#f59e0b";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+
+              for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.translate(15 + i * 17, 20); // فاصله حروف
+                const angle = Math.random() * 0.4 - 0.2; // چرخش رندوم
+                ctx.rotate(angle);
+                ctx.fillText(captcha[i], 0, 0);
+                ctx.restore();
+              }
+            }
+          };
+
+          // تولید کپچا در زمان لود اولیه
+          onMounted(() => {
+            nextTick(() => {
+              generateCaptcha();
+            });
+          });
+
+          // زیر نظر گرفتن رفرنس Canvas برای اطمینان ۱۰۰ درصدی از رندر شدن بعد از جابجایی انیمیشن
+          watch(captchaCanvas, (canvasElement) => {
+            if (canvasElement) {
+              generateCaptcha();
+            }
+          });
+
+          const switchMode = (newMode) => {
+            mode.value = newMode;
+            // ریست کردن خطاها و وضعیت لمس فیلدها هنگام جابجایی بین حالت‌ها
+            Object.keys(regErrors).forEach((key) => delete regErrors[key]);
+            Object.keys(loginErrors).forEach((key) => delete loginErrors[key]);
+            Object.keys(touched).forEach((key) => (touched[key] = false));
+
+            if (newMode === "register") {
+              regStep.value = 1;
+            }
+          };
+
+          const isOtpValid = computed(() => otp.value.join("").length === 5);
+
+          const handleLogin = () => {
+            // اعتبار سنجی نهایی تمام فیلدها
+            validateLoginField("identifier");
+            validateLoginField("password");
+            validateLoginField("captcha");
+
+            if (Object.keys(loginErrors).length > 0) {
+              if (loginErrors.captcha === "کد امنیتی اشتباه است") {
+                loginForm.captchaInput = "";
+                generateCaptcha();
+                showToast(
+                  "خطای امنیتی",
+                  "کد امنیتی وارد شده تطابق ندارد.",
+                  "error"
+                );
+              } else {
+                showToast(
+                  "فرم ناقص",
+                  "لطفاً مقادیر ورودی را به درستی پر کنید.",
+                  "warning"
+                );
+              }
+              return;
+            }
+
+            isLoading.value = true;
+            setTimeout(() => {
+              isLoading.value = false;
+              showToast(
+                "ورود موفقیت‌آمیز",
+                "به پلتفرم چالش‌های نور خوش آمدید!",
+                "success"
+              );
+            }, 1500);
+          };
+
+          const nextStep = () => {
+            // اعتبار سنجی نهایی تمام فیلدها
+            validateRegField("phone");
+            validateRegField("username");
+            validateRegField("password");
+            validateRegField("confirm");
+
+            if (Object.keys(regErrors).length > 0) {
+              showToast(
+                "خطای ثبت‌نام",
+                "فیلدهای ثبت‌نام دارای اطلاعات نامعتبر هستند.",
+                "error"
+              );
+              return;
+            }
+
+            isLoading.value = true;
+            setTimeout(() => {
+              isLoading.value = false;
+              regStep.value = 2; // رفتن به مرحله 2 باعث جابجایی پینگ‌پونگی پنل می‌شود
+              startCountdown();
+              nextTick(() => {
+                if (otpRefs.value[0]) otpRefs.value[0].focus();
+              });
+              showToast(
+                "کد تایید ارسال شد",
+                "کد فعال‌سازی موقت به شماره شما ارسال شد.",
+                "info"
+              );
+            }, 800);
+          };
+
+          const startCountdown = () => {
+            countdown.value = 120;
+            clearInterval(timer);
+            timer = setInterval(() => {
+              if (countdown.value > 0) countdown.value--;
+              else clearInterval(timer);
+            }, 1000);
+          };
+
+          const formatTime = (seconds) => {
+            const m = Math.floor(seconds / 60)
+              .toString()
+              .padStart(2, "0");
+            const s = (seconds % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
+          };
+
+          const handleOtpInput = (e, index) => {
+            const val = e.target.value;
+            if (!/^\d*$/.test(val)) {
+              otp.value[index] = "";
+              return;
+            }
+            if (val && index < 4) otpRefs.value[index + 1].focus();
+          };
+
+          const handleOtpDelete = (e, index) => {
+            if (!otp.value[index] && index > 0) {
+              otpRefs.value[index - 1].focus();
+            }
+          };
+
+          const verifyOtp = () => {
+            if (!isOtpValid.value) {
+              showToast(
+                "کد ناقص",
+                "لطفاً کد تایید ۵ رقمی را به طور کامل وارد کنید.",
+                "warning"
+              );
+              return;
+            }
+
+            isLoading.value = true;
+            setTimeout(() => {
+              isLoading.value = false;
+              showToast(
+                "ثبت‌نام کامل شد",
+                "خوش آمدید! ثبت‌نام شما با موفقیت به پایان رسید.",
+                "success"
+              );
+            }, 1000);
+          };
+
+          return {
+            mode,
+            switchMode,
+            isLoading,
+            loginForm,
+            showPassword,
+            handleLogin,
+            captchaCanvas,
+            generateCaptcha,
+            generatedCaptchaText,
+            regStep,
+            regForm,
+            nextStep,
+            otp,
+            otpRefs,
+            countdown,
+            startCountdown,
+            formatTime,
+            handleOtpInput,
+            handleOtpDelete,
+            isOtpValid,
+            verifyOtp,
+            dynamicSlide,
+            isOverlayRight,
+            regErrors,
+            loginErrors,
+            clearRegError,
+            clearLoginError,
+            validateRegField,
+            validateLoginField,
+            onRegInput,
+            onLoginInput,
+            touched,
+            toasts,
+            showToast,
+            removeToast,
+            getToastIconClass,
+            getToastBorderClass,
+            getToastBgClass,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

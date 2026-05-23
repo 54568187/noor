@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چالش‌های نور | انتخاب علاقه‌مندی‌ها</title>
+    
+    <!-- فونت وزیرمتن -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- تنظیمات سفارشی Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            black: '#000000', // مشکی خالص
+                            dark: '#0a0a0a',  // خاکستری بسیار تیره برای کارت‌ها
+                            gold: '#facc15',  // طلایی زنده
+                            'gold-dark': '#ca8a04',
+                        }
+                    },
+                    boxShadow: {
+                        'gold-glow': '0 0 15px rgba(250, 204, 21, 0.15)',
+                        'gold-glow-strong': '0 0 25px rgba(250, 204, 21, 0.3)',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        /* مخفی کردن اسکرول بار برای زیبایی */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #facc15;
+        }
+
+        /* انیمیشن تاخیر برای کارت‌ها */
+        .delay-100 { animation-delay: 50ms; }
+        .delay-200 { animation-delay: 100ms; }
+        .delay-300 { animation-delay: 150ms; }
+        .delay-400 { animation-delay: 200ms; }
+        .delay-500 { animation-delay: 250ms; }
+        .delay-600 { animation-delay: 300ms; }
+
+        /* افکت انتخاب کارت */
+        .card-selected {
+            border-color: #facc15 !important;
+            background: linear-gradient(145deg, #151100 0%, #000000 100%) !important;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen relative flex flex-col items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
+
+    <!-- افکت نور پس‌زمینه (Glow) -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-3/4 h-56 bg-brand-gold/10 blur-[100px] rounded-full pointer-events-none z-0"></div>
+
+    <div id="app" class="w-full max-w-4xl z-10">
+        
+        <!-- حالت در حال پردازش / اتمام -->
+        <div v-if="isSubmitting" class="flex flex-col items-center justify-center min-h-[50vh] opacity-0 animate-fade-in-up">
+            <div class="w-20 h-20 rounded-full border-4 border-brand-dark border-t-brand-gold animate-spin mb-6"></div>
+            <h2 class="text-2xl font-bold text-brand-gold mb-3">در حال ساخت مسیر نورانی شما...</h2>
+            <p class="text-gray-400 text-base">علاقه‌مندی‌های شما ثبت شد و در حال انتقال به داشبورد هستید.</p>
+        </div>
+
+        <!-- محتوای اصلی صفحه علاقه‌مندی‌ها -->
+        <div v-else>
+            <!-- هدر -->
+            <div class="text-center mb-10 opacity-0 animate-fade-in-up">
+                <div class="inline-flex items-center justify-center px-4 py-1 rounded-full bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-xs font-bold tracking-wide mb-5">
+                    <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    مأموریت اول: پروفایل روانشناختی
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-tight">مسیر خود را <span class="text-transparent bg-clip-text bg-gradient-to-l from-brand-gold to-yellow-200">کشف کنید</span></h1>
+                <p class="text-gray-400 text-sm md:text-base max-w-xl mx-auto">برای پیشنهاد بهترین چالش‌ها، لطفاً حوزه‌های مورد علاقه خود را انتخاب کنید.</p>
+            </div>
+
+            <!-- شبکه‌ی علاقه‌مندی‌ها (کارت‌های کوچکتر) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 mb-10">
+                
+                <!-- لایه پوششی برای حل تداخل انیمیشن ورودی و افکت هاور -->
+                <div v-for="(item, index) in interests" :key="item.id"
+                     :class="['opacity-0 animate-fade-in-up h-full', `delay-${(index % 6 + 1) * 100}`]">
+                    
+                    <div @click="toggleInterest(item.id)"
+                         :class="[
+                             'relative cursor-pointer rounded-xl p-4 transition-all duration-300 ease-out border flex flex-col items-center text-center group overflow-hidden transform h-full',
+                             isSelected(item.id) 
+                                ? 'card-selected shadow-gold-glow -translate-y-1.5 scale-105 z-20' 
+                                : 'bg-brand-dark border-gray-800 hover:border-brand-gold/60 hover:bg-gray-900 hover:-translate-y-1.5 hover:scale-105 hover:shadow-gold-glow hover:z-30'
+                         ]">
+                        
+                        <!-- بک‌گراند هاور افکت -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                        <!-- آیکون تیک (فقط در حالت انتخاب شده) -->
+                        <div class="absolute top-2 left-2 transition-all duration-300 transform z-20"
+                             :class="isSelected(item.id) ? 'scale-100 opacity-100' : 'scale-50 opacity-0'">
+                            <div class="bg-brand-gold rounded-full p-0.5 shadow-[0_0_8px_rgba(250,204,21,0.4)]">
+                                <svg class="w-2.5 h-2.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </div>
+
+                        <!-- آیکون اصلی کارت -->
+                        <div class="mb-3 transition-all duration-300 group-hover:scale-110 relative z-10"
+                             :class="isSelected(item.id) ? 'text-brand-gold' : 'text-gray-500 group-hover:text-brand-gold'">
+                            <div v-html="item.icon" class="w-10 h-10 flex items-center justify-center"></div>
+                        </div>
+
+                        <!-- متن -->
+                        <h3 class="text-sm font-bold transition-colors duration-300 mb-1.5 relative z-10"
+                            :class="isSelected(item.id) ? 'text-brand-gold' : 'text-gray-200 group-hover:text-white'">{{ item.title }}</h3>
+                        <p class="text-[11px] leading-relaxed transition-colors duration-300 relative z-10"
+                           :class="isSelected(item.id) ? 'text-gray-400' : 'text-gray-500 group-hover:text-gray-300'">{{ item.desc }}</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- بخش پایینی و دکمه تایید -->
+            <div class="fixed bottom-0 left-0 w-full bg-gradient-to-t from-black via-black to-transparent pt-10 pb-5 px-4 z-40">
+                <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                    
+                    <!-- شمارنده -->
+                    <div class="text-gray-400 text-sm font-medium flex items-center bg-brand-dark/80 px-4 py-2 rounded-lg border border-gray-800 backdrop-blur-sm">
+                        <span class="ml-2">انتخاب شده:</span>
+                        <span class="text-lg font-bold transition-colors duration-300" :class="selectedCount >= minRequired ? 'text-brand-gold' : 'text-white'">{{ selectedCount }}</span>
+                        <span class="mx-1 text-gray-600">/</span>
+                        <span class="text-xs">حداقل {{ minRequired }} مورد</span>
+                    </div>
+
+                    <!-- دکمه ورود (کوچکتر و جمع‌وجورتر) -->
+                    <button @click="submitInterests" 
+                            :disabled="!canSubmit"
+                            class="relative w-full sm:w-auto overflow-hidden rounded-lg font-bold text-base transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group"
+                            :class="canSubmit ? 'bg-brand-gold text-black hover:bg-yellow-400 hover:shadow-gold-glow-strong transform hover:-translate-y-0.5' : 'bg-gray-800 text-gray-500 border border-gray-700'">
+                        <div class="px-8 py-3 relative z-10 flex items-center justify-center">
+                            <span>ورود به پلتفرم</span>
+                            <svg v-if="canSubmit" class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- فاصله گذار برای جلوگیری از رفتن محتوا زیر نوار پایینی -->
+            <div class="h-20"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+
+        createApp({
+            setup() {
+                // تغییر حداقل موارد انتخابی به ۱
+                const minRequired = 1;
+                const isSubmitting = ref(false);
+
+                // لیست علاقه‌مندی‌ها
+                const interests = ref([
+                    { 
+                        id: 1, 
+                        title: 'حفظ جزء ۳۰', 
+                        desc: 'شروع با سوره‌های کوتاه مکی.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>'
+                    },
+                    { 
+                        id: 2, 
+                        title: 'تثبیت و مرور', 
+                        desc: 'فولادین کردن محفوظات قبلی.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>'
+                    },
+                    { 
+                        id: 3, 
+                        title: 'چالش سرعتی', 
+                        desc: 'رقابت با زمان و سرعت.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>'
+                    },
+                    { 
+                        id: 4, 
+                        title: 'تجوید و لحن', 
+                        desc: 'ارتقای کیفیت و زیبایی خوانش.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>'
+                    },
+                    { 
+                        id: 5, 
+                        title: 'تفسیر و تدبر', 
+                        desc: 'درک عمیق معانی آیات.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>'
+                    },
+                    { 
+                        id: 6, 
+                        title: 'حفظ موضوعی', 
+                        desc: 'حفظ با موضوعات کاربردی.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>'
+                    },
+                    { 
+                        id: 7, 
+                        title: 'رقابت گروهی', 
+                        desc: 'پیوستن به لیگ‌ها و قبیله‌ها.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>'
+                    },
+                    { 
+                        id: 8, 
+                        title: 'برنامه روزانه', 
+                        desc: 'عادت‌سازی با چالش‌های خرد.',
+                        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>'
+                    }
+                ]);
+
+                // آرایه ذخیره موارد انتخاب شده
+                const selectedItems = ref([]);
+
+                // بررسی آیا یک مورد انتخاب شده است یا خیر
+                const isSelected = (id) => selectedItems.value.includes(id);
+
+                // تغییر وضعیت انتخاب
+                const toggleInterest = (id) => {
+                    const index = selectedItems.value.indexOf(id);
+                    if (index === -1) {
+                        selectedItems.value.push(id);
+                    } else {
+                        selectedItems.value.splice(index, 1);
+                    }
+                };
+
+                // تعداد انتخاب‌ها
+                const selectedCount = computed(() => selectedItems.value.length);
+
+                // آیا کاربر مجاز به ورود است؟
+                const canSubmit = computed(() => selectedCount.value >= minRequired);
+
+                // ثبت علاقه‌مندی‌ها
+                const submitInterests = () => {
+                    if (!canSubmit.value) return;
+                    
+                    isSubmitting.value = true;
+                    
+                    const userInterests = interests.value.filter(i => selectedItems.value.includes(i.id));
+                    localStorage.setItem('user_interests', JSON.stringify(userInterests));
+                    
+                    console.log("علاقه‌مندی‌های ثبت شده:", userInterests);
+
+                    // شبیه‌سازی هدایت به داشبورد پس از ۲ ثانیه
+                    setTimeout(() => {
+                        alert('علاقه‌مندی‌ها با موفقیت ذخیره شد! (آماده انتقال به داشبورد)');
+                        isSubmitting.value = false;
+                    }, 2500);
+                };
+
+                return {
+                    interests,
+                    toggleInterest,
+                    isSelected,
+                    selectedCount,
+                    canSubmit,
+                    minRequired,
+                    submitInterests,
+                    isSubmitting
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

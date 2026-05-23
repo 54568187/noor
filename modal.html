@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مودال جایزه - Vue</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-zinc-950 font-sans">
+    <div id="app">
+        <!-- صفحه اصلی مودال -->
+        <div v-if="isOpen" class="min-h-screen flex items-center justify-center p-4">
+            <!-- پس زمینه بلور شده -->
+            <div 
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-opacity duration-500"
+                :class="showAnimation ? 'opacity-100' : 'opacity-0'"
+                @click="closeModal">
+                
+                <!-- بدنه مودال -->
+                <div
+                    @click.stop
+                    class="relative w-full max-w-sm mx-4 bg-[#232a35] border border-white/10 rounded-2xl p-8 shadow-2xl transition-all duration-700 ease-out transform"
+                    :class="showAnimation ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-4 opacity-0'">
+                    
+                    <!-- دکمه بستن (آیکون SVG جایگزین Lucide) -->
+                    <button
+                        @click="closeModal"
+                        class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors duration-300 p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+
+                    <div class="flex flex-col items-center mt-2">
+                        <!-- کامپوننت سکه طلایی (طراحی فوق حرفه‌ای و گیمینگ برگشته) -->
+                        <div class="mb-8 relative group cursor-pointer flex justify-center items-center">
+                            <!-- هاله نورانی متحرک پشت سکه -->
+                            <div class="absolute w-24 h-24 bg-amber-400/30 blur-[30px] rounded-full animate-pulse group-hover:bg-amber-400/50 transition-all duration-500"></div>
+
+                            <svg viewBox="0 0 100 100" class="w-32 h-32 relative z-10 drop-shadow-[0_20px_25px_rgba(0,0,0,0.7)] transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2 group-hover:rotate-6">
+                                <defs>
+                                    <!-- گرادیان‌های غنی و بازی‌گونه برای حجم‌دهی -->
+                                    <linearGradient id="coinRim" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#FFF2A8" />
+                                        <stop offset="25%" stop-color="#E5A924" />
+                                        <stop offset="50%" stop-color="#8A530C" />
+                                        <stop offset="75%" stop-color="#E5A924" />
+                                        <stop offset="100%" stop-color="#FFF2A8" />
+                                    </linearGradient>
+
+                                    <linearGradient id="coinBevel" x1="100%" y1="100%" x2="0%" y2="0%">
+                                        <stop offset="0%" stop-color="#5E3304" />
+                                        <stop offset="50%" stop-color="#FDE079" />
+                                        <stop offset="100%" stop-color="#4A2600" />
+                                    </linearGradient>
+
+                                    <radialGradient id="coinFace" cx="45%" cy="35%" r="65%">
+                                        <stop offset="0%" stop-color="#FFF8D6" />
+                                        <stop offset="40%" stop-color="#F0B929" />
+                                        <stop offset="100%" stop-color="#A86E14" />
+                                    </radialGradient>
+
+                                    <!-- گرادیان متالیک برای متن روی سکه -->
+                                    <linearGradient id="textShine" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#FFFFFF" />
+                                        <stop offset="45%" stop-color="#FFF2A8" />
+                                        <stop offset="100%" stop-color="#FF9900" />
+                                    </linearGradient>
+
+                                    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#4A2600" flood-opacity="0.8" />
+                                    </filter>
+                                    
+                                    <!-- افکت درخشش ستاره‌ها -->
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+
+                                <!-- لایه‌های سه‌بعدی و حجم‌دهنده سکه -->
+                                <circle cx="50" cy="50" r="48" fill="url(#coinRim)" />
+                                <circle cx="50" cy="50" r="44" fill="url(#coinBevel)" />
+                                <circle cx="50" cy="50" r="40" fill="#5A3505" />
+                                <circle cx="50" cy="50" r="38" fill="url(#coinFace)" />
+
+                                <!-- خطوط و بافت داخلی (Detailing) -->
+                                <circle cx="50" cy="50" r="33" fill="none" stroke="#FDE079" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.6" />
+                                <circle cx="50" cy="50" r="27" fill="none" stroke="#8A530C" stroke-width="0.5" opacity="0.4" />
+
+                                <!-- افکت انعکاس نور (Highlight/Shine) روی نیمه بالایی سکه -->
+                                <path d="M 14 36 C 14 15, 86 15, 86 36 C 65 24, 35 24, 14 36 Z" fill="#FFFFFF" opacity="0.35" />
+
+                                <!-- عدد سکه ادغام شده در SVG برای استایل‌دهی بی‌نقص -->
+                                <text x="50" y="66" font-size="46" font-weight="900" text-anchor="middle" font-family="system-ui, sans-serif" fill="url(#textShine)" stroke="#663A00" stroke-width="1.5" filter="url(#dropShadow)">
+                                    {{ coinCount }}
+                                </text>
+
+                                <!-- ستاره‌های درخشان (Sparkles) -->
+                                <g transform="translate(72, 12) scale(0.7)" filter="url(#glow)">
+                                    <path d="M 10 0 Q 10 10 20 10 Q 10 10 10 20 Q 10 10 0 10 Q 10 10 10 0 Z" fill="#FFFFFF" opacity="0.9" />
+                                </g>
+                                <g transform="translate(15, 65) scale(0.4)" filter="url(#glow)">
+                                    <path d="M 10 0 Q 10 10 20 10 Q 10 10 10 20 Q 10 10 0 10 Q 10 10 10 0 Z" fill="#FFFFFF" opacity="0.9" />
+                                </g>
+                            </svg>
+                        </div>
+
+                        <!-- عنوان با افکت گرادیان -->
+                        <h2 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-amber-200 text-center leading-snug drop-shadow-sm">
+                            اولین سکه نور دریافت شد!
+                        </h2>
+                        
+                        <!-- خط تزئینی جداکننده -->
+                        <div class="w-16 h-[2px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-5"></div>
+                        
+                        <!-- باکس توضیحات -->
+                        <div class="w-full bg-black/20 border border-amber-500/10 rounded-2xl p-4 shadow-inner">
+                            <p class="text-[15px] font-medium text-amber-100/70 text-center leading-relaxed">
+                                به پاس قدردانی از مشارکت فعال شما در رویداد اخیر.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const isOpen = ref(true);
+                const showAnimation = ref(false);
+                const coinCount = ref(1); // تعداد سکه‌ها
+                let confettiInterval = null;
+
+                // تابع مدیریت فشفشه‌ها
+                const triggerFireworks = () => {
+                    if (typeof confetti === 'undefined') return;
+                    
+                    const duration = 2.5 * 1000;
+                    const animationEnd = Date.now() + duration;
+                    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100000 };
+                    const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+                    confettiInterval = setInterval(function() {
+                        const timeLeft = animationEnd - Date.now();
+
+                        if (timeLeft <= 0) {
+                            return clearInterval(confettiInterval);
+                        }
+
+                        const particleCount = 50 * (timeLeft / duration);
+                        const colors = ['#FFE066', '#D4AF37', '#FFFFFF', '#FFD700'];
+
+                        confetti(Object.assign({}, defaults, { 
+                            particleCount, 
+                            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                            colors
+                        }));
+                        
+                        confetti(Object.assign({}, defaults, { 
+                            particleCount, 
+                            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                            colors
+                        }));
+                    }, 250);
+                };
+
+                // باز کردن مودال با انیمیشن
+                const openModal = () => {
+                    isOpen.value = true;
+                    setTimeout(() => {
+                        showAnimation.value = true;
+                        triggerFireworks();
+                    }, 10);
+                };
+
+                // بستن مودال با انیمیشن
+                const closeModal = () => {
+                    showAnimation.value = false;
+                    if(confettiInterval) clearInterval(confettiInterval);
+                    // صبر برای پایان ترنزیشن قبل از حذف از DOM
+                    setTimeout(() => {
+                        isOpen.value = false;
+                    }, 500); 
+                };
+
+                // اجرا در زمان لود اولیه
+                onMounted(() => {
+                    setTimeout(() => {
+                        showAnimation.value = true;
+                        triggerFireworks();
+                    }, 100);
+                });
+
+                return {
+                    isOpen,
+                    showAnimation,
+                    coinCount,
+                    openModal,
+                    closeModal
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
