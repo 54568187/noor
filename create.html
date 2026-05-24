@@ -60,6 +60,14 @@
         
         .fade-slide-enter-active, .fade-slide-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
         .fade-slide-enter-from, .fade-slide-leave-to { opacity: 0; transform: translateX(-15px); }
+
+        .modal-scale-enter-active, .modal-scale-leave-active { transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-scale-enter-active .bg-slate-900, .modal-scale-leave-active .bg-slate-900 { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-scale-enter-from { opacity: 0; }
+        .modal-scale-enter-from .bg-slate-900 { transform: scale(0.92) translateY(15px); opacity: 0; }
+        .modal-scale-leave-to { opacity: 0; }
+        .modal-scale-leave-to .bg-slate-900 { transform: scale(0.96) translateY(5px); opacity: 0; }
+    </style>
     </style>
 </head>
 <body class="text-slate-200 h-screen w-full flex flex-col overflow-hidden">
