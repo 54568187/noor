@@ -26,28 +26,61 @@
     <style>
         body { font-family: 'Vazirmatn', sans-serif; background-color: #0f172a; margin: 0; overflow: hidden; }
         .bg-canvas-dots { background-color: #0f172a; background-image: radial-gradient(#334155 1.5px, transparent 1.5px); background-size: 28px 28px; }
+        
+        /* کرسرهای تعاملی اسکرول بوم */
+        .canvas-container { cursor: grab; user-select: none; }
+        .canvas-container:active { cursor: grabbing; }
+        
+        /* بازیابی کرسرهای عادی برای گره‌ها و دکمه‌ها در کل بوم */
+        .node-box, .zoom-controls, .absolute-controls, button, select, input, textarea, a, .pointer-events-auto { cursor: auto !important; }
+        .node-box { cursor: grab !important; }
+        .node-box:active { cursor: grabbing !important; }
+        
         .path-line { stroke: #64748b; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; animation: dashFlow 30s linear infinite; transition: stroke 0.2s; pointer-events: auto; cursor: pointer; }
         .path-hitbox { stroke: transparent; stroke-width: 15; fill: none; pointer-events: auto; cursor: crosshair; }
         .path-line:hover, .path-hitbox:hover + .path-line { stroke: #facc15; }
         .path-temp { stroke: #facc15; stroke-width: 3; fill: none; stroke-dasharray: 6 6; animation: dashFlow 15s linear infinite reverse; }
         @keyframes dashFlow { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+        
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
         .mode-select .node-box { cursor: grab; }
         .mode-select .node-box:active { cursor: grabbing; }
         .mode-connect { cursor: crosshair; }
         .mode-connect .node-box { cursor: crosshair; }
         .mode-delete { cursor: not-allowed; }
         .mode-delete .node-box { cursor: pointer; }
+        
         .slide-next-enter-active, .slide-next-leave-active, .slide-prev-enter-active, .slide-prev-leave-active { transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease; position: absolute; width: 100%; height: 100%; }
         .slide-next-enter-from { transform: translateX(100%); opacity: 0; }
         .slide-next-leave-to { transform: translateX(-100%); opacity: 0; }
         .slide-prev-enter-from { transform: translateX(-100%); opacity: 0; }
         .slide-prev-leave-to { transform: translateX(100%); opacity: 0; }
+        
         .fade-slide-enter-active, .fade-slide-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
         .fade-slide-enter-from, .fade-slide-leave-to { opacity: 0; transform: translateX(-15px); }
+
+        /* ترنزیشن و انیمیشن شکیل باز شدن مدال */
+        .modal-scale-enter-active, .modal-scale-leave-active {
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-scale-enter-active .bg-slate-900,
+        .modal-scale-leave-active .bg-slate-900 {
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-scale-enter-from { opacity: 0; }
+        .modal-scale-enter-from .bg-slate-900 {
+            transform: scale(0.92) translateY(15px);
+            opacity: 0;
+        }
+        .modal-scale-leave-to { opacity: 0; }
+        .modal-scale-leave-to .bg-slate-900 {
+            transform: scale(0.96) translateY(5px);
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="text-slate-200 h-screen w-full flex flex-col overflow-hidden">
@@ -69,7 +102,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-xs bg-slate-800 px-3 py-1.5 rounded-lg text-slate-400 border border-slate-700 hidden md:block">
-                    <span v-if="currentMode === 'select'">ابزار انتخاب: جابجایی، تک‌کلیک برای تنظیمات، دابل‌کلیک برای تغییر نام سریع</span>
+                    <span v-if="currentMode === 'select'">ابزار انتخاب: کشیدن بوم برای جابجایی نقشه | تک‌کلیک روی گام برای تنظیمات </span>
                     <span v-if="currentMode === 'connect'" class="text-emerald-400">ابزار اتصال: کشیدن از یک گره به گره دیگر</span>
                     <span v-if="currentMode === 'delete'" class="text-red-400">ابزار حذف: کلیک روی گره یا مسیر جهت پاک کردن</span>
                 </div>
@@ -84,7 +117,9 @@
         <main class="flex-1 flex relative overflow-hidden bg-canvas-dots">
             
             <transition :name="transitionName">
-                <div :key="activeChapter.id" class="canvas-scroll-area absolute inset-0 overflow-auto w-full h-full z-10" dir="ltr"
+                <div :key="activeChapter.id" class="canvas-scroll-area canvas-container absolute inset-0 overflow-auto w-full h-full z-10" dir="ltr"
+                     ref="canvasScrollArea"
+                     @mousedown="onCanvasMouseDown"
                      @mousemove="onMouseMove" 
                      @mouseup="onCanvasMouseUp" 
                      @mouseleave="onCanvasMouseUp">
@@ -150,7 +185,7 @@
                     <button @click="setMode('connect')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="اتصال مراحل (فلوچارت)" :class="currentMode === 'connect' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-link text-2xl"></i></button>
                     <button @click="setMode('delete')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="حذف مرحله یا مسیر" :class="currentMode === 'delete' ? 'bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-slate-400 hover:text-red-300 hover:bg-slate-700/50'"><i class="ph ph-trash text-2xl"></i></button>
                     <div class="w-8 h-px bg-slate-700 my-2"></div>
-                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2.5 rounded-xl transition-all tooltip relative group" title="افزودن محتوای جدید" :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-squares-four text-2xl"></i></button>
+                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2.5 rounded-xl transform transition-all duration-800 tooltip relative group" title="افزودن محتوای جدید" :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-squares-four text-2xl"></i></button>
                 </div>
 
                 <transition name="fade-slide">
@@ -173,7 +208,7 @@
                 </transition>
             </div>
 
-            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-brand-panel border border-slate-700 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] z-40 p-2 gap-4">
+            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-brand-panel border border-slate-700 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] z-40 p-2 gap-4 pointer-events-auto">
                 <button @click="nextChapter" :disabled="currentChapterIndex === chapters.length - 1" class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors" :class="currentChapterIndex === chapters.length - 1 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'"><i class="ph-bold ph-caret-right"></i> فصل بعد</button>
                 <div class="w-px h-6 bg-slate-700 my-auto"></div>
                 <div v-if="!isEditingChapter" @dblclick="isEditingChapter = true" class="text-brand-gold font-bold text-sm min-w-[120px] text-center cursor-pointer hover:text-brand-goldHover flex items-center justify-center gap-1 tooltip" title="دابل-کلیک برای تغییر نام">{{ activeChapter.title }}<i class="ph ph-pencil-simple text-[10px] opacity-60"></i></div>
@@ -201,14 +236,12 @@
     </div>
 
     <script type="module">
-        // ایمپورت کردن کامپوننت‌ها از فایل‌های مجزا
         import { NodeModal } from './components/NodeModal.js';
         import { ZoomControls } from './components/ZoomControls.js';
 
         const { createApp, ref, computed } = Vue;
 
         createApp({
-            // ثبت کامپوننت‌های ایمپورت شده
             components: {
                 'node-modal': NodeModal,
                 'zoom-controls': ZoomControls
@@ -225,6 +258,12 @@
                 
                 const isModalOpen = ref(false);
                 const selectedNode = ref(null);
+
+                // متغیرهای درگ کردن نقشه و اسکرول بوم
+                const canvasScrollArea = ref(null);
+                const isDraggingCanvas = ref(false);
+                const canvasStartScroll = ref({ left: 0, top: 0 });
+                const canvasStartMouse = ref({ x: 0, y: 0 });
 
                 const dragStartPos = ref({ x: 0, y: 0 });
                 const isDragging = ref(false);
@@ -280,6 +319,23 @@
                     return { x: (e.clientX - rect.left) / zoomLevel.value, y: (e.clientY - rect.top) / zoomLevel.value };
                 };
 
+                // شروع درگ بوم با کلیک روی فضای خالی بوم
+                const onCanvasMouseDown = (e) => {
+                    // بررسی اینکه روی گره‌ها یا ابزارهای دیگر کلیک نشده باشد
+                    if (e.target.closest('.node-box') || e.target.closest('.pointer-events-auto') || e.target.closest('button')) return;
+                    
+                    isDraggingCanvas.value = true;
+                    const el = canvasScrollArea.value;
+                    canvasStartScroll.value = {
+                        left: el.scrollLeft,
+                        top: el.scrollTop
+                    };
+                    canvasStartMouse.value = {
+                        x: e.clientX,
+                        y: e.clientY
+                    };
+                };
+
                 const handleNodeMouseDown = (node, e) => {
                     dragStartPos.value = { x: e.clientX, y: e.clientY };
                     const coords = getMouseCoords(e); 
@@ -317,13 +373,31 @@
                 const onMouseMove = (e) => {
                     const coords = getMouseCoords(e);
                     mousePos.value = coords; 
+
+                    // درگ کردن بوم (کشیدن پس زمینه)
+                    if (isDraggingCanvas.value) {
+                        const dx = e.clientX - canvasStartMouse.value.x;
+                        const dy = e.clientY - canvasStartMouse.value.y;
+                        const el = canvasScrollArea.value;
+                        el.scrollLeft = canvasStartScroll.value.left - dx;
+                        el.scrollTop = canvasStartScroll.value.top - dy;
+                        return;
+                    }
+
+                    // درگ گره‌ها
                     if (isDragging.value && dragNode.value && currentMode.value === 'select') {
                         dragNode.value.x = coords.x - offset.value.x;
                         dragNode.value.y = coords.y - offset.value.y;
                     }
                 };
 
-                const onCanvasMouseUp = () => { isDragging.value = false; dragNode.value = null; connectingStartNode.value = null; };
+                const onCanvasMouseUp = () => { 
+                    isDragging.value = false; 
+                    dragNode.value = null; 
+                    connectingStartNode.value = null; 
+                    isDraggingCanvas.value = false;
+                };
+
                 const handlePathClick = (index) => { if (currentMode.value === 'delete') activeChapter.value.connections.splice(index, 1); };
                 const startEdit = (node) => { if(currentMode.value === 'select') editingNodeId.value = node.id; };
                 const stopEdit = () => editingNodeId.value = null;
@@ -407,7 +481,8 @@
 
                 return { 
                     chapters, currentChapterIndex, activeChapter, nextChapter, prevChapter, transitionName, isEditingChapter, currentMode, setMode, zoomLevel, zoomIn, zoomOut, resetZoom, isDragging, dragNode, connectingStartNode, handleNodeMouseDown, handleNodeMouseUp, handleNodeClick, onMouseMove, onCanvasMouseUp, handlePathClick, startEdit, stopEdit, editingNodeId, svgPaths, tempPath, addNode, isContentPanelOpen,
-                    isModalOpen, selectedNode, closeModal, saveModalData
+                    isModalOpen, selectedNode, closeModal, saveModalData,
+                    canvasScrollArea, onCanvasMouseDown
                 };
             }
         }).mount('#app');
