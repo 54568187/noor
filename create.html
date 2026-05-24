@@ -5,32 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>کارگاه سازندگان - بوم نقشه راه (چند فصلی)</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Vue.js 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        vazirmatn: ['Vazirmatn', 'sans-serif'],
-                    },
+                    fontFamily: { vazirmatn: ['Vazirmatn', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            dark: '#0f172a',
-                            panel: '#1e293b',
-                            gold: '#facc15',
-                            goldHover: '#fde047'
-                        }
+                        brand: { dark: '#0f172a', panel: '#1e293b', gold: '#facc15', goldHover: '#fde047' }
                     }
                 }
             }
@@ -38,103 +24,36 @@
     </script>
 
     <style>
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #0f172a;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .bg-canvas-dots {
-            background-color: #0f172a;
-            background-image: radial-gradient(#334155 1.5px, transparent 1.5px);
-            background-size: 28px 28px;
-        }
-
-        /* خطوط اتصال دائم */
-        .path-line {
-            stroke: #64748b;
-            stroke-width: 2.5;
-            fill: none;
-            stroke-dasharray: 8 6;
-            animation: dashFlow 30s linear infinite;
-            transition: stroke 0.2s;
-            pointer-events: auto;
-            cursor: pointer;
-        }
-        
-        /* خط نامرئی ضخیم‌تر برای راحت‌تر کلیک کردن */
-        .path-hitbox {
-            stroke: transparent;
-            stroke-width: 15;
-            fill: none;
-            pointer-events: auto;
-            cursor: crosshair;
-        }
-
-        .path-line:hover, .path-hitbox:hover + .path-line {
-            stroke: #facc15;
-        }
-
-        /* خط در حال کشیدن */
-        .path-temp {
-            stroke: #facc15;
-            stroke-width: 3;
-            fill: none;
-            stroke-dasharray: 6 6;
-            animation: dashFlow 15s linear infinite reverse;
-        }
-
-        @keyframes dashFlow {
-            from { stroke-dashoffset: 1000; }
-            to { stroke-dashoffset: 0; }
-        }
-
+        body { font-family: 'Vazirmatn', sans-serif; background-color: #0f172a; margin: 0; overflow: hidden; }
+        .bg-canvas-dots { background-color: #0f172a; background-image: radial-gradient(#334155 1.5px, transparent 1.5px); background-size: 28px 28px; }
+        .path-line { stroke: #64748b; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; animation: dashFlow 30s linear infinite; transition: stroke 0.2s; pointer-events: auto; cursor: pointer; }
+        .path-hitbox { stroke: transparent; stroke-width: 15; fill: none; pointer-events: auto; cursor: crosshair; }
+        .path-line:hover, .path-hitbox:hover + .path-line { stroke: #facc15; }
+        .path-temp { stroke: #facc15; stroke-width: 3; fill: none; stroke-dasharray: 6 6; animation: dashFlow 15s linear infinite reverse; }
+        @keyframes dashFlow { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        /* استایل حالت‌های مختلف موس */
         .mode-select .node-box { cursor: grab; }
         .mode-select .node-box:active { cursor: grabbing; }
         .mode-connect { cursor: crosshair; }
         .mode-connect .node-box { cursor: crosshair; }
         .mode-delete { cursor: not-allowed; }
         .mode-delete .node-box { cursor: pointer; }
-
-        /* انیمیشن‌های اسلاید بین فصل‌ها */
-        .slide-next-enter-active, .slide-next-leave-active,
-        .slide-prev-enter-active, .slide-prev-leave-active {
-            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* رفتن به فصل بعدی (حرکت به راست در RTL) */
+        .slide-next-enter-active, .slide-next-leave-active, .slide-prev-enter-active, .slide-prev-leave-active { transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease; position: absolute; width: 100%; height: 100%; }
         .slide-next-enter-from { transform: translateX(100%); opacity: 0; }
         .slide-next-leave-to { transform: translateX(-100%); opacity: 0; }
-        
-        /* برگشت به فصل قبلی */
         .slide-prev-enter-from { transform: translateX(-100%); opacity: 0; }
         .slide-prev-leave-to { transform: translateX(100%); opacity: 0; }
-
-        /* انیمیشن پنل افزودن محتوا */
-        .fade-slide-enter-active, .fade-slide-leave-active {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .fade-slide-enter-from, .fade-slide-leave-to {
-            opacity: 0;
-            transform: translateX(-15px);
-        }
+        .fade-slide-enter-active, .fade-slide-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
+        .fade-slide-enter-from, .fade-slide-leave-to { opacity: 0; transform: translateX(-15px); }
     </style>
 </head>
 <body class="text-slate-200 h-screen w-full flex flex-col overflow-hidden">
 
     <div id="app" class="h-full w-full flex flex-col" :class="'mode-' + currentMode">
         
-        <!-- هدر بالا -->
         <header class="h-16 bg-brand-panel border-b border-slate-700 flex items-center justify-between px-6 shrink-0 z-40 shadow-md">
             <div class="flex items-center gap-4">
                 <div class="text-xl font-black text-brand-gold flex items-center gap-2">
@@ -162,46 +81,33 @@
             </div>
         </header>
 
-        <!-- فضای کاری -->
         <main class="flex-1 flex relative overflow-hidden bg-canvas-dots">
             
-            <!-- بوم نقشه راه -->
             <transition :name="transitionName">
                 <div :key="activeChapter.id" class="canvas-scroll-area absolute inset-0 overflow-auto w-full h-full z-10" dir="ltr"
                      @mousemove="onMouseMove" 
                      @mouseup="onCanvasMouseUp" 
                      @mouseleave="onCanvasMouseUp">
                     
-                    <!-- Wrapper اختصاصی برای زوم -->
                     <div class="zoom-wrapper relative w-[3000px] h-[3000px]"
                          :style="{ transform: `scale(${zoomLevel})`, transformOrigin: '0 0', transition: 'transform 0.15s ease-out' }">
 
-                        <!-- لایه SVG برای خطوط در فصل فعال -->
                         <svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
                             <defs>
-                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                    <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
-                                </marker>
-                                <marker id="arrowhead-gold" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                    <polygon points="0 0, 10 3.5, 0 7" fill="#facc15" />
-                                </marker>
-                                <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                    <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
-                                </marker>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+                                <marker id="arrowhead-gold" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#facc15" /></marker>
+                                <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" /></marker>
                             </defs>
                             
-                            <!-- خطوط اتصال ثبت شده -->
                             <g v-for="(path, index) in svgPaths" :key="'conn-'+index">
                                 <path :d="path.d" class="path-hitbox" @mousedown.stop="handlePathClick(index)" />
                                 <path :d="path.d" class="path-line" :class="{ 'stroke-red-500': currentMode === 'delete' }" 
                                       :marker-end="currentMode === 'delete' ? 'url(#arrowhead-red)' : 'url(#arrowhead)'" />
                             </g>
 
-                            <!-- خط اتصال موقت -->
                             <path v-if="tempPath" :d="tempPath" class="path-temp" marker-end="url(#arrowhead-gold)"/>
                         </svg>
 
-                        <!-- گره‌های فصل فعال -->
                         <div v-for="node in activeChapter.nodes" :key="node.id" dir="rtl"
                              @mousedown.stop="handleNodeMouseDown(node, $event)"
                              @mouseup.stop="handleNodeMouseUp(node)"
@@ -210,8 +116,7 @@
                              :style="{ left: node.x + 'px', top: node.y + 'px', width: node.w + 'px' }"
                              class="absolute z-10 node-box transition-all duration-200"
                              :class="[
-                                 node.bg, 
-                                 node.border,
+                                 node.bg, node.border,
                                  isDragging && dragNode?.id === node.id ? 'shadow-[0_0_20px_rgba(250,204,21,0.4)] scale-105 z-20' : 'shadow-lg',
                                  currentMode === 'delete' ? 'hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'hover:shadow-xl',
                                  currentMode === 'connect' && connectingStartNode?.id === node.id ? 'border-brand-gold shadow-[0_0_15px_rgba(250,204,21,0.6)]' : ''
@@ -222,676 +127,209 @@
                                 <div class="flex items-center justify-center rounded-lg w-8 h-8 shrink-0" :class="node.iconBg">
                                     <i :class="['ph text-xl', node.icon, node.color]"></i>
                                 </div>
-                                
                                 <span v-if="editingNodeId !== node.id" class="text-sm font-semibold text-slate-200 truncate select-none flex-1">
                                     {{ node.title }}
                                 </span>
-                                
                                 <input v-else type="text" v-model="node.title" @blur="stopEdit" @keyup.enter="stopEdit" v-focus
                                        class="flex-1 bg-slate-800 text-sm text-white font-semibold border border-brand-gold rounded px-2 py-1 outline-none w-full" />
                             </div>
 
-                            <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full"
-                                 :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
-                            <div v-if="node.type !== 'start'" class="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full"
-                                 :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
-                            <div class="absolute top-1/2 -left-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full"
-                                 :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
-                            <div class="absolute top-1/2 -right-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full"
-                                 :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div v-if="node.type !== 'start'" class="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div class="absolute top-1/2 -left-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div class="absolute top-1/2 -right-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
                         </div>
 
                     </div>
                 </div>
             </transition>
 
-            <!-- پنل‌های سمت راست (همیشه ثابت) -->
             <div class="absolute top-6 right-6 flex gap-4 z-30 pointer-events-none">
-                
                 <div class="w-14 bg-brand-panel border border-slate-700 rounded-2xl flex flex-col items-center py-4 gap-2 shadow-2xl pointer-events-auto backdrop-blur-sm bg-opacity-90">
-                    <button @click="setMode('select')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="جابجایی و ویرایش"
-                            :class="currentMode === 'select' ? 'bg-brand-gold/10 text-brand-gold shadow-[0_0_10px_rgba(250,204,21,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'">
-                        <i class="ph-fill ph-cursor text-2xl"></i>
-                    </button>
-                    <button @click="setMode('connect')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="اتصال مراحل (فلوچارت)"
-                            :class="currentMode === 'connect' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'">
-                        <i class="ph ph-link text-2xl"></i>
-                    </button>
-                    <button @click="setMode('delete')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="حذف مرحله یا مسیر"
-                            :class="currentMode === 'delete' ? 'bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-slate-400 hover:text-red-300 hover:bg-slate-700/50'">
-                        <i class="ph ph-trash text-2xl"></i>
-                    </button>
-                    
+                    <button @click="setMode('select')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="جابجایی و ویرایش" :class="currentMode === 'select' ? 'bg-brand-gold/10 text-brand-gold shadow-[0_0_10px_rgba(250,204,21,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph-fill ph-cursor text-2xl"></i></button>
+                    <button @click="setMode('connect')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="اتصال مراحل (فلوچارت)" :class="currentMode === 'connect' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-link text-2xl"></i></button>
+                    <button @click="setMode('delete')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="حذف مرحله یا مسیر" :class="currentMode === 'delete' ? 'bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-slate-400 hover:text-red-300 hover:bg-slate-700/50'"><i class="ph ph-trash text-2xl"></i></button>
                     <div class="w-8 h-px bg-slate-700 my-2"></div>
-                    
-                    <!-- دکمه نمایش/مخفی کردن پنل افزودن محتوا -->
-                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2.5 rounded-xl transition-all tooltip relative group" title="افزودن محتوای جدید"
-                            :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'">
-                        <i class="ph ph-squares-four text-2xl"></i>
-                    </button>
+                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2.5 rounded-xl transition-all tooltip relative group" title="افزودن محتوای جدید" :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-squares-four text-2xl"></i></button>
                 </div>
 
                 <transition name="fade-slide">
                     <div v-if="isContentPanelOpen" class="w-64 bg-brand-panel border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto backdrop-blur-sm bg-opacity-95">
                         <div class="p-4 border-b border-slate-700/80 bg-slate-800/50 flex justify-between items-center">
-                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-                                <i class="ph ph-squares-four text-blue-400"></i>
-                                افزودن محتوا
-                            </h2>
+                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="ph ph-squares-four text-blue-400"></i> افزودن محتوای</h2>
                             <button @click="isContentPanelOpen = false" class="text-slate-400 hover:text-slate-200"><i class="ph ph-x"></i></button>
                         </div>
-                        
                         <div class="p-4 grid grid-cols-2 gap-3 overflow-y-auto max-h-[calc(100vh-200px)] custom-scrollbar">
                             <button @click="addNode('chapter')" class="col-span-2 flex flex-col items-center justify-center py-4 border border-dashed border-brand-gold/40 bg-brand-gold/5 rounded-xl hover:bg-brand-gold/10 hover:border-brand-gold/80 transition-all gap-2 group">
                                 <i class="ph ph-plus-circle text-3xl text-brand-gold group-hover:scale-110 transition-transform"></i>
                                 <span class="text-xs font-bold text-brand-gold">ایجاد فصل (اتاق) جدید</span>
                             </button>
-
-                            <button @click="addNode('quiz')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group">
-                                <i class="ph ph-exam text-2xl text-blue-400 group-hover:-translate-y-1 transition-transform"></i>
-                                <span class="text-xs text-slate-300 font-medium">آزمون</span>
-                            </button>
-                            <button @click="addNode('video')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group">
-                                <i class="ph ph-video-camera text-2xl text-purple-400 group-hover:-translate-y-1 transition-transform"></i>
-                                <span class="text-xs text-slate-300 font-medium">ویدیو</span>
-                            </button>
-                            <button @click="addNode('practice')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group">
-                                <i class="ph ph-pencil-simple text-2xl text-green-400 group-hover:-translate-y-1 transition-transform"></i>
-                                <span class="text-xs text-slate-300 font-medium">متن / تمرین</span>
-                            </button>
-                            <button @click="addNode('stage')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group">
-                                <i class="ph ph-flag-checkered text-2xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i>
-                                <span class="text-xs text-slate-300 font-medium">مرحله ترکیبی (همه موارد)</span>
-                            </button>
+                            <button @click="addNode('quiz')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-exam text-2xl text-blue-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">آزمون</span></button>
+                            <button @click="addNode('video')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-video-camera text-2xl text-purple-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">ویدیو</span></button>
+                            <button @click="addNode('practice')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-pencil-simple text-2xl text-green-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">متن / تمرین</span></button>
+                            <button @click="addNode('stage')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-flag-checkered text-2xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">مرحله ترکیبی</span></button>
                         </div>
                     </div>
                 </transition>
-
             </div>
 
-            <!-- نوار کنترلر فصل‌ها -->
             <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-brand-panel border border-slate-700 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] z-40 p-2 gap-4">
-                <button @click="nextChapter" :disabled="currentChapterIndex === chapters.length - 1" 
-                        class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors"
-                        :class="currentChapterIndex === chapters.length - 1 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'">
-                    <i class="ph-bold ph-caret-right"></i>
-                    فصل بعد
-                </button>
-                
-                <div class="w-px h-6 bg-slate-700"></div>
-
-                <div v-if="!isEditingChapter" @dblclick="isEditingChapter = true" class="text-brand-gold font-bold text-sm min-w-[120px] text-center cursor-pointer hover:text-brand-goldHover flex items-center justify-center gap-1 tooltip" title="دابل-کلیک برای تغییر نام">
-                    {{ activeChapter.title }}
-                    <i class="ph ph-pencil-simple text-[10px] opacity-60"></i>
-                </div>
-                <input v-else type="text" v-model="activeChapter.title" @blur="isEditingChapter = false" @keyup.enter="isEditingChapter = false" v-focus 
-                       class="bg-slate-800 text-sm text-brand-gold font-bold border border-brand-gold rounded px-2 py-1 outline-none text-center min-w-[120px]" />
-
-                <div class="w-px h-6 bg-slate-700"></div>
-
-                <button @click="prevChapter" :disabled="currentChapterIndex === 0" 
-                        class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors"
-                        :class="currentChapterIndex === 0 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'">
-                    فصل قبل
-                    <i class="ph-bold ph-caret-left"></i>
-                </button>
+                <button @click="nextChapter" :disabled="currentChapterIndex === chapters.length - 1" class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors" :class="currentChapterIndex === chapters.length - 1 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'"><i class="ph-bold ph-caret-right"></i> فصل بعد</button>
+                <div class="w-px h-6 bg-slate-700 my-auto"></div>
+                <div v-if="!isEditingChapter" @dblclick="isEditingChapter = true" class="text-brand-gold font-bold text-sm min-w-[120px] text-center cursor-pointer hover:text-brand-goldHover flex items-center justify-center gap-1 tooltip" title="دابل-کلیک برای تغییر نام">{{ activeChapter.title }}<i class="ph ph-pencil-simple text-[10px] opacity-60"></i></div>
+                <input v-else type="text" v-model="activeChapter.title" @blur="isEditingChapter = false" @keyup.enter="isEditingChapter = false" v-focus class="bg-slate-800 text-sm text-brand-gold font-bold border border-brand-gold rounded px-2 py-1 outline-none text-center min-w-[120px]" />
+                <div class="w-px h-6 bg-slate-700 my-auto"></div>
+                <button @click="prevChapter" :disabled="currentChapterIndex === 0" class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors" :class="currentChapterIndex === 0 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'">فصل قبل <i class="ph-bold ph-caret-left"></i></button>
             </div>
 
-            <!-- پنل زوم -->
-            <div class="absolute bottom-6 left-6 flex items-center bg-brand-panel border border-slate-700 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] z-40 p-2 gap-2">
-                <button @click="zoomIn" class="p-2 rounded-xl transition-all tooltip relative group text-slate-400 hover:text-brand-gold hover:bg-slate-700/50" title="بزرگ‌نمایی">
-                    <i class="ph ph-magnifying-glass-plus text-xl"></i>
-                </button>
-                <div @click="resetZoom" class="text-[11px] text-brand-gold font-bold cursor-pointer hover:text-brand-goldHover tooltip text-center min-w-[36px] select-none" title="بازگشت به ۱۰۰٪">
-                    {{ Math.round(zoomLevel * 100) }}%
-                </div>
-                <button @click="zoomOut" class="p-2 rounded-xl transition-all tooltip relative group text-slate-400 hover:text-brand-gold hover:bg-slate-700/50" title="کوچک‌نمایی">
-                    <i class="ph ph-magnifying-glass-minus text-xl"></i>
-                </button>
-            </div>
+            <zoom-controls 
+                :zoom-level="zoomLevel" 
+                @zoom-in="zoomIn" 
+                @zoom-out="zoomOut" 
+                @reset-zoom="resetZoom">
+            </zoom-controls>
 
         </main>
 
-        <!-- مُدال اختصاصی تنظیمات پیشرفته آیتم‌ها -->
-        <div v-if="isModalOpen && selectedNode" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <div class="bg-brand-panel border border-brand-gold/40 rounded-2xl w-full max-w-2xl shadow-[0_0_50px_rgba(250,204,21,0.15)] flex flex-col overflow-hidden max-h-[90vh]">
-                
-                <!-- هدر مدال -->
-                <div class="px-6 py-4 border-b border-slate-700/80 bg-slate-800/30 flex items-center justify-between shrink-0">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="selectedNode.iconBg">
-                            <i :class="['ph text-2xl', selectedNode.icon, selectedNode.color]"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-slate-100 text-base">تنظیمات {{ selectedNode.title }}</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">شخصی‌سازی و پیکربندی محتوای این گام</p>
-                        </div>
-                    </div>
-                    <button @click="closeModal" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 transition-colors">
-                        <i class="ph ph-x text-xl"></i>
-                    </button>
-                </div>
-
-                <!-- بدنه مدال -->
-                <div class="p-6 overflow-y-auto space-y-6 text-slate-200 text-sm custom-scrollbar">
-                    
-                    <!-- عنوان عمومی گام -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1.5">عنوان اصلی گام / مرحله:</label>
-                        <input type="text" v-model="modalData.title" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors" />
-                    </div>
-
-                    <!-- بخش اختصاصی: مرحله ساده (Stage) - ماموریت -->
-                    <div v-if="selectedNode.type === 'stage'" class="space-y-2 border-b border-slate-700 pb-4">
-                        <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="ph ph-flag-checkered text-lg"></i> ماموریت کلی مرحله</h4>
-                        <input type="text" v-model="modalData.stageMission" placeholder="مثال: حفظ و درک مفاهیم آیات ۱ تا ۵ سوره نبأ" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors" />
-                    </div>
-
-                    <!-- بخش اختصاصی: ویدیو (نمایش در مود ویدیو یا مرحله ترکیبی) -->
-                    <div v-if="selectedNode.type === 'video' || selectedNode.type === 'stage'" class="space-y-4 bg-slate-800/20 p-4 rounded-xl border border-slate-800">
-                        <h4 class="text-sm font-bold text-purple-400 flex items-center gap-2"><i class="ph ph-video-camera text-lg"></i> محتوای ویدیویی</h4>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1.5">آپلود فایل ویدیو از سیستم:</label>
-                            <div class="flex items-center gap-3">
-                                <label class="flex-shrink-0 cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-xs font-bold transition-colors text-slate-300">
-                                    <i class="ph ph-upload-simple mr-1"></i> انتخاب فایل
-                                    <input type="file" accept="video/*" class="hidden" @change="handleVideoUpload" />
-                                </label>
-                                <div class="flex-1 text-xs text-slate-400 truncate">
-                                    {{ modalData.localVideoName || 'هیچ ویدیویی انتخاب نشده است' }}
-                                    <button v-if="modalData.localVideoName" @click="modalData.localVideoName = ''" class="text-red-400 hover:text-red-300 mr-2 text-[10px]"><i class="ph ph-x"></i> حذف</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="h-px bg-slate-700 flex-1"></div>
-                            <span class="text-[10px] text-slate-500">یا استفاده از لینک</span>
-                            <div class="h-px bg-slate-700 flex-1"></div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1.5">آدرس اینترنتی ویدیو (آپارات، یوتیوب و...):</label>
-                            <input type="text" v-model="modalData.videoUrl" placeholder="https://example.com/video.mp4" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors" />
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1.5">توضیحات تکمیلی و درسنامه ویدیو:</label>
-                            <textarea v-model="modalData.videoDesc" rows="3" placeholder="توضیحاتی که تمایل دارید کاربر پس از دیدن ویدیو بخواند..." class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors resize-none"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- بخش اختصاصی: متن / تمرین (نمایش در مود تمرین یا مرحله ترکیبی) -->
-                    <div v-if="selectedNode.type === 'practice' || selectedNode.type === 'stage'" class="space-y-4 bg-slate-800/20 p-4 rounded-xl border border-slate-800">
-                        <h4 class="text-sm font-bold text-green-400 flex items-center gap-2"><i class="ph ph-pencil-simple text-lg"></i> محتوای متنی و تصویری</h4>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1.5">متن درسنامه یا تمرین:</label>
-                            <textarea v-model="modalData.practiceText" rows="4" placeholder="متن درس، شرح مأموریت یا تمرین‌های عملی را وارد کنید..." class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors resize-none"></textarea>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1.5">افزودن تصاویر پیوست:</label>
-                            <label class="inline-flex cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-xs font-bold transition-colors text-slate-300">
-                                <i class="ph ph-image mr-1"></i> انتخاب تصویر
-                                <input type="file" accept="image/*" multiple class="hidden" @change="handleImageUpload" />
-                            </label>
-                            <div v-if="modalData.images && modalData.images.length > 0" class="mt-3 flex flex-wrap gap-2">
-                                <div v-for="(img, idx) in modalData.images" :key="idx" class="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs">
-                                    <i class="ph ph-image text-brand-gold"></i>
-                                    <span class="max-w-[120px] truncate">{{ img }}</span>
-                                    <button @click="removeImage(idx)" class="text-red-400 hover:text-red-300 ml-1"><i class="ph ph-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 pt-2">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1.5">زمان تقریبی مطالعه (دقیقه):</label>
-                                <input type="number" v-model="modalData.readTime" min="1" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1.5">درجه اهمیت:</label>
-                                <select v-model="modalData.importance" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors">
-                                    <option value="low">عادی (اختیاری)</option>
-                                    <option value="medium">مهم (توصیه شده)</option>
-                                    <option value="high">حیاتی (اجباری)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- بخش اختصاصی: آزمون (نمایش در مود آزمون یا مرحله ترکیبی) -->
-                    <div v-if="selectedNode.type === 'quiz' || selectedNode.type === 'stage'" class="space-y-4 bg-slate-800/20 p-4 rounded-xl border border-slate-800">
-                        <h4 class="text-sm font-bold text-blue-400 flex items-center gap-2"><i class="ph ph-exam text-lg"></i> طراحی سوالات و ارزیابی</h4>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1.5">نوع سوالات در این بخش:</label>
-                            <div class="grid grid-cols-3 gap-2">
-                                <button type="button" @click="modalData.quizType = 'multiple'" :class="modalData.quizType === 'multiple' ? 'bg-brand-gold/15 border-brand-gold text-brand-gold' : 'bg-slate-900 border-slate-700 text-slate-400 hover:text-slate-200'" class="py-2.5 border rounded-xl font-bold transition-all text-xs">تستی (۴ گزینه‌ای)</button>
-                                <button type="button" @click="modalData.quizType = 'gap'" :class="modalData.quizType === 'gap' ? 'bg-brand-gold/15 border-brand-gold text-brand-gold' : 'bg-slate-900 border-slate-700 text-slate-400 hover:text-slate-200'" class="py-2.5 border rounded-xl font-bold transition-all text-xs">جای خالی (متنی)</button>
-                                <button type="button" @click="modalData.quizType = 'descriptive'" :class="modalData.quizType === 'descriptive' ? 'bg-brand-gold/15 border-brand-gold text-brand-gold' : 'bg-slate-900 border-slate-700 text-slate-400 hover:text-slate-200'" class="py-2.5 border rounded-xl font-bold transition-all text-xs">تشریحی (صوتی/فایل)</button>
-                            </div>
-                        </div>
-
-                        <!-- لیست سوالات آزمون فیلتر شده -->
-                        <div class="border-t border-slate-700/60 pt-4">
-                            <div class="flex items-center justify-between mb-3">
-                                <label class="block text-xs font-bold text-slate-400">بانک سوالات این بخش:</label>
-                                <button type="button" @click="addQuizQuestion" class="flex items-center gap-1 text-xs text-brand-gold hover:text-brand-goldHover font-bold bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700 hover:border-brand-gold transition-all">
-                                    <i class="ph ph-plus"></i> سوال جدید
-                                </button>
-                            </div>
-
-                            <div v-if="modalData.quizQuestions.filter(q => q.type === modalData.quizType).length === 0" class="text-center py-6 bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-500">
-                                هنوز هیچ سوالی برای این بخش طراحی نشده است.
-                            </div>
-
-                            <div v-else class="space-y-4 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
-                                <div v-for="(q, qIdx) in modalData.quizQuestions.filter(q => q.type === modalData.quizType)" :key="q.id" class="p-4 bg-slate-900/60 border border-slate-800 rounded-xl space-y-3 relative group">
-                                    <button type="button" @click="removeQuizQuestion(q.id)" class="absolute top-3 left-3 text-slate-500 hover:text-red-400 transition-colors tooltip" title="حذف سوال">
-                                        <i class="ph ph-trash text-base"></i>
-                                    </button>
-                                    
-                                    <!-- تستی -->
-                                    <template v-if="modalData.quizType === 'multiple'">
-                                        <div class="flex items-start gap-2 pl-6">
-                                            <span class="text-xs font-bold text-brand-gold mt-1">سوال {{ qIdx + 1 }}:</span>
-                                            <textarea v-model="q.text" rows="2" placeholder="متن صورت سوال را بنویسید..." class="flex-1 bg-transparent border border-slate-700 rounded-lg p-2 focus:border-brand-gold outline-none text-xs text-slate-200 resize-none"></textarea>
-                                        </div>
-                                        <p class="text-[10px] text-slate-400 px-2">پاسخ صحیح را با تیک زدن کنار گزینه مشخص کنید:</p>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
-                                            <div v-for="optIdx in [0, 1, 2, 3]" :key="optIdx" class="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1">
-                                                <!-- استفاده از آیدی سوال برای اختصاصی بودن name دکمه رادیویی -->
-                                                <input type="radio" :name="'correct-'+q.id" :value="optIdx" v-model="q.correctIndex" class="w-3.5 h-3.5 accent-brand-gold cursor-pointer" />
-                                                <input type="text" v-model="q.options[optIdx]" :placeholder="'گزینه ' + (optIdx+1)" class="bg-transparent flex-1 text-[11px] py-1 text-slate-300 outline-none focus:text-white" />
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                    <!-- جای خالی -->
-                                    <template v-if="modalData.quizType === 'gap'">
-                                        <div class="flex items-start gap-2 pl-6">
-                                            <span class="text-xs font-bold text-brand-gold mt-1">متن {{ qIdx + 1 }}:</span>
-                                            <textarea v-model="q.text" rows="2" placeholder="جمله را بنویسید و برای کلمه مخفی از [...] استفاده کنید. مثال: پایتخت ایران شهر [...] است." class="flex-1 bg-transparent border border-slate-700 rounded-lg p-2 focus:border-brand-gold outline-none text-xs text-slate-200 resize-none"></textarea>
-                                        </div>
-                                        <div class="flex items-center gap-2 pt-1">
-                                            <i class="ph ph-check-circle text-green-400 text-lg"></i>
-                                            <input type="text" v-model="q.gapAnswer" placeholder="پاسخ صحیح جای خالی (کلمه‌ای که کاربر باید تایپ کند)" class="bg-slate-950 border border-slate-800 text-[11px] rounded-lg px-3 py-2 flex-1 text-green-400 font-bold outline-none focus:border-green-500 transition-colors" />
-                                        </div>
-                                    </template>
-
-                                    <!-- تشریحی -->
-                                    <template v-if="modalData.quizType === 'descriptive'">
-                                        <div class="flex items-start gap-2 pl-6">
-                                            <span class="text-xs font-bold text-brand-gold mt-1">سوال {{ qIdx + 1 }}:</span>
-                                            <textarea v-model="q.text" rows="2" placeholder="متن سوال تشریحی یا درخواست پروژه را بنویسید..." class="flex-1 bg-transparent border border-slate-700 rounded-lg p-2 focus:border-brand-gold outline-none text-xs text-slate-200 resize-none"></textarea>
-                                        </div>
-                                        <div class="pt-2 flex flex-col gap-2">
-                                            <span class="text-[10px] text-slate-400">کاربر مجاز است پاسخ خود را در چه قالب‌هایی ارسال کند؟</span>
-                                            <div class="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2">
-                                                <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
-                                                    <input type="checkbox" v-model="q.allowText" class="accent-brand-gold rounded" /> متن تایپ شده
-                                                </label>
-                                                <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
-                                                    <input type="checkbox" v-model="q.allowVoice" class="accent-brand-gold rounded" /> پیام صوتی
-                                                </label>
-                                                <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
-                                                    <input type="checkbox" v-model="q.allowFile" class="accent-brand-gold rounded" /> آپلود فایل / تصویر
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- بخش اختصاصی: نقطه شروع (Start) -->
-                    <div v-if="selectedNode.type === 'start'" class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl text-xs text-brand-gold leading-relaxed">
-                        این گام به عنوان شروع‌کننده فصل جاری در نظر گرفته شده است. شما می‌توانید عنوان این گام را برای نمایش سفارشی کنید.
-                    </div>
-
-                    <!-- تنظیمات مشترک گیمیفیکیشن برای همه نوع گام‌ها -->
-                    <div v-if="selectedNode.type !== 'start'" class="mt-6 pt-5 border-t border-slate-700/60 space-y-4">
-                        <h4 class="text-sm font-bold text-brand-gold flex items-center gap-2"><i class="ph ph-star text-lg"></i> تنظیمات گیمیفیکیشن و پاداش (عمومی)</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1.5">پاداش عبور از مرحله (XP امتیاز):</label>
-                                <input type="number" v-model="modalData.rewardXp" min="0" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1.5">سکه اهدایی گیمیفیکیشن:</label>
-                                <input type="number" v-model="modalData.rewardCoins" min="0" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-gold transition-colors" />
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 p-3.5 bg-slate-900/50 border border-slate-800 rounded-xl">
-                            <input type="checkbox" id="requireApproval" v-model="modalData.requireApproval" class="w-4 h-4 rounded text-brand-gold accent-brand-gold cursor-pointer" />
-                            <label for="requireApproval" class="text-xs text-slate-300 font-medium cursor-pointer select-none">
-                                نیاز به بررسی و تایید دستی پاسخ‌ها توسط استاد ارزیاب دارد
-                            </label>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- فوتر مدال -->
-                <div class="px-6 py-4 border-t border-slate-700/80 bg-slate-800/30 flex items-center justify-end gap-3 shrink-0">
-                    <button type="button" @click="closeModal" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-colors">انصراف</button>
-                    <button type="button" @click="saveModalData" class="px-5 py-2.5 bg-brand-gold hover:bg-brand-goldHover text-brand-dark rounded-xl text-xs font-bold transition-all shadow-[0_0_15px_rgba(250,204,21,0.15)]">ذخیره تغییرات</button>
-                </div>
-            </div>
-        </div>
+        <node-modal 
+            :is-open="isModalOpen" 
+            :node="selectedNode" 
+            @close="closeModal" 
+            @save="saveModalData">
+        </node-modal>
 
     </div>
 
-    <script>
+    <script type="module">
+        // ایمپورت کردن کامپوننت‌ها از فایل‌های مجزا
+        import { NodeModal } from './components/NodeModal.js';
+        import { ZoomControls } from './components/ZoomControls.js';
+
         const { createApp, ref, computed } = Vue;
 
         createApp({
+            // ثبت کامپوننت‌های ایمپورت شده
+            components: {
+                'node-modal': NodeModal,
+                'zoom-controls': ZoomControls
+            },
             directives: {
                 focus: { mounted(el) { el.focus(); el.select(); } }
             },
             setup() {
                 const currentMode = ref('select');
-                const isContentPanelOpen = ref(false); // مدیریت باز و بسته بودن پنل محتوا
-                
-                // مدیریت اسلایدها و معماری چند فصلی
+                const isContentPanelOpen = ref(false);
                 const transitionName = ref('slide-next');
                 const isEditingChapter = ref(false);
-                
-                // منطق زوم (Zoom Logic)
                 const zoomLevel = ref(1);
-                const zoomIn = () => { if (zoomLevel.value < 2) zoomLevel.value = parseFloat((zoomLevel.value + 0.1).toFixed(1)); };
-                const zoomOut = () => { if (zoomLevel.value > 0.4) zoomLevel.value = parseFloat((zoomLevel.value - 0.1).toFixed(1)); };
-                const resetZoom = () => { zoomLevel.value = 1; };
-
-                // منطق مدال‌ها (Modal Logic)
+                
                 const isModalOpen = ref(false);
                 const selectedNode = ref(null);
-                const modalData = ref({});
 
-                // ذخیره داده‌های اولیه برای مدیریت درگ و کلیک به صورت مجزا
                 const dragStartPos = ref({ x: 0, y: 0 });
+                const isDragging = ref(false);
+                const dragNode = ref(null);
+                const offset = ref({ x: 0, y: 0 });
+                const connectingStartNode = ref(null);
+                const mousePos = ref({ x: 0, y: 0 });
+                const editingNodeId = ref(null);
 
-                // داده‌ها بر اساس "فصل" دسته‌بندی می‌شوند با اضافه کردن مقادیر اولیه برای عدم بروز خطا
                 const chapters = ref([
                     {
                         id: 1,
                         title: 'فصل ۱: مبانی اولیه',
                         nodes: [
                             { id: 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: 450, y: 80, w: 160 },
-                            { id: 2, type: 'stage', title: 'مرحله اول', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark', x: 450, y: 220, w: 160, stageMission: '', rewardXp: 50, rewardCoins: 10, requireApproval: false, quizQuestions: [], images: [] }
+                            { id: 2, type: 'stage', title: 'مرحله اول', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark', x: 450, y: 220, w: 160, stageMission: '', rewardXp: 50, rewardCoins: 10, requireApproval: false, quizQuestions: [] }
                         ],
-                        connections: [
-                            { from: 1, to: 2 }
-                        ]
+                        connections: [{ from: 1, to: 2 }]
                     }
                 ]);
-
                 const currentChapterIndex = ref(0);
-                
                 const activeChapter = computed(() => chapters.value[currentChapterIndex.value]);
 
-                const nextChapter = () => {
-                    if (currentChapterIndex.value < chapters.value.length - 1) {
-                        transitionName.value = 'slide-next';
-                        resetInteractions();
-                        currentChapterIndex.value++;
+                const zoomIn = () => { if (zoomLevel.value < 2) zoomLevel.value = parseFloat((zoomLevel.value + 0.1).toFixed(1)); };
+                const zoomOut = () => { if (zoomLevel.value > 0.4) zoomLevel.value = parseFloat((zoomLevel.value - 0.1).toFixed(1)); };
+                const resetZoom = () => { zoomLevel.value = 1; };
+
+                const openModal = (node) => {
+                    selectedNode.value = node;
+                    isModalOpen.value = true;
+                };
+                const closeModal = () => {
+                    isModalOpen.value = false;
+                    selectedNode.value = null;
+                };
+                const saveModalData = (updatedData) => {
+                    const index = activeChapter.value.nodes.findIndex(n => n.id === selectedNode.value.id);
+                    if (index !== -1) {
+                        activeChapter.value.nodes[index] = { ...activeChapter.value.nodes[index], ...updatedData };
                     }
+                    closeModal();
                 };
 
-                const prevChapter = () => {
-                    if (currentChapterIndex.value > 0) {
-                        transitionName.value = 'slide-prev';
-                        resetInteractions();
-                        currentChapterIndex.value--;
-                    }
-                };
+                const nextChapter = () => { if (currentChapterIndex.value < chapters.value.length - 1) { transitionName.value = 'slide-next'; currentChapterIndex.value++; } };
+                const prevChapter = () => { if (currentChapterIndex.value > 0) { transitionName.value = 'slide-prev'; currentChapterIndex.value--; } };
 
-                const isDragging = ref(false);
-                const dragNode = ref(null);
-                const offset = ref({ x: 0, y: 0 });
-                
-                const connectingStartNode = ref(null);
-                const mousePos = ref({ x: 0, y: 0 });
-                const editingNodeId = ref(null);
-
-                const resetInteractions = () => {
-                    isDragging.value = false;
-                    dragNode.value = null;
-                    connectingStartNode.value = null;
-                    editingNodeId.value = null;
-                    setMode('select');
-                };
-
-                const setMode = (mode) => {
-                    currentMode.value = mode;
-                    connectingStartNode.value = null;
-                    if(isDragging.value) {
-                        isDragging.value = false;
-                        dragNode.value = null;
-                    }
-                };
+                const setMode = (mode) => { currentMode.value = mode; connectingStartNode.value = null; };
 
                 const getMouseCoords = (e) => {
                     const wrapper = document.querySelector('.zoom-wrapper');
-                    if (wrapper) {
-                        const rect = wrapper.getBoundingClientRect();
-                        return {
-                            x: (e.clientX - rect.left) / zoomLevel.value,
-                            y: (e.clientY - rect.top) / zoomLevel.value
-                        };
-                    }
-                    
-                    const canvas = document.querySelector('.canvas-scroll-area');
-                    if(!canvas) return { x: e.clientX, y: e.clientY };
-                    
-                    const rect = canvas.getBoundingClientRect();
-                    return {
-                        x: (e.clientX - rect.left + canvas.scrollLeft) / zoomLevel.value,
-                        y: (e.clientY - rect.top + canvas.scrollTop) / zoomLevel.value
-                    };
+                    if(!wrapper) return { x: e.clientX, y: e.clientY };
+                    const rect = wrapper.getBoundingClientRect();
+                    return { x: (e.clientX - rect.left) / zoomLevel.value, y: (e.clientY - rect.top) / zoomLevel.value };
                 };
 
                 const handleNodeMouseDown = (node, e) => {
-                    // ذخیره موقعیت مکانی اولیه کلیک برای تشخیص درگ از کلیک
                     dragStartPos.value = { x: e.clientX, y: e.clientY };
-
                     const coords = getMouseCoords(e); 
-                    
                     if (currentMode.value === 'select') {
                         isDragging.value = true;
                         dragNode.value = node;
                         offset.value = { x: coords.x - node.x, y: coords.y - node.y };
-                    } 
-                    else if (currentMode.value === 'connect') {
+                    } else if (currentMode.value === 'connect') {
                         connectingStartNode.value = node;
-                    }
-                    else if (currentMode.value === 'delete') {
-                        deleteNode(node.id);
+                    } else if (currentMode.value === 'delete') {
+                        activeChapter.value.nodes = activeChapter.value.nodes.filter(n => n.id !== node.id);
+                        activeChapter.value.connections = activeChapter.value.connections.filter(c => c.from !== node.id && c.to !== node.id);
                     }
                 };
 
                 const handleNodeClick = (node, e) => {
                     if (currentMode.value !== 'select') return;
-
-                    // محاسبه فاصله جابجایی موس از زمان mousedown تا الان
                     const dx = e.clientX - dragStartPos.value.x;
                     const dy = e.clientY - dragStartPos.value.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    // اگر موس تکان چندانی نخورده است، یعنی کاربر قصد کشیدن نداشته و صرفاً کلیک کرده
-                    if (distance < 5) {
+                    if (Math.sqrt(dx * dx + dy * dy) < 5) {
                         openModal(node);
                     }
                 };
 
-                // --- هندلر فایل ها جهت نمایش ظاهری آپلود (UI) ---
-                const handleVideoUpload = (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        modalData.value.localVideoName = file.name;
-                        modalData.value.videoUrl = ''; // Clear URL if local selected
-                    }
-                };
-
-                const handleImageUpload = (e) => {
-                    const files = Array.from(e.target.files);
-                    if (!modalData.value.images) modalData.value.images = [];
-                    files.forEach(f => {
-                        modalData.value.images.push(f.name);
-                    });
-                };
-
-                const removeImage = (index) => {
-                    modalData.value.images.splice(index, 1);
-                };
-
-                const openModal = (node) => {
-                    selectedNode.value = node;
-                    
-                    // کپی عمیق از داده‌ها جهت امکان انصراف بدون اعمال تغییرات موقت
-                    modalData.value = {
-                        title: node.title || '',
-                        
-                        // Video data
-                        videoUrl: node.videoUrl || '',
-                        localVideoName: node.localVideoName || '',
-                        videoDesc: node.videoDesc || '',
-                        
-                        // Practice data
-                        practiceText: node.practiceText || '',
-                        images: node.images ? [...node.images] : [],
-                        readTime: node.readTime || 5,
-                        importance: node.importance || 'low',
-                        
-                        // Quiz data
-                        quizType: node.quizType || 'multiple',
-                        quizQuestions: JSON.parse(JSON.stringify(node.quizQuestions || [])),
-                        
-                        // Stage data
-                        stageMission: node.stageMission || '',
-                        
-                        // Global Gamification Data
-                        rewardXp: node.rewardXp !== undefined ? node.rewardXp : 50,
-                        rewardCoins: node.rewardCoins !== undefined ? node.rewardCoins : 10,
-                        requireApproval: !!node.requireApproval
-                    };
-                    isModalOpen.value = true;
-                };
-
-                const closeModal = () => {
-                    isModalOpen.value = false;
-                    selectedNode.value = null;
-                };
-
-                const saveModalData = () => {
-                    if (selectedNode.value) {
-                        selectedNode.value.title = modalData.value.title;
-                        
-                        // ذخیره تمامی داده ها بدون توجه به نوع
-                        selectedNode.value.videoUrl = modalData.value.videoUrl;
-                        selectedNode.value.localVideoName = modalData.value.localVideoName;
-                        selectedNode.value.videoDesc = modalData.value.videoDesc;
-                        
-                        selectedNode.value.practiceText = modalData.value.practiceText;
-                        selectedNode.value.images = [...modalData.value.images];
-                        selectedNode.value.readTime = modalData.value.readTime;
-                        selectedNode.value.importance = modalData.value.importance;
-                        
-                        selectedNode.value.quizType = modalData.value.quizType;
-                        selectedNode.value.quizQuestions = JSON.parse(JSON.stringify(modalData.value.quizQuestions));
-                        
-                        selectedNode.value.stageMission = modalData.value.stageMission;
-                        
-                        selectedNode.value.rewardXp = modalData.value.rewardXp;
-                        selectedNode.value.rewardCoins = modalData.value.rewardCoins;
-                        selectedNode.value.requireApproval = modalData.value.requireApproval;
-                    }
-                    closeModal();
-                };
-
-                const addQuizQuestion = () => {
-                    if (!modalData.value.quizQuestions) modalData.value.quizQuestions = [];
-                    modalData.value.quizQuestions.push({
-                        id: Date.now() + Math.random().toString(36).substr(2, 9), // آیدی یونیک
-                        type: modalData.value.quizType, // تعیین نوع سوال دقیقا برای تب فعلی
-                        text: '',
-                        options: ['', '', '', ''],
-                        correctIndex: 0,
-                        gapAnswer: '',
-                        allowText: true,
-                        allowVoice: false,
-                        allowFile: false
-                    });
-                };
-
-                const removeQuizQuestion = (qId) => {
-                    const index = modalData.value.quizQuestions.findIndex(q => q.id === qId);
-                    if (index !== -1) {
-                        modalData.value.quizQuestions.splice(index, 1);
-                    }
-                };
-
                 const handleNodeMouseUp = (node) => {
-                    if (currentMode.value === 'connect' && connectingStartNode.value) {
-                        if (connectingStartNode.value.id !== node.id) {
-                            const exists = activeChapter.value.connections.find(c => c.from === connectingStartNode.value.id && c.to === node.id);
-                            if (!exists) {
-                                activeChapter.value.connections.push({ from: connectingStartNode.value.id, to: node.id });
-                            }
-                        }
-                        connectingStartNode.value = null;
+                    if (currentMode.value === 'connect' && connectingStartNode.value && connectingStartNode.value.id !== node.id) {
+                        const exists = activeChapter.value.connections.find(c => c.from === connectingStartNode.value.id && c.to === node.id);
+                        if (!exists) activeChapter.value.connections.push({ from: connectingStartNode.value.id, to: node.id });
                     }
-                    
-                    if (isDragging.value && currentMode.value === 'select') {
-                        isDragging.value = false;
-                        dragNode.value = null;
-                    }
+                    isDragging.value = false;
+                    dragNode.value = null;
+                    connectingStartNode.value = null;
                 };
 
                 const onMouseMove = (e) => {
                     const coords = getMouseCoords(e);
                     mousePos.value = coords; 
-
                     if (isDragging.value && dragNode.value && currentMode.value === 'select') {
                         dragNode.value.x = coords.x - offset.value.x;
                         dragNode.value.y = coords.y - offset.value.y;
                     }
                 };
 
-                const onCanvasMouseUp = () => {
-                    if (isDragging.value) {
-                        isDragging.value = false;
-                        dragNode.value = null;
-                    }
-                    if (currentMode.value === 'connect') {
-                        connectingStartNode.value = null;
-                    }
-                };
+                const onCanvasMouseUp = () => { isDragging.value = false; dragNode.value = null; connectingStartNode.value = null; };
+                const handlePathClick = (index) => { if (currentMode.value === 'delete') activeChapter.value.connections.splice(index, 1); };
+                const startEdit = (node) => { if(currentMode.value === 'select') editingNodeId.value = node.id; };
+                const stopEdit = () => editingNodeId.value = null;
 
-                const startEdit = (node) => {
-                    if(currentMode.value === 'select') {
-                        editingNodeId.value = node.id;
-                    }
-                };
-                
-                const stopEdit = () => {
-                    editingNodeId.value = null;
-                };
-
-                const deleteNode = (id) => {
-                    activeChapter.value.nodes = activeChapter.value.nodes.filter(n => n.id !== id);
-                    activeChapter.value.connections = activeChapter.value.connections.filter(c => c.from !== id && c.to !== id);
-                };
-
-                const handlePathClick = (index) => {
-                    if (currentMode.value === 'delete') {
-                        activeChapter.value.connections.splice(index, 1);
-                    }
-                };
-
-                // توابع برای محاسبه هوشمند نزدیک‌ترین دایره اتصال
                 const getNodePorts = (node) => {
-                    const w = node.w;
-                    const h = 56;
+                    const w = node.w, h = 56;
                     return {
                         top: { x: node.x + w / 2, y: node.y - 2 },
                         bottom: { x: node.x + w / 2, y: node.y + h + 2 },
@@ -904,51 +342,25 @@
                 const getBestConnection = (fromNode, toPoint) => {
                     const ports1 = getNodePorts(fromNode);
                     const isNode = toPoint.w !== undefined;
-                    const ports2 = isNode ? getNodePorts(toPoint) : {
-                        top: toPoint, bottom: toPoint, left: toPoint, right: toPoint, center: toPoint
-                    };
-
+                    const ports2 = isNode ? getNodePorts(toPoint) : { top: toPoint, bottom: toPoint, left: toPoint, right: toPoint, center: toPoint };
                     const dx = ports2.center.x - ports1.center.x;
                     const dy = ports2.center.y - ports1.center.y;
-
-                    let start, end;
-                    let isHorizontal = Math.abs(dx) > Math.abs(dy);
-
+                    let start, end, isHorizontal = Math.abs(dx) > Math.abs(dy);
                     if (isHorizontal) {
-                        if (dx > 0) {
-                            start = ports1.right;
-                            end = isNode ? ports2.left : toPoint;
-                        } else {
-                            start = ports1.left;
-                            end = isNode ? ports2.right : toPoint;
-                        }
+                        start = dx > 0 ? ports1.right : ports1.left;
+                        end = isNode ? (dx > 0 ? ports2.left : ports2.right) : toPoint;
                     } else {
-                        if (dy > 0) {
-                            start = ports1.bottom;
-                            end = isNode ? ports2.top : toPoint;
-                        } else {
-                            start = ports1.top;
-                            end = isNode ? ports2.bottom : toPoint;
-                        }
+                        start = dy > 0 ? ports1.bottom : ports1.top;
+                        end = isNode ? (dy > 0 ? ports2.top : ports2.bottom) : toPoint;
                     }
-
                     return { startX: start.x, startY: start.y, endX: end.x, endY: end.y, isHorizontal };
                 };
 
                 const createBezierPath = (startX, startY, endX, endY, isHorizontal) => {
-                    if (isHorizontal) {
-                        const cp1X = startX + Math.max(30, Math.abs(endX - startX) / 2);
-                        const cp1Y = startY;
-                        const cp2X = endX - Math.max(30, Math.abs(endX - startX) / 2);
-                        const cp2Y = endY;
-                        return `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
-                    } else {
-                        const cp1X = startX;
-                        const cp1Y = startY + Math.max(30, Math.abs(endY - startY) / 2);
-                        const cp2X = endX;
-                        const cp2Y = endY - Math.max(30, Math.abs(endY - startY) / 2);
-                        return `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
-                    }
+                    const factor = Math.max(30, isHorizontal ? Math.abs(endX - startX) / 2 : Math.abs(endY - startY) / 2);
+                    return isHorizontal 
+                        ? `M ${startX} ${startY} C ${startX + factor} ${startY}, ${endX - factor} ${endY}, ${endX} ${endY}`
+                        : `M ${startX} ${startY} C ${startX} ${startY + factor}, ${endX} ${endY - factor}, ${endX} ${endY}`;
                 };
 
                 const svgPaths = computed(() => {
@@ -956,7 +368,6 @@
                         const fromNode = activeChapter.value.nodes.find(n => n.id === conn.from);
                         const toNode = activeChapter.value.nodes.find(n => n.id === conn.to);
                         if (!fromNode || !toNode) return { d: '' };
-
                         const { startX, startY, endX, endY, isHorizontal } = getBestConnection(fromNode, toNode);
                         return { d: createBezierPath(startX, startY, endX, endY, isHorizontal) };
                     });
@@ -970,134 +381,33 @@
 
                 const addNode = (type) => {
                     if (type === 'chapter') {
-                        const newChapterNum = chapters.value.length + 1;
                         chapters.value.push({
                             id: Date.now(),
-                            title: `فصل ${newChapterNum}: عنوان جدید`,
-                            nodes: [
-                                { id: Date.now() + 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: 450, y: 80, w: 160 }
-                            ],
+                            title: `فصل ${chapters.value.length + 1}: عنوان جدید`,
+                            nodes: [{ id: Date.now() + 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: 450, y: 80, w: 160 }],
                             connections: []
                         });
-                        
                         transitionName.value = 'slide-next';
                         currentChapterIndex.value = chapters.value.length - 1;
-                        resetInteractions();
-                        isContentPanelOpen.value = false; // بستن پنل بعد از افزودن
+                        isContentPanelOpen.value = false;
                         return;
                     }
 
                     const id = Date.now();
-                    const wrapper = document.querySelector('.zoom-wrapper');
-                    const canvas = document.querySelector('.canvas-scroll-area');
-                    
-                    let x = 100;
-                    let y = 100;
+                    let newNode = { id, type, x: 200, y: 200, w: 160, rewardXp: 50, rewardCoins: 10, quizQuestions: [] };
 
-                    if (wrapper && canvas) {
-                        const wrapperRect = wrapper.getBoundingClientRect();
-                        const canvasRect = canvas.getBoundingClientRect();
-
-                        const centerX = canvasRect.left + (canvas.clientWidth / 2);
-                        const centerY = canvasRect.top + (canvas.clientHeight / 2);
-
-                        x = (centerX - wrapperRect.left) / zoomLevel.value - 80;
-                        y = (centerY - wrapperRect.top) / zoomLevel.value - 30;
-                    }
-
-                    // ویژگی های پایه و عمومی برای همه
-                    let newNode = { 
-                        id, type, x, y, w: 160,
-                        rewardXp: 50, rewardCoins: 10, requireApproval: false,
-                        images: [], quizQuestions: []
-                    };
-
-                    switch(type) {
-                        case 'quiz':
-                            newNode = { 
-                                ...newNode, 
-                                title: 'آزمون جدید', 
-                                icon: 'ph-exam', color: 'text-blue-400', iconBg: 'bg-blue-400/10', 
-                                border: 'border-blue-500/30 rounded-xl', bg: 'bg-brand-dark',
-                                quizType: 'multiple'
-                            };
-                            break;
-                        case 'video':
-                            newNode = { 
-                                ...newNode, 
-                                title: 'ویدیو آموزشی', 
-                                icon: 'ph-video-camera', color: 'text-purple-400', iconBg: 'bg-purple-400/10', 
-                                border: 'border-purple-500/30 rounded-xl', bg: 'bg-brand-dark',
-                                videoUrl: '', localVideoName: '', videoDesc: ''
-                            };
-                            break;
-                        case 'practice':
-                            newNode = { 
-                                ...newNode, 
-                                title: 'توضیح / تمرین', 
-                                icon: 'ph-pencil-simple', color: 'text-green-400', iconBg: 'bg-green-400/10', 
-                                border: 'border-green-500/30 rounded-xl', bg: 'bg-brand-dark',
-                                practiceText: '', readTime: 5, importance: 'low'
-                            };
-                            break;
-                        case 'stage':
-                            newNode = { 
-                                ...newNode, 
-                                title: 'مرحله جدید', 
-                                icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', 
-                                border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark',
-                                stageMission: '', quizType: 'multiple'
-                            };
-                            break;
-                    }
+                    if (type === 'quiz') newNode = { ...newNode, title: 'آزمون جدید', icon: 'ph-exam', color: 'text-blue-400', iconBg: 'bg-blue-400/10', border: 'border-blue-500/30 rounded-xl', bg: 'bg-brand-dark', quizType: 'multiple' };
+                    if (type === 'video') newNode = { ...newNode, title: 'ویدیو آموزشی', icon: 'ph-video-camera', color: 'text-purple-400', iconBg: 'bg-purple-400/10', border: 'border-purple-500/30 rounded-xl', bg: 'bg-brand-dark' };
+                    if (type === 'practice') newNode = { ...newNode, title: 'توضیح / تمرین', icon: 'ph-pencil-simple', color: 'text-green-400', iconBg: 'bg-green-400/10', border: 'border-green-500/30 rounded-xl', bg: 'bg-brand-dark' };
+                    if (type === 'stage') newNode = { ...newNode, title: 'مرحله جدید', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark' };
                     
                     activeChapter.value.nodes.push(newNode);
-                    setMode('select'); 
-                    isContentPanelOpen.value = false; // بستن پنل بعد از افزودن
+                    isContentPanelOpen.value = false;
                 };
 
                 return { 
-                    chapters,
-                    currentChapterIndex,
-                    activeChapter,
-                    nextChapter,
-                    prevChapter,
-                    transitionName,
-                    isEditingChapter,
-                    currentMode,
-                    setMode,
-                    zoomLevel,
-                    zoomIn,
-                    zoomOut,
-                    resetZoom,
-                    isDragging, 
-                    dragNode, 
-                    connectingStartNode,
-                    handleNodeMouseDown,
-                    handleNodeMouseUp,
-                    handleNodeClick,
-                    onMouseMove, 
-                    onCanvasMouseUp,
-                    handlePathClick,
-                    startEdit,
-                    stopEdit,
-                    editingNodeId,
-                    svgPaths,
-                    tempPath,
-                    addNode,
-                    isContentPanelOpen, // برای پنل محتوا
-                    
-                    // اکسپورت های مدال
-                    isModalOpen,
-                    selectedNode,
-                    modalData,
-                    closeModal,
-                    saveModalData,
-                    addQuizQuestion,
-                    removeQuizQuestion,
-                    handleVideoUpload,
-                    handleImageUpload,
-                    removeImage
+                    chapters, currentChapterIndex, activeChapter, nextChapter, prevChapter, transitionName, isEditingChapter, currentMode, setMode, zoomLevel, zoomIn, zoomOut, resetZoom, isDragging, dragNode, connectingStartNode, handleNodeMouseDown, handleNodeMouseUp, handleNodeClick, onMouseMove, onCanvasMouseUp, handlePathClick, startEdit, stopEdit, editingNodeId, svgPaths, tempPath, addNode, isContentPanelOpen,
+                    isModalOpen, selectedNode, closeModal, saveModalData
                 };
             }
         }).mount('#app');
