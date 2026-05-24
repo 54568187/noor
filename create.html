@@ -2,7 +2,7 @@
 <html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>کارگاه سازندگان - بوم نقشه راه (چند فصلی)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,16 +24,14 @@
     </script>
 
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background-color: #0f172a; margin: 0; overflow: hidden; }
+        body { font-family: 'Vazirmatn', sans-serif; background-color: #0f172a; margin: 0; overflow: hidden; overscroll-behavior: none; }
         .bg-canvas-dots { background-color: #0f172a; background-image: radial-gradient(#334155 1.5px, transparent 1.5px); background-size: 28px 28px; }
         
-        /* کرسرهای تعاملی اسکرول بوم */
-        .canvas-container { cursor: grab; user-select: none; }
+        .canvas-container { cursor: grab; user-select: none; touch-action: none; }
         .canvas-container:active { cursor: grabbing; }
         
-        /* بازیابی کرسرهای عادی برای گره‌ها و دکمه‌ها در کل بوم */
-        .node-box, .zoom-controls, .absolute-controls, button, select, input, textarea, a, .pointer-events-auto { cursor: auto !important; }
-        .node-box { cursor: grab !important; }
+        .node-box, .zoom-controls, .absolute-controls, button, select, input, textarea, a, .pointer-events-auto { cursor: auto !important; touch-action: auto; }
+        .node-box { cursor: grab !important; touch-action: none; }
         .node-box:active { cursor: grabbing !important; }
         
         .path-line { stroke: #64748b; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; animation: dashFlow 30s linear infinite; transition: stroke 0.2s; pointer-events: auto; cursor: pointer; }
@@ -62,54 +60,35 @@
         
         .fade-slide-enter-active, .fade-slide-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
         .fade-slide-enter-from, .fade-slide-leave-to { opacity: 0; transform: translateX(-15px); }
-
-        /* ترنزیشن و انیمیشن شکیل باز شدن مدال */
-        .modal-scale-enter-active, .modal-scale-leave-active {
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .modal-scale-enter-active .bg-slate-900,
-        .modal-scale-leave-active .bg-slate-900 {
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .modal-scale-enter-from { opacity: 0; }
-        .modal-scale-enter-from .bg-slate-900 {
-            transform: scale(0.92) translateY(15px);
-            opacity: 0;
-        }
-        .modal-scale-leave-to { opacity: 0; }
-        .modal-scale-leave-to .bg-slate-900 {
-            transform: scale(0.96) translateY(5px);
-            opacity: 0;
-        }
     </style>
 </head>
 <body class="text-slate-200 h-screen w-full flex flex-col overflow-hidden">
 
     <div id="app" class="h-full w-full flex flex-col" :class="'mode-' + currentMode">
         
-        <header class="h-16 bg-brand-panel border-b border-slate-700 flex items-center justify-between px-6 shrink-0 z-40 shadow-md">
-            <div class="flex items-center gap-4">
-                <div class="text-xl font-black text-brand-gold flex items-center gap-2">
-                    <i class="ph-fill ph-hexagon"></i>
-                    حفظ النور
+        <header class="h-14 md:h-16 bg-brand-panel border-b border-slate-700 flex items-center justify-between px-4 md:px-6 shrink-0 z-40 shadow-md">
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="text-lg md:text-xl font-black text-brand-gold flex items-center gap-1.5 md:gap-2">
+                    <i class="ph-fill ph-hexagon text-xl md:text-2xl"></i>
+                    <span class="hidden sm:inline">حفظ النور</span>
                 </div>
-                <div class="h-6 w-px bg-slate-600"></div>
-                <div class="flex items-center gap-2 text-sm">
-                    <span class="text-slate-400">کارگاه سازندگان</span>
-                    <i class="ph ph-caret-left text-slate-500 text-xs"></i>
-                    <h1 class="font-bold text-slate-100">طراحی چالش جزء ۳۰</h1>
+                <div class="h-5 md:h-6 w-px bg-slate-600 hidden sm:block"></div>
+                <div class="flex items-center gap-2 text-xs md:text-sm">
+                    <span class="text-slate-400 hidden md:inline">کارگاه سازندگان</span>
+                    <i class="ph ph-caret-left text-slate-500 text-xs hidden md:inline"></i>
+                    <h1 class="font-bold text-slate-100 truncate max-w-[150px] sm:max-w-none">طراحی چالش</h1>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="text-xs bg-slate-800 px-3 py-1.5 rounded-lg text-slate-400 border border-slate-700 hidden md:block">
-                    <span v-if="currentMode === 'select'">ابزار انتخاب: کشیدن بوم برای جابجایی نقشه | تک‌کلیک روی گام برای تنظیمات </span>
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="text-[10px] md:text-xs bg-slate-800 px-3 py-1.5 rounded-lg text-slate-400 border border-slate-700 hidden lg:block">
+                    <span v-if="currentMode === 'select'">ابزار انتخاب: جابجایی نقشه | تک‌کلیک روی گام برای تنظیمات</span>
                     <span v-if="currentMode === 'connect'" class="text-emerald-400">ابزار اتصال: کشیدن از یک گره به گره دیگر</span>
                     <span v-if="currentMode === 'delete'" class="text-red-400">ابزار حذف: کلیک روی گره یا مسیر جهت پاک کردن</span>
                 </div>
                 
-                <button class="flex items-center gap-2 px-5 py-2.5 bg-brand-gold hover:bg-brand-goldHover text-brand-dark text-sm font-bold rounded-xl shadow-[0_0_15px_rgba(250,204,21,0.25)] transition-all">
-                    <i class="ph ph-paper-plane-right text-lg"></i>
-                    ذخیره و انتشار
+                <button class="flex items-center justify-center gap-2 px-3 py-2 md:px-5 md:py-2.5 bg-brand-gold hover:bg-brand-goldHover text-brand-dark text-xs md:text-sm font-bold rounded-lg md:rounded-xl shadow-[0_0_15px_rgba(250,204,21,0.25)] transition-all">
+                    <i class="ph ph-paper-plane-right text-base md:text-lg"></i>
+                    <span class="hidden sm:inline">ذخیره و انتشار</span>
                 </button>
             </div>
         </header>
@@ -119,10 +98,14 @@
             <transition :name="transitionName">
                 <div :key="activeChapter.id" class="canvas-scroll-area canvas-container absolute inset-0 overflow-auto w-full h-full z-10" dir="ltr"
                      ref="canvasScrollArea"
-                     @mousedown="onCanvasMouseDown"
-                     @mousemove="onMouseMove" 
-                     @mouseup="onCanvasMouseUp" 
-                     @mouseleave="onCanvasMouseUp">
+                     @mousedown="onCanvasDown"
+                     @touchstart.passive="onCanvasDown"
+                     @mousemove="onPointerMove"
+                     @touchmove="onPointerMove"
+                     @mouseup="onPointerUp" 
+                     @touchend="onPointerUp"
+                     @mouseleave="onPointerUp"
+                     @touchcancel="onPointerUp">
                     
                     <div class="zoom-wrapper relative w-[3000px] h-[3000px]"
                          :style="{ transform: `scale(${zoomLevel})`, transformOrigin: '0 0', transition: 'transform 0.15s ease-out' }">
@@ -135,7 +118,7 @@
                             </defs>
                             
                             <g v-for="(path, index) in svgPaths" :key="'conn-'+index">
-                                <path :d="path.d" class="path-hitbox" @mousedown.stop="handlePathClick(index)" />
+                                <path :d="path.d" class="path-hitbox" @mousedown.stop="handlePathClick(index)" @touchstart.stop="handlePathClick(index)" />
                                 <path :d="path.d" class="path-line" :class="{ 'stroke-red-500': currentMode === 'delete' }" 
                                       :marker-end="currentMode === 'delete' ? 'url(#arrowhead-red)' : 'url(#arrowhead)'" />
                             </g>
@@ -144,8 +127,12 @@
                         </svg>
 
                         <div v-for="node in activeChapter.nodes" :key="node.id" dir="rtl"
-                             @mousedown.stop="handleNodeMouseDown(node, $event)"
-                             @mouseup.stop="handleNodeMouseUp(node)"
+                             :data-node-id="node.id"
+                             @mousedown.stop="handleNodeDown(node, $event)"
+                             @touchstart.stop="handleNodeDown(node, $event)"
+                             @touchmove="onPointerMove"
+                             @mouseup.stop="handleNodeUp(node, $event)"
+                             @touchend.stop="handleNodeUp(node, $event)"
                              @click.stop="handleNodeClick(node, $event)"
                              @dblclick="startEdit(node)"
                              :style="{ left: node.x + 'px', top: node.y + 'px', width: node.w + 'px' }"
@@ -158,15 +145,15 @@
                              ]"
                              style="border-width: 1.5px;">
                             
-                            <div class="flex items-center gap-3 px-4 py-3 rounded-inherit">
-                                <div class="flex items-center justify-center rounded-lg w-8 h-8 shrink-0" :class="node.iconBg">
-                                    <i :class="['ph text-xl', node.icon, node.color]"></i>
+                            <div class="flex items-center gap-2 md:gap-3 px-3 py-2 md:px-4 md:py-3 rounded-inherit">
+                                <div class="flex items-center justify-center rounded-lg w-7 h-7 md:w-8 md:h-8 shrink-0" :class="node.iconBg">
+                                    <i :class="['ph text-lg md:text-xl', node.icon, node.color]"></i>
                                 </div>
-                                <span v-if="editingNodeId !== node.id" class="text-sm font-semibold text-slate-200 truncate select-none flex-1">
+                                <span v-if="editingNodeId !== node.id" class="text-xs md:text-sm font-semibold text-slate-200 truncate select-none flex-1">
                                     {{ node.title }}
                                 </span>
                                 <input v-else type="text" v-model="node.title" @blur="stopEdit" @keyup.enter="stopEdit" v-focus
-                                       class="flex-1 bg-slate-800 text-sm text-white font-semibold border border-brand-gold rounded px-2 py-1 outline-none w-full" />
+                                       class="flex-1 bg-slate-800 text-xs md:text-sm text-white font-semibold border border-brand-gold rounded px-2 py-1 outline-none w-full" />
                             </div>
 
                             <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
@@ -179,59 +166,54 @@
                 </div>
             </transition>
 
-            <div class="absolute top-6 right-6 flex gap-4 z-30 pointer-events-none">
-                <div class="w-14 bg-brand-panel border border-slate-700 rounded-2xl flex flex-col items-center py-4 gap-2 shadow-2xl pointer-events-auto backdrop-blur-sm bg-opacity-90">
-                    <button @click="setMode('select')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="جابجایی و ویرایش" :class="currentMode === 'select' ? 'bg-brand-gold/10 text-brand-gold shadow-[0_0_10px_rgba(250,204,21,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph-fill ph-cursor text-2xl"></i></button>
-                    <button @click="setMode('connect')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="اتصال مراحل (فلوچارت)" :class="currentMode === 'connect' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-link text-2xl"></i></button>
-                    <button @click="setMode('delete')" class="p-2.5 rounded-xl transition-all tooltip relative group" title="حذف مرحله یا مسیر" :class="currentMode === 'delete' ? 'bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-slate-400 hover:text-red-300 hover:bg-slate-700/50'"><i class="ph ph-trash text-2xl"></i></button>
-                    <div class="w-8 h-px bg-slate-700 my-2"></div>
-                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2.5 rounded-xl transform transition-all duration-800 tooltip relative group" title="افزودن محتوای جدید" :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-squares-four text-2xl"></i></button>
+            <div class="absolute top-4 right-4 md:top-6 md:right-6 flex gap-4 z-30 pointer-events-none">
+                <div class="w-12 md:w-14 bg-brand-panel border border-slate-700 rounded-xl md:rounded-2xl flex flex-col items-center py-2 md:py-4 gap-1.5 md:gap-2 shadow-2xl pointer-events-auto backdrop-blur-sm bg-opacity-90">
+                    <button @click="setMode('select')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="جابجایی و ویرایش" :class="currentMode === 'select' ? 'bg-brand-gold/10 text-brand-gold shadow-[0_0_10px_rgba(250,204,21,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph-fill ph-cursor text-xl md:text-2xl"></i></button>
+                    <button @click="setMode('connect')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="اتصال مراحل (فلوچارت)" :class="currentMode === 'connect' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-link text-xl md:text-2xl"></i></button>
+                    <button @click="setMode('delete')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="حذف مرحله یا مسیر" :class="currentMode === 'delete' ? 'bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-slate-400 hover:text-red-300 hover:bg-slate-700/50'"><i class="ph ph-trash text-xl md:text-2xl"></i></button>
+                    <div class="w-6 md:w-8 h-px bg-slate-700 my-1 md:my-2"></div>
+                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="افزودن محتوای جدید" :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-squares-four text-xl md:text-2xl"></i></button>
                 </div>
 
                 <transition name="fade-slide">
-                    <div v-if="isContentPanelOpen" class="w-64 bg-brand-panel border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto backdrop-blur-sm bg-opacity-95">
-                        <div class="p-4 border-b border-slate-700/80 bg-slate-800/50 flex justify-between items-center">
-                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="ph ph-squares-four text-blue-400"></i> افزودن محتوای</h2>
-                            <button @click="isContentPanelOpen = false" class="text-slate-400 hover:text-slate-200"><i class="ph ph-x"></i></button>
+                    <div v-if="isContentPanelOpen" class="fixed inset-0 sm:absolute sm:inset-auto sm:top-0 sm:right-[72px] md:right-[80px] w-full h-full sm:w-64 sm:h-auto bg-slate-950/95 sm:bg-brand-panel border-0 sm:border border-slate-700 sm:rounded-2xl z-50 shadow-2xl flex flex-col overflow-hidden pointer-events-auto backdrop-blur-md sm:backdrop-blur-sm bg-opacity-100 sm:bg-opacity-95">
+                        <div class="p-4 border-b border-slate-700/80 bg-slate-800/50 flex justify-between items-center mt-12 sm:mt-0">
+                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="ph ph-squares-four text-blue-400"></i> افزودن محتوای جدید</h2>
+                            <button @click="isContentPanelOpen = false" class="p-2 rounded-lg bg-slate-800 sm:bg-transparent text-slate-300 hover:text-white"><i class="ph ph-x"></i></button>
                         </div>
-                        <div class="p-4 grid grid-cols-2 gap-3 overflow-y-auto max-h-[calc(100vh-200px)] custom-scrollbar">
+                        <div class="p-4 grid grid-cols-2 gap-3 overflow-y-auto sm:max-h-[calc(100vh-200px)] custom-scrollbar">
                             <button @click="addNode('chapter')" class="col-span-2 flex flex-col items-center justify-center py-4 border border-dashed border-brand-gold/40 bg-brand-gold/5 rounded-xl hover:bg-brand-gold/10 hover:border-brand-gold/80 transition-all gap-2 group">
                                 <i class="ph ph-plus-circle text-3xl text-brand-gold group-hover:scale-110 transition-transform"></i>
                                 <span class="text-xs font-bold text-brand-gold">ایجاد فصل (اتاق) جدید</span>
                             </button>
-                            <button @click="addNode('quiz')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-exam text-2xl text-blue-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">آزمون</span></button>
-                            <button @click="addNode('video')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-video-camera text-2xl text-purple-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">ویدیو</span></button>
-                            <button @click="addNode('practice')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-pencil-simple text-2xl text-green-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">متن / تمرین</span></button>
-                            <button @click="addNode('stage')" class="flex flex-col items-center justify-center p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-flag-checkered text-2xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">مرحله ترکیبی</span></button>
+                            <button @click="addNode('quiz')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-exam text-2xl text-blue-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">آزمون</span></button>
+                            <button @click="addNode('video')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-video-camera text-2xl text-purple-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">ویدیو</span></button>
+                            <button @click="addNode('practice')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-pencil-simple text-2xl text-green-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">متن / تمرین</span></button>
+                            <button @click="addNode('stage')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-flag-checkered text-2xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">مرحله ترکیبی</span></button>
                         </div>
                     </div>
                 </transition>
             </div>
 
-            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-brand-panel border border-slate-700 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] z-40 p-2 gap-4 pointer-events-auto">
-                <button @click="nextChapter" :disabled="currentChapterIndex === chapters.length - 1" class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors" :class="currentChapterIndex === chapters.length - 1 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'"><i class="ph-bold ph-caret-right"></i> فصل بعد</button>
-                <div class="w-px h-6 bg-slate-700 my-auto"></div>
-                <div v-if="!isEditingChapter" @dblclick="isEditingChapter = true" class="text-brand-gold font-bold text-sm min-w-[120px] text-center cursor-pointer hover:text-brand-goldHover flex items-center justify-center gap-1 tooltip" title="دابل-کلیک برای تغییر نام">{{ activeChapter.title }}<i class="ph ph-pencil-simple text-[10px] opacity-60"></i></div>
-                <input v-else type="text" v-model="activeChapter.title" @blur="isEditingChapter = false" @keyup.enter="isEditingChapter = false" v-focus class="bg-slate-800 text-sm text-brand-gold font-bold border border-brand-gold rounded px-2 py-1 outline-none text-center min-w-[120px]" />
-                <div class="w-px h-6 bg-slate-700 my-auto"></div>
-                <button @click="prevChapter" :disabled="currentChapterIndex === 0" class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors" :class="currentChapterIndex === 0 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'">فصل قبل <i class="ph-bold ph-caret-left"></i></button>
+            <div class="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-brand-panel border border-slate-700 rounded-xl md:rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] z-40 p-1.5 md:p-2 gap-2 md:gap-4 pointer-events-auto">
+                <button @click="nextChapter" :disabled="currentChapterIndex === chapters.length - 1" class="flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-[11px] md:text-sm rounded-lg transition-colors" :class="currentChapterIndex === chapters.length - 1 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'"><i class="ph-bold ph-caret-right"></i> <span class="hidden sm:inline">فصل</span> بعد</button>
+                <div class="w-px h-5 md:h-6 bg-slate-700 my-auto"></div>
+                
+                <div v-if="!isEditingChapter" @dblclick="isEditingChapter = true" class="text-brand-gold font-bold text-xs md:text-sm min-w-[80px] md:min-w-[120px] max-w-[120px] md:max-w-none truncate text-center cursor-pointer hover:text-brand-goldHover flex items-center justify-center gap-1 tooltip" title="دابل-کلیک برای تغییر نام">
+                    <span class="truncate">{{ activeChapter.title }}</span>
+                    <i class="ph ph-pencil-simple text-[10px] opacity-60 shrink-0 hidden sm:inline"></i>
+                </div>
+                <input v-else type="text" v-model="activeChapter.title" @blur="isEditingChapter = false" @keyup.enter="isEditingChapter = false" v-focus class="bg-slate-800 text-xs md:text-sm text-brand-gold font-bold border border-brand-gold rounded px-2 py-1 outline-none text-center min-w-[80px] md:min-w-[120px]" />
+                
+                <div class="w-px h-5 md:h-6 bg-slate-700 my-auto"></div>
+                <button @click="prevChapter" :disabled="currentChapterIndex === 0" class="flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-[11px] md:text-sm rounded-lg transition-colors" :class="currentChapterIndex === 0 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'"><span class="hidden sm:inline">فصل</span> قبل <i class="ph-bold ph-caret-left"></i></button>
             </div>
 
-            <zoom-controls 
-                :zoom-level="zoomLevel" 
-                @zoom-in="zoomIn" 
-                @zoom-out="zoomOut" 
-                @reset-zoom="resetZoom">
-            </zoom-controls>
+            <zoom-controls :zoom-level="zoomLevel" @zoom-in="zoomIn" @zoom-out="zoomOut" @reset-zoom="resetZoom"></zoom-controls>
 
         </main>
 
-        <node-modal 
-            :is-open="isModalOpen" 
-            :node="selectedNode" 
-            @close="closeModal" 
-            @save="saveModalData">
-        </node-modal>
+        <node-modal :is-open="isModalOpen" :node="selectedNode" @close="closeModal" @save="saveModalData"></node-modal>
 
     </div>
 
@@ -259,7 +241,6 @@
                 const isModalOpen = ref(false);
                 const selectedNode = ref(null);
 
-                // متغیرهای درگ کردن نقشه و اسکرول بوم
                 const canvasScrollArea = ref(null);
                 const isDraggingCanvas = ref(false);
                 const canvasStartScroll = ref({ left: 0, top: 0 });
@@ -273,13 +254,17 @@
                 const mousePos = ref({ x: 0, y: 0 });
                 const editingNodeId = ref(null);
 
+                // محاسبه خودکار و داینامیک مرکز صفحه کاربر برای جاگذاری آیتم‌های پیش‌فرض
+                const initialX = typeof window !== 'undefined' ? Math.max(50, (window.innerWidth / 2) - 80) : 450;
+
                 const chapters = ref([
                     {
                         id: 1,
                         title: 'فصل ۱: مبانی اولیه',
                         nodes: [
-                            { id: 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: 450, y: 80, w: 160 },
-                            { id: 2, type: 'stage', title: 'مرحله اول', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark', x: 450, y: 220, w: 160, stageMission: '', rewardXp: 50, rewardCoins: 10, requireApproval: false, quizQuestions: [] }
+                            // استفاده از initialX برای مرکزچین شدن اتوماتیک
+                            { id: 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: initialX, y: 80, w: 160 },
+                            { id: 2, type: 'stage', title: 'مرحله اول', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark', x: initialX, y: 220, w: 160, stageMission: '', rewardXp: 50, rewardCoins: 10, requireApproval: false, quizQuestions: [] }
                         ],
                         connections: [{ from: 1, to: 2 }]
                     }
@@ -312,33 +297,37 @@
 
                 const setMode = (mode) => { currentMode.value = mode; connectingStartNode.value = null; };
 
-                const getMouseCoords = (e) => {
-                    const wrapper = document.querySelector('.zoom-wrapper');
-                    if(!wrapper) return { x: e.clientX, y: e.clientY };
-                    const rect = wrapper.getBoundingClientRect();
-                    return { x: (e.clientX - rect.left) / zoomLevel.value, y: (e.clientY - rect.top) / zoomLevel.value };
+                const getPointerEventPos = (e) => {
+                    if (e.touches && e.touches.length > 0) {
+                        return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+                    } else if (e.changedTouches && e.changedTouches.length > 0) {
+                        return { clientX: e.changedTouches[0].clientX, clientY: e.changedTouches[0].clientY };
+                    }
+                    return { clientX: e.clientX, clientY: e.clientY };
                 };
 
-                // شروع درگ بوم با کلیک روی فضای خالی بوم
-                const onCanvasMouseDown = (e) => {
-                    // بررسی اینکه روی گره‌ها یا ابزارهای دیگر کلیک نشده باشد
+                const getCanvasCoords = (clientX, clientY) => {
+                    const wrapper = document.querySelector('.zoom-wrapper');
+                    if(!wrapper) return { x: clientX, y: clientY };
+                    const rect = wrapper.getBoundingClientRect();
+                    return { x: (clientX - rect.left) / zoomLevel.value, y: (clientY - rect.top) / zoomLevel.value };
+                };
+
+                const onCanvasDown = (e) => {
                     if (e.target.closest('.node-box') || e.target.closest('.pointer-events-auto') || e.target.closest('button')) return;
                     
                     isDraggingCanvas.value = true;
+                    const pos = getPointerEventPos(e);
                     const el = canvasScrollArea.value;
-                    canvasStartScroll.value = {
-                        left: el.scrollLeft,
-                        top: el.scrollTop
-                    };
-                    canvasStartMouse.value = {
-                        x: e.clientX,
-                        y: e.clientY
-                    };
+                    canvasStartScroll.value = { left: el.scrollLeft, top: el.scrollTop };
+                    canvasStartMouse.value = { x: pos.clientX, y: pos.clientY };
                 };
 
-                const handleNodeMouseDown = (node, e) => {
-                    dragStartPos.value = { x: e.clientX, y: e.clientY };
-                    const coords = getMouseCoords(e); 
+                const handleNodeDown = (node, e) => {
+                    const pos = getPointerEventPos(e);
+                    dragStartPos.value = { x: pos.clientX, y: pos.clientY };
+                    const coords = getCanvasCoords(pos.clientX, pos.clientY); 
+                    
                     if (currentMode.value === 'select') {
                         isDragging.value = true;
                         dragNode.value = node;
@@ -355,43 +344,61 @@
                     if (currentMode.value !== 'select') return;
                     const dx = e.clientX - dragStartPos.value.x;
                     const dy = e.clientY - dragStartPos.value.y;
-                    if (Math.sqrt(dx * dx + dy * dy) < 5) {
+                    if (Math.sqrt(dx * dx + dy * dy) < 10) { 
                         openModal(node);
                     }
                 };
 
-                const handleNodeMouseUp = (node) => {
-                    if (currentMode.value === 'connect' && connectingStartNode.value && connectingStartNode.value.id !== node.id) {
-                        const exists = activeChapter.value.connections.find(c => c.from === connectingStartNode.value.id && c.to === node.id);
-                        if (!exists) activeChapter.value.connections.push({ from: connectingStartNode.value.id, to: node.id });
+                const handleNodeUp = (node, e) => {
+                    let targetNode = node;
+
+                    if (e && (e.type === 'touchend' || e.type === 'touchcancel')) {
+                        const pos = getPointerEventPos(e);
+                        const elemUnderFinger = document.elementFromPoint(pos.clientX, pos.clientY);
+                        if (elemUnderFinger) {
+                            const nodeBox = elemUnderFinger.closest('.node-box');
+                            if (nodeBox) {
+                                const nodeId = Number(nodeBox.getAttribute('data-node-id'));
+                                const foundNode = activeChapter.value.nodes.find(n => n.id === nodeId);
+                                if (foundNode) targetNode = foundNode;
+                            }
+                        }
+                    }
+
+                    if (currentMode.value === 'connect' && connectingStartNode.value && connectingStartNode.value.id !== targetNode.id) {
+                        const exists = activeChapter.value.connections.find(c => c.from === connectingStartNode.value.id && c.to === targetNode.id);
+                        if (!exists) activeChapter.value.connections.push({ from: connectingStartNode.value.id, to: targetNode.id });
                     }
                     isDragging.value = false;
                     dragNode.value = null;
                     connectingStartNode.value = null;
                 };
 
-                const onMouseMove = (e) => {
-                    const coords = getMouseCoords(e);
+                const onPointerMove = (e) => {
+                    if (isDragging.value || connectingStartNode.value || isDraggingCanvas.value) {
+                        if (e.cancelable) e.preventDefault();
+                    }
+
+                    const pos = getPointerEventPos(e);
+                    const coords = getCanvasCoords(pos.clientX, pos.clientY);
                     mousePos.value = coords; 
 
-                    // درگ کردن بوم (کشیدن پس زمینه)
                     if (isDraggingCanvas.value) {
-                        const dx = e.clientX - canvasStartMouse.value.x;
-                        const dy = e.clientY - canvasStartMouse.value.y;
+                        const dx = pos.clientX - canvasStartMouse.value.x;
+                        const dy = pos.clientY - canvasStartMouse.value.y;
                         const el = canvasScrollArea.value;
                         el.scrollLeft = canvasStartScroll.value.left - dx;
                         el.scrollTop = canvasStartScroll.value.top - dy;
                         return;
                     }
 
-                    // درگ گره‌ها
                     if (isDragging.value && dragNode.value && currentMode.value === 'select') {
                         dragNode.value.x = coords.x - offset.value.x;
                         dragNode.value.y = coords.y - offset.value.y;
                     }
                 };
 
-                const onCanvasMouseUp = () => { 
+                const onPointerUp = () => { 
                     isDragging.value = false; 
                     dragNode.value = null; 
                     connectingStartNode.value = null; 
@@ -454,11 +461,16 @@
                 });
 
                 const addNode = (type) => {
+                    const el = canvasScrollArea.value;
+                    const targetX = el ? (el.scrollLeft + (el.clientWidth / 2)) / zoomLevel.value - 80 : initialX;
+                    const targetY = el ? (el.scrollTop + (el.clientHeight / 2)) / zoomLevel.value - 30 : 80;
+
                     if (type === 'chapter') {
                         chapters.value.push({
                             id: Date.now(),
                             title: `فصل ${chapters.value.length + 1}: عنوان جدید`,
-                            nodes: [{ id: Date.now() + 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: 450, y: 80, w: 160 }],
+                            // جاگذاری مرکزچین برای فصل جدید
+                            nodes: [{ id: Date.now() + 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: targetX, y: 80, w: 160 }],
                             connections: []
                         });
                         transitionName.value = 'slide-next';
@@ -468,7 +480,8 @@
                     }
 
                     const id = Date.now();
-                    let newNode = { id, type, x: 200, y: 200, w: 160, rewardXp: 50, rewardCoins: 10, quizQuestions: [] };
+                    // جاگذاری مرکزچین برای آیتم‌های جدید در مرکز دید فعلی کاربر
+                    let newNode = { id, type, x: targetX > 0 ? targetX : 50, y: targetY > 0 ? targetY : 80, w: 160, rewardXp: 50, rewardCoins: 10, quizQuestions: [] };
 
                     if (type === 'quiz') newNode = { ...newNode, title: 'آزمون جدید', icon: 'ph-exam', color: 'text-blue-400', iconBg: 'bg-blue-400/10', border: 'border-blue-500/30 rounded-xl', bg: 'bg-brand-dark', quizType: 'multiple' };
                     if (type === 'video') newNode = { ...newNode, title: 'ویدیو آموزشی', icon: 'ph-video-camera', color: 'text-purple-400', iconBg: 'bg-purple-400/10', border: 'border-purple-500/30 rounded-xl', bg: 'bg-brand-dark' };
@@ -480,9 +493,10 @@
                 };
 
                 return { 
-                    chapters, currentChapterIndex, activeChapter, nextChapter, prevChapter, transitionName, isEditingChapter, currentMode, setMode, zoomLevel, zoomIn, zoomOut, resetZoom, isDragging, dragNode, connectingStartNode, handleNodeMouseDown, handleNodeMouseUp, handleNodeClick, onMouseMove, onCanvasMouseUp, handlePathClick, startEdit, stopEdit, editingNodeId, svgPaths, tempPath, addNode, isContentPanelOpen,
+                    chapters, currentChapterIndex, activeChapter, nextChapter, prevChapter, transitionName, isEditingChapter, currentMode, setMode, zoomLevel, zoomIn, zoomOut, resetZoom, isDragging, dragNode, connectingStartNode, 
+                    handleNodeDown, handleNodeUp, handleNodeClick, onPointerMove, onPointerUp, handlePathClick, startEdit, stopEdit, editingNodeId, svgPaths, tempPath, addNode, isContentPanelOpen,
                     isModalOpen, selectedNode, closeModal, saveModalData,
-                    canvasScrollArea, onCanvasMouseDown
+                    canvasScrollArea, onCanvasDown
                 };
             }
         }).mount('#app');
