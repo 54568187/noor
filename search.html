@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پلتفرم چالش‌های نور - جستجوی دوره‌ها</title>
 
-    <!-- فونت وزیرمتن -->
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet"
-        type="text/css" />
 
     <!-- FontAwesome برای آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,7 +22,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Vazirmatn', 'sans-serif'],
+                        sans: ["Shabnam"],
                     },
                     colors: {
                         darkBase: '#080C16',
@@ -239,26 +236,42 @@
                     </div>
                 </div>
 
-                <!-- پنل چالش‌های داغ -->
-                <div class="bg-darkPanel rounded-2xl p-5 border border-darkBorder shadow-lg relative z-20">
-                    <h3
-                        class="text-white font-bold text-sm mb-4 flex items-center gap-2 border-b border-darkBorder pb-2">
-                        <i class="fa-solid fa-fire text-orange-500"></i> چالش‌های داغ
+                <!-- پنل چالش‌های داغ (بازطراحی مینیمال و مدرن) -->
+                <div class="bg-darkPanel rounded-2xl p-5 border border-darkBorder shadow-lg relative z-20 overflow-hidden">
+                    <h3 class="text-white font-bold text-sm mb-4 flex items-center gap-2 border-b border-darkBorder pb-3">
+                        <i class="fa-solid fa-fire text-orange-500 animate-pulse"></i> چالش‌های داغ
                     </h3>
-                    <div class="space-y-4">
-                        <div v-for="course in popularCourses" :key="course.id" @click="startChallenge(course)"
-                            class="flex gap-3 items-center group cursor-pointer p-2 -mx-2 rounded-xl hover:bg-darkBase transition-colors">
-                            <img :src="course.image"
-                                class="w-12 h-12 rounded-lg object-cover border border-darkBorder group-hover:border-goldPrimary transition-all shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-white line-clamp-2 leading-relaxed group-hover:text-goldPrimary transition-colors">
+                    <div class="space-y-3 relative">
+                        <div v-for="(course, index) in popularCourses" :key="course.id" @click="startChallenge(course)"
+                            class="group relative flex items-center gap-3 p-2.5 rounded-2xl bg-darkBase/40 border border-transparent hover:bg-darkBase hover:border-darkBorder/60 transition-all duration-300 cursor-pointer overflow-hidden">
+                            
+                            <!-- رتبه (واترمارک پس‌زمینه) -->
+                            <div class="absolute -left-2 -bottom-2 text-darkBorder/40 text-5xl font-black italic pointer-events-none group-hover:text-goldPrimary/10 transition-colors duration-300 z-0">
+                                #{{ index + 1 }}
+                            </div>
+
+                            <!-- تصویر -->
+                            <div class="relative shrink-0 z-10">
+                                <img :src="course.image"
+                                    class="w-14 h-14 rounded-xl object-cover border border-darkBorder group-hover:border-goldPrimary/50 transition-all duration-300">
+                                <!-- نشان داغ فقط برای اولین آیتم -->
+                                <div v-if="index === 0" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-[8px] text-white shadow-[0_0_10px_rgba(249,115,22,0.6)] animate-pulse">
+                                    <i class="fa-solid fa-fire"></i>
+                                </div>
+                            </div>
+
+                            <!-- محتوا -->
+                            <div class="flex-1 min-w-0 z-10">
+                                <h4 class="text-xs font-bold text-gray-200 line-clamp-2 leading-relaxed group-hover:text-goldPrimary transition-colors duration-300">
                                     {{ course.title }}
                                 </h4>
-                                <div class="flex items-center justify-between mt-1 text-[10px] text-textMuted">
-                                    <span class="flex items-center gap-1">
-                                        <i class="fa-solid fa-star text-yellow-500"></i> {{ course.rating }}
+                                <div class="flex items-center gap-3 mt-1.5 text-[9px] font-medium text-textMuted">
+                                    <span class="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded-md">
+                                        <i class="fa-solid fa-star text-[8px]"></i> {{ course.rating }}
                                     </span>
-                                    <span>{{ course.students }} شرکت‌کننده</span>
+                                    <span class="flex items-center gap-1 opacity-80">
+                                        <i class="fa-solid fa-users text-[8px]"></i> {{ course.students.toLocaleString('fa-IR') }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -297,45 +310,45 @@
                     </div>
                 </div>
 
-                <!-- کارت‌های آماری -->
+                <!-- کارت‌های آماری (با آیکون‌های واترمارک) -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div
-                        class="bg-darkPanel border border-darkBorder hover:border-blue-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-2.5 text-lg">
+                    <!-- کارت ۱ -->
+                    <div class="bg-darkPanel border border-darkBorder hover:border-blue-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
+                        <div class="absolute -right-4 -bottom-4 text-blue-500/5 text-6xl pointer-events-none group-hover:text-blue-500/10 transition-colors duration-300"><i class="fa-solid fa-users"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-2.5 text-lg z-10">
                             <i class="fa-solid fa-users"></i>
                         </div>
-                        <span class="text-xl font-black text-white">{{ stats.totalStudents }}</span>
-                        <span class="text-[10px] text-textMuted mt-0.5">دانشجوی فعال</span>
+                        <span class="text-xl font-black text-white z-10">{{ stats.totalStudents }}</span>
+                        <span class="text-[10px] text-textMuted mt-0.5 z-10">دانشجوی فعال</span>
                     </div>
-                    <div
-                        class="bg-darkPanel border border-darkBorder hover:border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center mb-2.5 text-lg">
+                    
+                    <!-- کارت ۲ -->
+                    <div class="bg-darkPanel border border-darkBorder hover:border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
+                        <div class="absolute -right-4 -bottom-4 text-green-500/5 text-6xl pointer-events-none group-hover:text-green-500/10 transition-colors duration-300"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center mb-2.5 text-lg z-10">
                             <i class="fa-solid fa-book-open"></i>
                         </div>
-                        <span class="text-xl font-black text-white">{{ stats.totalCourses }}</span>
-                        <span class="text-[10px] text-textMuted mt-0.5">چالش و دوره</span>
+                        <span class="text-xl font-black text-white z-10">{{ stats.totalCourses }}</span>
+                        <span class="text-[10px] text-textMuted mt-0.5 z-10">چالش و دوره</span>
                     </div>
-                    <div
-                        class="bg-darkPanel border border-darkBorder hover:border-purple-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mb-2.5 text-lg">
+
+                    <!-- کارت ۳ -->
+                    <div class="bg-darkPanel border border-darkBorder hover:border-purple-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
+                        <div class="absolute -right-4 -bottom-4 text-purple-500/5 text-6xl pointer-events-none group-hover:text-purple-500/10 transition-colors duration-300"><i class="fa-solid fa-clock"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mb-2.5 text-lg z-10">
                             <i class="fa-solid fa-clock"></i>
                         </div>
-                        <span class="text-xl font-black text-white">{{ stats.totalHours }}</span>
-                        <span class="text-[10px] text-textMuted mt-0.5">ساعت آموزش</span>
+                        <span class="text-xl font-black text-white z-10">{{ stats.totalHours }}</span>
+                        <span class="text-[10px] text-textMuted mt-0.5 z-10">ساعت آموزش</span>
                     </div>
-                    <div
-                        class="bg-darkPanel border border-darkBorder hover:border-goldPrimary/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden">
-                        <div class="absolute -right-4 -bottom-4 text-goldPrimary/5 text-6xl pointer-events-none"><i
-                                class="fa-solid fa-medal"></i></div>
-                        <div
-                            class="w-10 h-10 rounded-xl bg-goldPrimary/10 text-goldPrimary flex items-center justify-center mb-2.5 text-lg z-10">
+
+                    <!-- کارت ۴ -->
+                    <div class="bg-darkPanel border border-darkBorder hover:border-goldPrimary/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
+                        <div class="absolute -right-4 -bottom-4 text-goldPrimary/5 text-6xl pointer-events-none group-hover:text-goldPrimary/10 transition-colors duration-300"><i class="fa-solid fa-medal"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 text-goldPrimary flex items-center justify-center mb-2.5 text-lg z-10">
                             <i class="fa-solid fa-star"></i>
                         </div>
-                        <span class="text-xl font-black text-white z-10">{{ stats.totalXP }} <span
-                                class="text-xs font-normal text-goldPrimary">XP</span></span>
+                        <span class="text-xl font-black text-white z-10">{{ stats.totalXP }} <span class="text-xs font-normal text-goldPrimary">XP</span></span>
                         <span class="text-[10px] text-textMuted mt-0.5 z-10">کل امتیازات</span>
                     </div>
                 </div>

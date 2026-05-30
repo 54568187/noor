@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چالش چهل روزه عهد و خودسازی</title>
+    
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome (برای سایر بخش‌های عمومی سایت) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Vazirmatn Font -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#09090b',       
+                            card: '#121212',       
+                            cardHover: '#18181b',  
+                            gold: '#f59e0b',       
+                            goldHover: '#d97706',
+                            gray: '#a1a1aa'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Shabnam', 'Vazirmatn', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            font-family: Shabnam, Vazirmatn, sans-serif; 
+            background-color: #09090b; 
+            color: #ffffff; 
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+        /* Smooth Tabs Transition */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(5px); }
+        .fade-leave-active { display: none; }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-gold selection:text-black relative overflow-x-hidden">
+
+<div id="app" class="min-h-screen">
+    
+    <!-- Navbar Placeholder -->
+    <header class="border-b border-gray-800/40 bg-brand-dark/90 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-brand-gold rounded-full flex items-center justify-center text-black">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+                <span class="font-bold text-lg text-white">نورالهدی</span>
+                <nav class="hidden md:flex gap-8 mr-10 text-sm text-gray-400 font-medium">
+                    <a href="#" class="hover:text-white transition">دوره ها</a>
+                    <a href="#" class="hover:text-white transition text-white">چالش ها</a>
+                    <a href="#" class="hover:text-white transition">رهبران</a>
+                    <a href="#" class="hover:text-white transition">درباره ما</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-5">
+                <div class="bg-brand-card px-4 py-1.5 rounded-full flex items-center gap-2 text-sm border border-gray-800/60">
+                    <span class="text-brand-gold font-bold">۴۵۰</span> <span class="text-gray-300">توکن</span>
+                    <div class="w-5 h-5 bg-amber-500/10 rounded-full flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hexagon w-3 h-3 text-amber-500 fill-amber-500"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+                </div>
+                <button class="text-gray-400 hover:text-white transition"><i class="fa-regular fa-bell text-lg"></i></button>
+                <div class="w-9 h-9 bg-gray-800 rounded-full overflow-hidden border border-gray-700 cursor-pointer">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="User" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner Background (به‌روزرسانی شده با تصویر زیبا و گرادینت‌های یکپارچه) -->
+    <div class="absolute top-0 inset-x-0 w-full h-[550px] md:h-[650px] overflow-hidden -z-10 pointer-events-none">
+        
+        <!-- تصویر بنر جذاب، معنوی و باکیفیت -->
+        <img src="https://img.freepik.com/free-vector/golden-islamic-banner-with-mosque-design_1017-37982.jpg?semt=ais_hybrid&w=740&q=80" 
+             class="w-full h-full object-cover object-center opacity-60" 
+             alt="Hero Banner Image" />
+
+        <!-- گرادینت پایین به بالا: برای اینکه لبه پایینی عکس کاملا و به نرمی در بدنه سایت محو شود -->
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-transparent z-10"></div>
+        
+        <!-- گرادینت راست به چپ: سمت راست (زیر متن‌ها) را تاریک می‌کند اما اجازه می‌دهد تصویر در سمت چپ کاملا مشخص باشد -->
+        <div class="absolute inset-0 bg-gradient-to-l from-brand-dark via-brand-dark/80 to-transparent z-20"></div>
+        
+        <!-- افکت نوری ملایم و گرم هماهنگ با رنگ طلایی سایت -->
+        <div class="absolute inset-0 bg-brand-gold/10 mix-blend-overlay z-30"></div>
+        
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-[1200px] mx-auto px-4 pt-16 pb-20">
+        
+        <!-- Hero Section -->
+        <section class="text-right mb-28 relative z-10">
+            <!-- Breadcrumb -->
+            <div class="text-xs text-gray-500 mb-8 flex items-center gap-2">
+                <a href="#" class="hover:text-white transition">خانه</a> 
+                <i class="fa-solid fa-angle-left text-[10px]"></i>
+                <a href="#" class="hover:text-white transition">چالش‌ها</a> 
+                <i class="fa-solid fa-angle-left text-[10px]"></i>
+                <span class="text-gray-300">چالش چهل روزه عهد</span>
+            </div>
+
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-card/50 backdrop-blur-sm border border-brand-gold/30 text-brand-gold rounded-full text-xs mb-6">
+                <i class="fa-solid fa-shield-halved"></i> 
+                <span class="pt-0.5">سطح: متوسط</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-white tracking-tight drop-shadow-md">چالش چهل روزه عهد و خودسازی</h1>
+            
+            <!-- Description -->
+            <p class="text-gray-300/90 text-base md:text-lg max-w-3xl mb-10 leading-relaxed font-light drop-shadow-sm">
+                یک مسیر معنوی چهل روزه برای انس بیشتر با خدا و تقویت اراده. در این چالش روزانه با تمرین‌های کوتاه و مستمر، عادات مثبت را در خود نهادینه می‌کنیم.
+            </p>
+
+            <!-- Meta Stats Row -->
+            <div class="flex flex-wrap items-center gap-5 text-sm text-gray-300">
+                <!-- Stars -->
+                <div class="flex items-center gap-2 bg-brand-dark/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                    <div class="flex text-brand-gold text-sm gap-0.5">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="font-bold text-white text-base mx-1">۴.۸</span>
+                    <span class="text-gray-400 text-xs">(۱۲۴ نظر)</span>
+                </div>
+                
+                <div class="w-px h-5 bg-gray-600/80"></div>
+                
+                <!-- Users -->
+                <div class="flex items-center gap-2 bg-brand-dark/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-brand-gold"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span class="font-bold text-white text-base mx-1">۱,۲۴۰</span> 
+                    <span class="text-gray-400">دانشجو</span>
+                </div>
+                
+                <div class="w-px h-5 bg-gray-600/80"></div>
+                
+                <!-- Duration -->
+                <div class="flex items-center gap-2 bg-brand-dark/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                    <i class="fa-regular fa-clock text-brand-gold text-lg"></i>
+                    <span class="font-bold text-white text-base mx-1">۴۰ روز</span> 
+                    <span class="text-gray-400">مدت زمان</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Two Column Layout -->
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            
+            <!-- Right Sidebar (Sticky Panel) -->
+            <aside class="w-full lg:w-[320px] sticky top-28 shrink-0 order-2 lg:order-1">
+                <div class="bg-brand-card border border-gray-800/80 rounded-2xl p-6 relative overflow-hidden">
+                    
+                    <!-- Circular Watermark -->
+                    <div class="absolute -top-16 -right-16 w-48 h-48 bg-[#4a3219]/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <!-- Cost Section -->
+                    <div class="text-center mb-8 relative z-10 mt-2">
+                        <p class="text-gray-400 text-sm mb-6 font-light">هزینه ورود به چالش</p>
+                        
+                        <div class="flex items-center justify-center gap-4">
+                            <!-- Cost Number (Right) -->
+                            <span class="text-6xl font-black text-white tracking-tighter ml-1 font-sans">۱۵۰</span>
+                            
+                            <!-- Text Block (Center) -->
+                            <div class="flex flex-col text-right leading-tight mt-1">
+                                <span class="text-white font-bold text-base">توکن</span>
+                                <span class="text-gray-500 text-[11px] mt-0.5">مورد نیاز</span>
+                            </div>
+
+                            <!-- Hexagon Icon (Left) -->
+                            <svg viewBox="0 0 24 24" class="w-11 h-11 text-brand-gold fill-[#4a3219]" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button class="w-full py-3.5 bg-brand-gold hover:bg-brand-goldHover text-black font-bold text-base rounded-xl transition-all flex justify-center items-center gap-2 mb-3 relative z-10 shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ورود به چالش
+                    </button>
+                    
+                    <p class="text-center text-xs text-gray-500 mb-6 relative z-10">موجودی شما: <span class="text-brand-gold">۴۵۰ توکن</span></p>
+
+                    <!-- Subtle Divider -->
+                    <div class="w-full h-px bg-gray-800/80 mb-6 relative z-10"></div>
+
+                    <!-- Achievements -->
+                    <div class="relative z-10">
+                        <h3 class="font-bold text-sm text-white mb-5">دستاوردهای این چالش</h3>
+                        <div class="space-y-4">
+                            <!-- Item 1: Trophy -->
+                            <div class="flex items-center gap-3 group">
+                                <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <h4 class="font-bold text-sm text-gray-200 group-hover:text-white transition-colors">نشان اختصاصی عهد</h4>
+                                    <p class="text-[11px] text-gray-500 mt-0.5">اضافه شدن به پروفایل کاربری</p>
+                                </div>
+                            </div>
+                            <!-- Item 2: Hexagon -->
+                            <div class="flex items-center gap-3 group">
+                                <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <h4 class="font-bold text-sm text-gray-200 group-hover:text-white transition-colors">پاداش ۵۰۰ توکنی</h4>
+                                    <p class="text-[11px] text-gray-500 mt-0.5">در صورت اتمام موفقیت‌آمیز</p>
+                                </div>
+                            </div>
+                            <!-- Item 3: Target/Bullseye -->
+                            <div class="flex items-center gap-3 group">
+                                <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <h4 class="font-bold text-sm text-gray-200 group-hover:text-white transition-colors">گزارش‌گیری روزانه</h4>
+                                    <p class="text-[11px] text-gray-500 mt-0.5">ابزار اختصاصی رصد پیشرفت</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area - Tabs -->
+            <section class="w-full lg:flex-1 order-1 lg:order-2">
+                
+                <!-- Tabs Header -->
+                <div class="flex gap-8 border-b border-gray-800/60 mb-6 overflow-x-auto text-sm">
+                    <button 
+                        @click="activeTab = 'intro'" 
+                        :class="['pb-4 font-medium whitespace-nowrap transition-all duration-300 relative', activeTab === 'intro' ? 'text-brand-gold' : 'text-gray-500 hover:text-gray-300']">
+                        معرفی چالش
+                        <div v-if="activeTab === 'intro'" class="absolute bottom-0 left-0 w-full h-0.5 bg-brand-gold"></div>
+                    </button>
+                    <button 
+                        @click="activeTab = 'leaderboard'" 
+                        :class="['pb-4 font-medium whitespace-nowrap transition-all duration-300 relative', activeTab === 'leaderboard' ? 'text-brand-gold' : 'text-gray-500 hover:text-gray-300']">
+                        لیدربرد
+                        <div v-if="activeTab === 'leaderboard'" class="absolute bottom-0 left-0 w-full h-0.5 bg-brand-gold"></div>
+                    </button>
+                    <button 
+                        @click="activeTab = 'stats'" 
+                        :class="['pb-4 font-medium whitespace-nowrap transition-all duration-300 relative', activeTab === 'stats' ? 'text-brand-gold' : 'text-gray-500 hover:text-gray-300']">
+                        آمار و ارقام
+                        <div v-if="activeTab === 'stats'" class="absolute bottom-0 left-0 w-full h-0.5 bg-brand-gold"></div>
+                    </button>
+                </div>
+
+                <!-- Tabs Content Wrapper -->
+                <div class="min-h-[500px]">
+                    <transition name="fade" mode="out-in">
+                        
+                        <!-- TAB 1: Introduction -->
+                        <div v-if="activeTab === 'intro'" key="intro" class="bg-brand-card border border-gray-800/60 rounded-2xl p-6 md:p-8">
+                            <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-white">
+                                <i class="fa-solid fa-diamond text-brand-gold text-xs"></i> 
+                                <i class="fa-solid fa-diamond text-brand-gold text-[10px]"></i> 
+                                درباره این چالش
+                            </h2>
+                            <p class="text-gray-300 leading-8 text-sm md:text-base text-justify font-light mb-6">
+                                چالش چهل روزه عهد یک برنامه معنوی منسجم است که با هدف ایجاد نظم در زندگی فردی و تقویت ارتباط با خداوند طراحی شده است. در این دوره، هر روز مجموعه‌ای از اعمال کوتاه اما مستمر را تمرین می‌کنیم تا در طول ۴۰ روز، به یک عادت پایدار دست یابیم.
+                            </p>
+                            <p class="text-gray-300 leading-8 text-sm md:text-base text-justify font-light mb-10">
+                                این چالش نیازی به صرف زمان طولانی ندارد، بلکه هدف آن تمرکز بر حضور قلب و استمرار است. شما با پرداخت ۱۵۰ توکن وارد این مسیر می‌شوید و در صورت تکمیل موفقیت‌آمیز، ۵۰۰ توکن پاداش دریافت خواهید کرد.
+                            </p>
+
+                            <h3 class="font-bold text-base mb-6 text-white">آنچه در این ۴۰ روز تجربه می‌کنید:</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 rounded-full border border-brand-gold/40 flex items-center justify-center text-brand-gold text-[10px] shrink-0">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <span class="text-gray-300 text-sm font-light">خواندن روزانه دعای عهد بعد از نماز صبح</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 rounded-full border border-brand-gold/40 flex items-center justify-center text-brand-gold text-[10px] shrink-0">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <span class="text-gray-300 text-sm font-light">مراقبه ۵ دقیقه‌ای پیش از خواب</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 rounded-full border border-brand-gold/40 flex items-center justify-center text-brand-gold text-[10px] shrink-0">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <span class="text-gray-300 text-sm font-light">ثبت روزانه وضعیت روحی در پنل کاربری</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 rounded-full border border-brand-gold/40 flex items-center justify-center text-brand-gold text-[10px] shrink-0">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <span class="text-gray-300 text-sm font-light">شرکت در مباحثات هفتگی گروهی</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: Leaderboard -->
+                        <div v-else-if="activeTab === 'leaderboard'" key="leaderboard" class="bg-brand-card border border-gray-800/60 rounded-2xl p-6 md:p-8">
+                            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-800/60">
+                                <h2 class="text-xl font-bold flex items-center gap-2 text-white">
+                                    برترین‌های چالش <i class="fa-solid fa-trophy text-brand-gold ml-2"></i>
+                                </h2>
+                                <span class="text-xs text-gray-500">تا این لحظه</span>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <!-- ردیف‌های کاربران همراه با افکت‌های hover پویا -->
+                                <div v-for="user in leaderboard" :key="user.rank" 
+                                     class="group flex items-center justify-between p-4 bg-brand-cardHover border border-gray-800/40 rounded-xl transition-all duration-300 hover:border-brand-gold/30 hover:-translate-y-1 hover:shadow-[0_8px_20px_-8px_rgba(245,158,11,0.25)] cursor-default">
+                                    <div class="flex items-center gap-4">
+                                        <div class="relative">
+                                            <img :src="user.avatar" class="w-12 h-12 rounded-full border border-gray-700 object-cover transition-transform duration-300 group-hover:scale-105 group-hover:border-brand-gold/50" alt="avatar">
+                                            <div v-if="user.rank === 1" class="absolute -top-1 -right-1 text-yellow-400 text-xs bg-black rounded-full w-5 h-5 flex items-center justify-center border border-yellow-900 shadow-sm shadow-yellow-900/50">👑</div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-white text-sm transition-colors duration-300 group-hover:text-brand-gold">{{ user.name }}</h4>
+                                            <p class="text-xs text-gray-500 mt-1 font-light group-hover:text-gray-400 transition-colors">{{ user.days }} روز پیوسته</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-6">
+                                        <div class="text-left leading-tight transition-transform duration-300 group-hover:scale-105">
+                                            <div class="font-bold text-brand-gold text-lg drop-shadow-sm" dir="ltr">{{ user.score.toLocaleString() }}</div>
+                                            <p class="text-[10px] text-gray-500">امتیاز</p>
+                                        </div>
+                                        <div class="w-8 flex justify-center text-xl transition-transform duration-300 group-hover:scale-110">
+                                            <i v-if="user.rank === 1" class="fa-solid fa-crown text-yellow-500 drop-shadow-[0_0_5px_rgba(234,179,8,0.5)]"></i>
+                                            <i v-else-if="user.rank === 2" class="fa-solid fa-medal text-gray-400"></i>
+                                            <i v-else-if="user.rank === 3" class="fa-solid fa-medal text-orange-400"></i>
+                                            <span v-else class="font-bold text-gray-600 text-lg group-hover:text-brand-gold/70 transition-colors">#{{ user.rank }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: Stats -->
+                        <div v-else-if="activeTab === 'stats'" key="stats">
+                            
+                            <!-- 4 Status Cards -->
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                                
+                                <!-- Card 1: Users -->
+                                <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105">۱,۲۴۰</span>
+                                    <span class="text-[11px] text-gray-400 font-light relative z-10 group-hover:text-gray-300 transition-colors">شرکت کننده</span>
+                                </div>
+
+                                <!-- Card 2: Completion Rate -->
+                                <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                    <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105" dir="ltr">۸۵%</span>
+                                    <span class="text-[11px] text-gray-400 font-light relative z-10 group-hover:text-gray-300 transition-colors">نرخ تکمیل دوره</span>
+                                </div>
+
+                                <!-- Card 3: Average Rating -->
+                                <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105">۴.۸</span>
+                                    <span class="text-[11px] text-gray-400 font-light relative z-10 group-hover:text-gray-300 transition-colors">میانگین امتیاز</span>
+                                </div>
+
+                                <!-- Card 4: Continuous Days -->
+                                <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                    <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105">۳۵</span>
+                                    <span class="text-[11px] text-gray-400 font-light relative z-10 group-hover:text-gray-300 transition-colors">میانگین روزهای پیوسته</span>
+                                </div>
+                            </div>
+
+                            <!-- Chart Area -->
+                            <div class="bg-brand-card border border-gray-800/60 rounded-xl p-6">
+                                <h3 class="font-bold mb-10 text-white text-base">نمودار فعالیت کاربران</h3>
+                                
+                                <div class="relative h-[280px] w-full flex items-end pb-8">
+                                    <!-- Y Axis Labels & Grid -->
+                                    <div class="absolute left-0 top-0 h-full w-full pointer-events-none flex flex-col justify-between text-[11px] text-gray-500 pb-8 font-mono">
+                                        <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">2800</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
+                                        <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">2100</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
+                                        <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">1400</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
+                                        <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">700</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
+                                        <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">0</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
+                                    </div>
+
+                                    <!-- Bars Container -->
+                                    <div class="w-full flex justify-around items-end h-full relative z-10 pl-12 pr-4" dir="ltr">
+                                        <div v-for="bar in chartData" :key="bar.label" class="relative group flex flex-col items-center w-12 h-full justify-end">
+                                            
+                                            <!-- Tooltip -->
+                                            <div class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-[#18181b] border border-gray-700 rounded py-1 px-2 text-center shadow-lg pointer-events-none whitespace-nowrap z-20">
+                                                <p class="text-brand-gold text-xs font-mono" dir="ltr">{{ bar.value }}</p>
+                                            </div>
+                                            
+                                            <!-- Bar Fill -->
+                                            <div class="w-10 bg-brand-gold transition-all duration-300 group-hover:bg-yellow-400 cursor-pointer"
+                                                 :style="{ height: (bar.value / 2800 * 100) + '%' }">
+                                            </div>
+                                            
+                                            <!-- X Axis Label -->
+                                            <span class="absolute -bottom-8 text-[13px] text-gray-300 whitespace-nowrap font-medium" dir="rtl">{{ bar.label }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </transition>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script>
+    const { createApp, ref } = Vue;
+
+    createApp({
+        setup() {
+            // State for Tabs
+            const activeTab = ref('intro');
+
+            // Data for Leaderboard
+            const leaderboard = ref([
+                { rank: 1, name: 'علی رضایی', days: 35, score: 4200, avatar: 'https://i.pravatar.cc/150?img=11' },
+                { rank: 2, name: 'محمد حسینی', days: 33, score: 3950, avatar: 'https://i.pravatar.cc/150?img=12' },
+                { rank: 3, name: 'فاطمه احمدی', days: 31, score: 3800, avatar: 'https://i.pravatar.cc/150?img=5' },
+                { rank: 4, name: 'حسین عباسی', days: 28, score: 3600, avatar: 'https://i.pravatar.cc/150?img=15' },
+            ]);
+
+            // Data for Stats Chart
+            const chartData = ref([
+                { label: 'هفته اول', value: 1200 },
+                { label: 'هفته دوم', value: 1900 },
+                { label: 'هفته سوم', value: 1500 },
+                { label: 'هفته چهارم', value: 2750 },
+                { label: 'هفته پنجم', value: 2200 },
+            ]);
+
+            return {
+                activeTab,
+                leaderboard,
+                chartData
+            }
+        }
+    }).mount('#app')
+</script>
+</body>
+</html>
