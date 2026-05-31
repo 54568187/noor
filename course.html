@@ -90,23 +90,14 @@
         </div>
     </header>
 
-    <!-- Hero Banner Background (به‌روزرسانی شده با تصویر زیبا و گرادینت‌های یکپارچه) -->
+    <!-- Hero Banner Background -->
     <div class="absolute top-0 inset-x-0 w-full h-[550px] md:h-[650px] overflow-hidden -z-10 pointer-events-none">
-        
-        <!-- تصویر بنر جذاب، معنوی و باکیفیت -->
         <img src="https://img.freepik.com/free-vector/golden-islamic-banner-with-mosque-design_1017-37982.jpg?semt=ais_hybrid&w=740&q=80" 
              class="w-full h-full object-cover object-center opacity-60" 
              alt="Hero Banner Image" />
-
-        <!-- گرادینت پایین به بالا: برای اینکه لبه پایینی عکس کاملا و به نرمی در بدنه سایت محو شود -->
         <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-transparent z-10"></div>
-        
-        <!-- گرادینت راست به چپ: سمت راست (زیر متن‌ها) را تاریک می‌کند اما اجازه می‌دهد تصویر در سمت چپ کاملا مشخص باشد -->
         <div class="absolute inset-0 bg-gradient-to-l from-brand-dark via-brand-dark/80 to-transparent z-20"></div>
-        
-        <!-- افکت نوری ملایم و گرم هماهنگ با رنگ طلایی سایت -->
         <div class="absolute inset-0 bg-brand-gold/10 mix-blend-overlay z-30"></div>
-        
     </div>
 
     <!-- Main Content -->
@@ -139,7 +130,6 @@
 
             <!-- Meta Stats Row -->
             <div class="flex flex-wrap items-center gap-5 text-sm text-gray-300">
-                <!-- Stars -->
                 <div class="flex items-center gap-2 bg-brand-dark/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                     <div class="flex text-brand-gold text-sm gap-0.5">
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star opacity-50"></i>
@@ -150,7 +140,6 @@
                 
                 <div class="w-px h-5 bg-gray-600/80"></div>
                 
-                <!-- Users -->
                 <div class="flex items-center gap-2 bg-brand-dark/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-brand-gold"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     <span class="font-bold text-white text-base mx-1">۱,۲۴۰</span> 
@@ -159,7 +148,6 @@
                 
                 <div class="w-px h-5 bg-gray-600/80"></div>
                 
-                <!-- Duration -->
                 <div class="flex items-center gap-2 bg-brand-dark/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                     <i class="fa-regular fa-clock text-brand-gold text-lg"></i>
                     <span class="font-bold text-white text-base mx-1">۴۰ روز</span> 
@@ -174,8 +162,6 @@
             <!-- Right Sidebar (Sticky Panel) -->
             <aside class="w-full lg:w-[320px] sticky top-28 shrink-0 order-2 lg:order-1">
                 <div class="bg-brand-card border border-gray-800/80 rounded-2xl p-6 relative overflow-hidden">
-                    
-                    <!-- Circular Watermark -->
                     <div class="absolute -top-16 -right-16 w-48 h-48 bg-[#4a3219]/20 rounded-full blur-2xl pointer-events-none"></div>
 
                     <!-- Cost Section -->
@@ -183,37 +169,30 @@
                         <p class="text-gray-400 text-sm mb-6 font-light">هزینه ورود به چالش</p>
                         
                         <div class="flex items-center justify-center gap-4">
-                            <!-- Cost Number (Right) -->
                             <span class="text-6xl font-black text-white tracking-tighter ml-1 font-sans">۱۵۰</span>
-                            
-                            <!-- Text Block (Center) -->
                             <div class="flex flex-col text-right leading-tight mt-1">
                                 <span class="text-white font-bold text-base">توکن</span>
                                 <span class="text-gray-500 text-[11px] mt-0.5">مورد نیاز</span>
                             </div>
-
-                            <!-- Hexagon Icon (Left) -->
                             <svg viewBox="0 0 24 24" class="w-11 h-11 text-brand-gold fill-[#4a3219]" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
                             </svg>
                         </div>
                     </div>
 
-                    <!-- Action Button -->
                     <button class="w-full py-3.5 bg-brand-gold hover:bg-[#ffc504] text-black font-bold text-base rounded-xl transition-all duration-350 flex justify-center items-center gap-2 mb-3 relative z-10 shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ورود به چالش
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mb-6 relative z-10">موجودی شما: <span class="text-brand-gold">۴۵۰ توکن</span></p>
 
-                    <!-- Subtle Divider -->
                     <div class="w-full h-px bg-gray-800/80 mb-6 relative z-10"></div>
 
                     <!-- Achievements -->
                     <div class="relative z-10">
                         <h3 class="font-bold text-sm text-white mb-5">دستاوردهای این چالش</h3>
                         <div class="space-y-4">
-                            <!-- Item 1: Trophy -->
+                            <!-- Item 1 -->
                             <div class="flex items-center gap-3 group">
                                 <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
@@ -223,7 +202,7 @@
                                     <p class="text-[11px] text-gray-500 mt-0.5">اضافه شدن به پروفایل کاربری</p>
                                 </div>
                             </div>
-                            <!-- Item 2: Hexagon -->
+                            <!-- Item 2 -->
                             <div class="flex items-center gap-3 group">
                                 <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
@@ -233,7 +212,7 @@
                                     <p class="text-[11px] text-gray-500 mt-0.5">در صورت اتمام موفقیت‌آمیز</p>
                                 </div>
                             </div>
-                            <!-- Item 3: Target/Bullseye -->
+                            <!-- Item 3 -->
                             <div class="flex items-center gap-3 group">
                                 <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -330,9 +309,7 @@
                             </div>
                             
                             <div class="space-y-3">
-                                <!-- ردیف‌های کاربران همراه با افکت‌های hover پویا -->
-                                <div v-for="user in leaderboard" :key="user.rank" 
-                                     class="group flex items-center justify-between p-4 bg-brand-cardHover border border-gray-800/40 rounded-xl transition-all duration-300 hover:border-brand-gold/30 hover:-translate-y-1 hover:shadow-[0_8px_20px_-8px_rgba(245,158,11,0.25)] cursor-default">
+                                <div v-for="user in leaderboard" :key="user.rank" class="group flex items-center justify-between p-4 bg-brand-cardHover border border-gray-800/40 rounded-xl transition-all duration-300 hover:border-brand-gold/30 hover:-translate-y-1 hover:shadow-[0_8px_20px_-8px_rgba(245,158,11,0.25)] cursor-default">
                                     <div class="flex items-center gap-4">
                                         <div class="relative">
                                             <img :src="user.avatar" class="w-12 h-12 rounded-full border border-gray-700 object-cover transition-transform duration-300 group-hover:scale-105 group-hover:border-brand-gold/50" alt="avatar">
@@ -361,35 +338,25 @@
 
                         <!-- TAB 3: Stats -->
                         <div v-else-if="activeTab === 'stats'" key="stats">
-                            
-                            <!-- 4 Status Cards -->
                             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                                
-                                <!-- Card 1: Users -->
                                 <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                     <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105">۱,۲۴۰</span>
                                     <span class="text-[11px] text-gray-400 font-light relative z-10 group-hover:text-gray-300 transition-colors">شرکت کننده</span>
                                 </div>
-
-                                <!-- Card 2: Completion Rate -->
                                 <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                                     <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105" dir="ltr">۸۵%</span>
                                     <span class="text-[11px] text-gray-400 font-light relative z-10 group-hover:text-gray-300 transition-colors">نرخ تکمیل دوره</span>
                                 </div>
-
-                                <!-- Card 3: Average Rating -->
                                 <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                                     <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105">۴.۸</span>
                                     <span class="text-[11px] text-gray-400 font-light relative z-10 group-hover:text-gray-300 transition-colors">میانگین امتیاز</span>
                                 </div>
-
-                                <!-- Card 4: Continuous Days -->
                                 <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute -bottom-4 -right-4 w-28 h-28 text-white/[0.02] pointer-events-none group-hover:text-brand-gold/[0.05] group-hover:-rotate-12 transition-all duration-500"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -398,12 +365,9 @@
                                 </div>
                             </div>
 
-                            <!-- Chart Area -->
                             <div class="bg-brand-card border border-gray-800/60 rounded-xl p-6">
                                 <h3 class="font-bold mb-10 text-white text-base">نمودار فعالیت کاربران</h3>
-                                
                                 <div class="relative h-[280px] w-full flex items-end pb-8">
-                                    <!-- Y Axis Labels & Grid -->
                                     <div class="absolute left-0 top-0 h-full w-full pointer-events-none flex flex-col justify-between text-[11px] text-gray-500 pb-8 font-mono">
                                         <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">2800</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
                                         <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">2100</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
@@ -411,45 +375,241 @@
                                         <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">700</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
                                         <div class="w-full h-0 flex items-center relative"><span class="absolute left-0 -translate-y-1/2 bg-brand-card pr-3">0</span><div class="w-full border-t border-gray-800/40 border-dashed"></div></div>
                                     </div>
-
-                                    <!-- Bars Container -->
                                     <div class="w-full flex justify-around items-end h-full relative z-10 pl-12 pr-4" dir="ltr">
                                         <div v-for="bar in chartData" :key="bar.label" class="relative group flex flex-col items-center w-12 h-full justify-end">
-                                            
-                                            <!-- Tooltip -->
                                             <div class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-[#18181b] border border-gray-700 rounded py-1 px-2 text-center shadow-lg pointer-events-none whitespace-nowrap z-20">
                                                 <p class="text-brand-gold text-xs font-mono" dir="ltr">{{ bar.value }}</p>
                                             </div>
-                                            
-                                            <!-- Bar Fill -->
                                             <div class="w-10 bg-brand-gold transition-all duration-300 group-hover:bg-yellow-400 cursor-pointer"
                                                  :style="{ height: (bar.value / 2800 * 100) + '%' }">
                                             </div>
-                                            
-                                            <!-- X Axis Label -->
                                             <span class="absolute -bottom-8 text-[13px] text-gray-300 whitespace-nowrap font-medium" dir="rtl">{{ bar.label }}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </transition>
                 </div>
             </section>
         </div>
+
+        <!-- ================= NEW COMMENTS SECTION ================= -->
+        <section class="mt-20 w-full relative z-10">
+            
+            <!-- Section Header -->
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fa-regular fa-comments text-brand-gold"></i>
+                    پرسش‌ها و نظرات
+                    <span class="bg-brand-dark border border-gray-700 text-gray-300 text-xs px-2.5 py-1 rounded-full font-sans shadow-inner">۲۴</span>
+                </h2>
+                <div class="flex gap-2">
+                    <button class="text-xs text-gray-400 hover:text-white transition-colors bg-brand-dark px-3 py-1.5 rounded-lg border border-gray-800">جدیدترین</button>
+                    <button class="text-xs text-brand-gold hover:text-yellow-400 transition-colors bg-brand-gold/10 px-3 py-1.5 rounded-lg border border-brand-gold/20">محبوب‌ترین</button>
+                </div>
+            </div>
+
+            <!-- Add Comment Form -->
+            <div class="bg-brand-card border border-gray-800/60 rounded-2xl p-5 md:p-7 mb-10 transition-all duration-300 focus-within:border-brand-gold/50 focus-within:shadow-[0_0_20px_rgba(245,158,11,0.08)]">
+                <div class="flex gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-700 shadow-md hidden sm:block">
+                        <img src="https://i.pravatar.cc/150?img=11" alt="شما" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 w-full">
+                        
+                        <!-- Comment Title -->
+                        <input type="text" v-model="newComment.title" placeholder="عنوان پرسش یا نظر شما (اختیاری)" class="w-full bg-transparent border-b border-gray-800/80 pb-3 mb-4 text-white placeholder-gray-500 focus:outline-none focus:border-brand-gold transition-colors font-bold text-lg">
+                        
+                        <!-- Rich Text Editor Container -->
+                        <div class="border border-gray-800/60 rounded-xl overflow-hidden bg-[#09090b] flex flex-col">
+                            
+                            <!-- Toolbar (Clean & Minimal Radius) -->
+                            <div class="flex flex-wrap items-center gap-1 bg-[#121212] border-b border-gray-800/60 p-2">
+                                <button @click="insertMarkdown('**', '**')" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="ضخیم (Bold)">
+                                    <i class="fa-solid fa-bold text-[13px]"></i>
+                                </button>
+                                <button @click="insertMarkdown('*', '*')" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="مورب (Italic)">
+                                    <i class="fa-solid fa-italic text-[13px]"></i>
+                                </button>
+                                <div class="w-px h-4 bg-gray-700/60 mx-1"></div>
+                                <button @click="insertMarkdown('[', '](url)')" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="افزودن لینک">
+                                    <i class="fa-solid fa-link text-[13px]"></i>
+                                </button>
+                                <button @click="insertList()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="لیست نقطه‌ای">
+                                    <i class="fa-solid fa-list-ul text-[13px]"></i>
+                                </button>
+                            </div>
+
+                            <!-- Comment Body Textarea -->
+                            <textarea 
+                                ref="mainTextarea"
+                                v-model="newComment.body" 
+                                rows="4" 
+                                placeholder="متن کامل نظر، پیشنهاد یا پرسش خود را اینجا بنویسید (از مارک‌داون پشتیبانی می‌شود)..." 
+                                class="w-full bg-transparent p-4 text-gray-300 placeholder-gray-600 focus:outline-none resize-y transition-all text-sm leading-7">
+                            </textarea>
+                        </div>
+
+                        <!-- Real File Upload Functionality -->
+                        <div class="mt-4">
+                            <!-- Hidden input -->
+                            <input type="file" ref="fileInput" class="hidden" @change="handleFileUpload">
+                            
+                            <!-- Drag & Drop / Click Zone -->
+                            <div v-if="!selectedFile" @click="triggerFileInput" class="border-2 border-dashed border-gray-700/60 rounded-xl p-5 flex flex-col items-center justify-center text-center hover:border-brand-gold/50 hover:bg-brand-gold/[0.02] transition-all duration-300 cursor-pointer group">
+                                <div class="w-10 h-10 bg-[#121212] rounded-full flex items-center justify-center text-gray-500 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-300 mb-2 border border-gray-800">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                </div>
+                                <p class="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">برای افزودن فایل یا تصویر <span class="text-brand-gold font-medium">کلیک کنید</span></p>
+                                <p class="text-[10px] text-gray-600 mt-1 font-sans">PNG, JPG, PDF (Max: 5MB)</p>
+                            </div>
+
+                            <!-- Selected File Display -->
+                            <div v-else class="flex items-center justify-between bg-brand-dark border border-brand-gold/30 p-3 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-brand-gold/10 text-brand-gold rounded-lg flex items-center justify-center">
+                                        <i class="fa-solid fa-file-circle-check text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-white font-medium truncate max-w-[200px] sm:max-w-xs" dir="ltr">{{ selectedFile.name }}</p>
+                                        <p class="text-[11px] text-gray-500 font-sans mt-0.5">{{ formatFileSize(selectedFile.size) }}</p>
+                                    </div>
+                                </div>
+                                <button @click="removeSelectedFile" class="text-gray-500 hover:text-red-400 transition-colors p-2" title="حذف فایل">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex justify-end mt-5">
+                            <button class="px-6 py-2.5 bg-brand-gold hover:bg-[#ffc504] text-black font-bold text-sm rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5 flex items-center gap-2">
+                                <span>ثبت نظر</span>
+                                <i class="fa-solid fa-paper-plane text-xs transform -rotate-12 mt-0.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Comments List -->
+            <div class="space-y-6">
+                
+                <!-- Iterate over comments -->
+                <div v-for="comment in commentsList" :key="comment.id" 
+                     :class="['relative bg-brand-card border rounded-2xl p-5 md:p-6 transition-colors', comment.role === 'admin' ? 'border-gray-800/50 border-r-4 border-r-brand-gold bg-brand-cardHover shadow-[0_5px_20px_rgba(0,0,0,0.2)]' : 'border-gray-800/60 hover:border-gray-700']">
+                    
+                    <div class="flex gap-4">
+                        <img :src="comment.avatar" alt="User" :class="['w-12 h-12 rounded-full object-cover shrink-0', comment.role === 'admin' ? 'border-2 border-brand-gold shadow-[0_0_10px_rgba(245,158,11,0.2)]' : 'border border-gray-700']">
+                        <div class="flex-1">
+                            <!-- Header -->
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="font-bold text-white text-sm">{{ comment.author }}</h4>
+                                        <span v-if="comment.role === 'admin'" class="bg-brand-gold/10 text-brand-gold text-[10px] px-2 py-0.5 rounded-full border border-brand-gold/30 flex items-center gap-1">
+                                            <i class="fa-solid fa-shield-halved text-[9px]"></i> مدیر دوره
+                                        </span>
+                                    </div>
+                                    <span class="text-[11px] text-gray-500 font-sans">{{ comment.time }}</span>
+                                </div>
+                                <button class="text-gray-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            </div>
+                            
+                            <!-- Content -->
+                            <h5 v-if="comment.title" :class="['font-bold text-base mb-2', comment.role === 'admin' ? 'text-brand-gold' : 'text-white']">{{ comment.title }}</h5>
+                            <p class="text-gray-300 text-sm leading-8 mb-4 font-light text-justify">
+                                {{ comment.body }}
+                            </p>
+                            
+                            <!-- Attached File Display -->
+                            <div v-if="comment.file" class="flex items-center gap-4 bg-[#09090b] border border-gray-800/80 p-3 rounded-xl w-fit mb-5 hover:border-gray-600 transition-colors cursor-pointer group">
+                                <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 group-hover:bg-red-500/20 transition-colors">
+                                    <i class="fa-solid fa-file-pdf text-xl"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-gray-200 font-medium group-hover:text-white transition-colors" dir="ltr">{{ comment.file.name }}</span>
+                                    <span class="text-[11px] text-gray-500 font-sans mt-0.5">{{ comment.file.size }}</span>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 mr-4 group-hover:text-brand-gold transition-colors">
+                                    <i class="fa-solid fa-download text-sm"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex items-center gap-6 text-xs text-gray-400 font-medium">
+                                <!-- Like Button -->
+                                <button @click="toggleLike(comment)" :class="['flex items-center gap-1.5 transition-colors', comment.isLiked ? 'text-brand-gold' : 'hover:text-brand-gold']">
+                                    <i :class="[comment.isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']"></i> 
+                                    <span dir="ltr">{{ comment.likes }}</span>
+                                </button>
+                                <!-- Reply Button -->
+                                <button @click="openReplyBox(comment.id)" class="flex items-center gap-1.5 hover:text-white transition-colors">
+                                    <i class="fa-solid fa-reply"></i> پاسخ <span v-if="comment.replies?.length">({{ comment.replies.length }})</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inline Reply Box (Only visible if replying to this comment) -->
+                    <div v-if="activeReplyId === comment.id" class="mt-5 border-t border-gray-800/60 pt-5">
+                        <div class="flex gap-3">
+                            <img src="https://i.pravatar.cc/150?img=11" alt="شما" class="w-8 h-8 rounded-full object-cover shrink-0 hidden sm:block">
+                            <div class="flex-1 flex flex-col gap-2">
+                                <textarea v-model="replyText" rows="2" placeholder="پاسخ خود را بنویسید..." class="w-full bg-[#09090b] border border-gray-700 rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 focus:border-brand-gold focus:outline-none resize-none transition-colors"></textarea>
+                                <div class="flex justify-end gap-2 mt-1">
+                                    <button @click="closeReplyBox" class="px-4 py-1.5 text-xs text-gray-400 hover:text-white transition-colors">انصراف</button>
+                                    <button @click="submitReply(comment.id)" class="px-4 py-1.5 bg-brand-gold hover:bg-[#ffc504] text-black font-bold text-xs rounded-lg transition-colors">ارسال پاسخ</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nested Replies (Tiered structure) -->
+                    <div v-if="comment.replies && comment.replies.length > 0" class="mt-5 mr-10 md:mr-12 pr-4 border-r-2 border-gray-800/80 space-y-4">
+                        <div v-for="reply in comment.replies" :key="reply.id" class="flex gap-3 relative">
+                            <!-- Connector line -->
+                            <div class="absolute -right-4 top-4 w-4 h-px bg-gray-800/80"></div>
+                            
+                            <img :src="reply.avatar" alt="User" class="w-9 h-9 rounded-full border border-gray-700 shrink-0 object-cover">
+                            <div class="flex-1 bg-[#09090b] border border-gray-800/50 rounded-xl p-4 hover:border-gray-700 transition-colors">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-gray-200 text-sm">{{ reply.author }}</h4>
+                                        <span v-if="reply.role === 'admin'" class="bg-brand-gold/10 text-brand-gold text-[9px] px-1.5 py-0.5 rounded-sm border border-brand-gold/30">مدیر</span>
+                                    </div>
+                                    <span class="text-[10px] text-gray-500 font-sans">{{ reply.time }}</span>
+                                </div>
+                                <p class="text-gray-400 text-sm leading-7 mb-3 font-light">{{ reply.body }}</p>
+                                
+                                <div class="flex items-center gap-4 text-[11px] text-gray-500">
+                                    <button @click="toggleLike(reply)" :class="['flex items-center gap-1.5 transition-colors', reply.isLiked ? 'text-brand-gold' : 'hover:text-brand-gold']">
+                                        <i :class="[reply.isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']"></i> 
+                                        <span dir="ltr">{{ reply.likes }}</span>
+                                    </button>
+                                    <button @click="openReplyBox(reply.id)" class="flex items-center gap-1.5 hover:text-white transition-colors">پاسخ</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div> <!-- End of comment iteration -->
+
+            </div>
+        </section>
+
     </main>
 </div>
 
 <script>
-    const { createApp, ref } = Vue;
+    const { createApp, ref, nextTick } = Vue;
 
     createApp({
         setup() {
-            // State for Tabs
             const activeTab = ref('intro');
 
-            // Data for Leaderboard
+            // --- Stats and Leaderboard Data ---
             const leaderboard = ref([
                 { rank: 1, name: 'علی رضایی', days: 35, score: 4200, avatar: 'https://i.pravatar.cc/150?img=11' },
                 { rank: 2, name: 'محمد حسینی', days: 33, score: 3950, avatar: 'https://i.pravatar.cc/150?img=12' },
@@ -457,7 +617,6 @@
                 { rank: 4, name: 'حسین عباسی', days: 28, score: 3600, avatar: 'https://i.pravatar.cc/150?img=15' },
             ]);
 
-            // Data for Stats Chart
             const chartData = ref([
                 { label: 'هفته اول', value: 1200 },
                 { label: 'هفته دوم', value: 1900 },
@@ -466,10 +625,199 @@
                 { label: 'هفته پنجم', value: 2200 },
             ]);
 
+            // --- Comment System Data ---
+            const newComment = ref({
+                title: '',
+                body: '',
+            });
+
+            const commentsList = ref([
+                {
+                    id: 1,
+                    author: 'استاد راهنما',
+                    role: 'admin',
+                    avatar: 'https://i.pravatar.cc/150?img=8',
+                    time: '۲ ساعت پیش',
+                    title: 'نکته مهم برای شرکت‌کنندگان',
+                    body: 'دوستان عزیز، دقت داشته باشید که فایل پیوست شده شامل جدول زمان‌بندی دقیق چهل روزه است. حتماً آن را دانلود کرده و در دسترس خود قرار دهید. هدف اصلی ما در این چالش، استمرار است.',
+                    file: { name: 'برنامه-جامع-چالش.pdf', size: '2.4 MB' },
+                    likes: 124,
+                    isLiked: false,
+                    replies: [
+                        {
+                            id: 11,
+                            author: 'محمد حسینی',
+                            role: 'user',
+                            avatar: 'https://i.pravatar.cc/150?img=12',
+                            time: '۱ ساعت پیش',
+                            body: 'ممنون از راهنمایی عالی شما استاد. فایل را دانلود کردم، بسیار منظم و دقیق طراحی شده بود.',
+                            likes: 12,
+                            isLiked: true
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    author: 'فاطمه احمدی',
+                    role: 'user',
+                    avatar: 'https://i.pravatar.cc/150?img=5',
+                    time: '۵ ساعت پیش',
+                    title: 'مشکل در ثبت گزارش روزانه',
+                    body: 'سلام، من دیروز گزارش روز نهم رو ثبت کردم اما الان تو پنل کاربریم نشون نمیده. امکانش هست بررسی کنید؟ ممنون میشم.',
+                    likes: 4,
+                    isLiked: false,
+                    replies: []
+                }
+            ]);
+
+            // --- Markdown Text Editor Logic ---
+            const mainTextarea = ref(null);
+
+            const insertMarkdown = (prefix, suffix) => {
+                const el = mainTextarea.value;
+                if (!el) return;
+                
+                const start = el.selectionStart;
+                const end = el.selectionEnd;
+                const text = newComment.value.body;
+                
+                let selectedText = text.substring(start, end);
+                
+                // If link button is clicked and text is selected, or ask for URL
+                if (suffix === '](url)') {
+                    const url = prompt('لطفاً آدرس لینک را وارد کنید (مثلا https://example.com):', 'https://');
+                    if (!url) return;
+                    suffix = `](${url})`;
+                    if (!selectedText) selectedText = 'متن لینک';
+                } else {
+                    if (!selectedText) selectedText = 'متن';
+                }
+
+                const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
+                newComment.value.body = newText;
+
+                // Return focus to textarea
+                nextTick(() => {
+                    el.focus();
+                    // Set cursor position inside the syntax if no text was selected initially
+                    if (selectedText === 'متن' || selectedText === 'متن لینک') {
+                        el.setSelectionRange(start + prefix.length, start + prefix.length + selectedText.length);
+                    } else {
+                        el.setSelectionRange(start + prefix.length + selectedText.length + suffix.length, start + prefix.length + selectedText.length + suffix.length);
+                    }
+                });
+            };
+
+            const insertList = () => {
+                const el = mainTextarea.value;
+                if (!el) return;
+                
+                const start = el.selectionStart;
+                const end = el.selectionEnd;
+                const text = newComment.value.body;
+                const selectedText = text.substring(start, end);
+
+                // Add "- " to the start of each line in the selection
+                const listText = selectedText ? selectedText.split('\n').map(line => `- ${line}`).join('\n') : '- آیتم لیست';
+                
+                // Add a newline before the list if it doesn't start at the beginning and the previous char isn't a newline
+                const prefix = (start > 0 && text[start - 1] !== '\n') ? '\n' : '';
+                
+                const newText = text.substring(0, start) + prefix + listText + '\n' + text.substring(end);
+                newComment.value.body = newText;
+                
+                nextTick(() => el.focus());
+            };
+
+
+            // --- File Upload Logic ---
+            const fileInput = ref(null);
+            const selectedFile = ref(null);
+
+            const triggerFileInput = () => {
+                fileInput.value.click();
+            };
+
+            const handleFileUpload = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    selectedFile.value = file;
+                }
+            };
+
+            const removeSelectedFile = () => {
+                selectedFile.value = null;
+                if (fileInput.value) {
+                    fileInput.value.value = ''; // Reset input
+                }
+            };
+
+            const formatFileSize = (bytes) => {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            };
+
+
+            // --- Like and Reply Logic ---
+            const activeReplyId = ref(null);
+            const replyText = ref('');
+
+            const toggleLike = (item) => {
+                if (item.isLiked) {
+                    item.likes--;
+                    item.isLiked = false;
+                } else {
+                    item.likes++;
+                    item.isLiked = true;
+                }
+            };
+
+            const openReplyBox = (commentId) => {
+                activeReplyId.value = commentId;
+                replyText.value = ''; // Clear previous input
+            };
+
+            const closeReplyBox = () => {
+                activeReplyId.value = null;
+                replyText.value = '';
+            };
+
+            const submitReply = (commentId) => {
+                if (!replyText.value.trim()) return;
+                
+                // In a real app, this goes to backend. Here we just close it.
+                alert(`پاسخ شما ثبت شد: ${replyText.value}`);
+                closeReplyBox();
+            };
+
             return {
                 activeTab,
                 leaderboard,
-                chartData
+                chartData,
+                
+                newComment,
+                commentsList,
+                
+                mainTextarea,
+                insertMarkdown,
+                insertList,
+                
+                fileInput,
+                selectedFile,
+                triggerFileInput,
+                handleFileUpload,
+                removeSelectedFile,
+                formatFileSize,
+                
+                toggleLike,
+                activeReplyId,
+                replyText,
+                openReplyBox,
+                closeReplyBox,
+                submitReply
             }
         }
     }).mount('#app')
