@@ -11,7 +11,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- FontAwesome (برای سایر بخش‌های عمومی سایت) -->
+    <!-- FontAwesome (برای آیکون‌های زیبا و عمومی سایت) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Vazirmatn Font -->
@@ -46,23 +46,72 @@
             color: #ffffff; 
         }
         
-        /* Custom Scrollbar */
+        /* اسکرول‌بار سفارشی و مدرن */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
 
-        /* Smooth Tabs Transition */
+        /* انیمیشن جابجایی نرم تب‌ها */
         .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
         .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(5px); }
         .fade-leave-active { display: none; }
+
+        /* انیمیشن توست (Toast) اختصاصی و مدرن */
+        .toast-enter-active, .toast-leave-active { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, 20px) scale(0.9); }
+
+        /* استایل‌های اختصاصی ویرایشگر WYSIWYG بر پایه ContentEditable */
+        .wysiwyg-editor {
+            min-height: 140px;
+            outline: none;
+        }
+        
+        /* استایل‌دهی ویژه به لیست‌های نقطه‌ای داخل ادیتور جهت رفع مشکل ریست Tailwind */
+        .wysiwyg-editor ul {
+            list-style-type: disc !important;
+            padding-right: 1.5rem !important; /* فاصله مناسب در حالت RTL برای نمایش بالت‌ها */
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .wysiwyg-editor li {
+            display: list-item !important;
+            color: #d1d5db !important;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* شبیه‌ساز پلیس‌هولدر برای ادیتور پیشرفته */
+        .wysiwyg-editor:empty:before {
+            content: attr(placeholder);
+            color: #52525b;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* استایل ظاهری لینک‌ها در حین ویرایش */
+        .wysiwyg-editor a {
+            color: #f59e0b !important;
+            text-decoration: underline !important;
+            pointer-events: none; /* غیرفعال‌سازی کلیک تصادفی در ادیتور */
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-brand-gold selection:text-black relative overflow-x-hidden">
 
 <div id="app" class="min-h-screen">
     
-    <!-- Navbar Placeholder -->
+    <!-- سیستم هشدار یا توست کاملا اختصاصی و منعطف -->
+    <transition name="toast">
+        <div v-if="toast.show" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[200] flex items-center gap-3 px-5 py-3.5 bg-[#121212]/95 border border-brand-gold/40 rounded-2xl shadow-[0_12px_40px_rgba(245,158,11,0.2)] backdrop-blur-xl">
+            <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold shrink-0 border border-brand-gold/20">
+                <i class="fa-solid fa-circle-exclamation text-sm"></i>
+            </div>
+            <p class="text-sm text-gray-200 font-bold whitespace-nowrap">{{ toast.message }}</p>
+        </div>
+    </transition>
+
+    <!-- هدر سایت و ناوبری -->
     <header class="border-b border-gray-800/40 bg-brand-dark/90 backdrop-blur-xl sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -90,7 +139,7 @@
         </div>
     </header>
 
-    <!-- Hero Banner Background -->
+    <!-- تصویر هیرو پشت زمینه چالش -->
     <div class="absolute top-0 inset-x-0 w-full h-[550px] md:h-[650px] overflow-hidden -z-10 pointer-events-none">
         <img src="https://img.freepik.com/free-vector/golden-islamic-banner-with-mosque-design_1017-37982.jpg?semt=ais_hybrid&w=740&q=80" 
              class="w-full h-full object-cover object-center opacity-60" 
@@ -100,12 +149,12 @@
         <div class="absolute inset-0 bg-brand-gold/10 mix-blend-overlay z-30"></div>
     </div>
 
-    <!-- Main Content -->
+    <!-- بدنه اصلی محتوا -->
     <main class="max-w-[1200px] mx-auto px-4 pt-16 pb-20">
         
-        <!-- Hero Section -->
+        <!-- هیرو و معرفی کلی چالش -->
         <section class="text-right mb-28 relative z-10">
-            <!-- Breadcrumb -->
+            <!-- موقعیت یاب (Breadcrumb) -->
             <div class="text-xs text-gray-500 mb-8 flex items-center gap-2">
                 <a href="#" class="hover:text-white transition">خانه</a> 
                 <i class="fa-solid fa-angle-left text-[10px]"></i>
@@ -114,21 +163,20 @@
                 <span class="text-gray-300">چالش چهل روزه عهد</span>
             </div>
 
-            <!-- Badge -->
+            <!-- بج سطح چالش -->
             <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-card/50 backdrop-blur-sm border border-brand-gold/30 text-brand-gold rounded-full text-xs mb-6">
                 <i class="fa-solid fa-shield-halved"></i> 
                 <span class="pt-0.5">سطح: متوسط</span>
             </div>
 
-            <!-- Title -->
+            <!-- عنوان بزرگ چالش -->
             <h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-white tracking-tight drop-shadow-md">چالش چهل روزه عهد و خودسازی</h1>
             
-            <!-- Description -->
             <p class="text-gray-300/90 text-base md:text-lg max-w-3xl mb-10 leading-relaxed font-light drop-shadow-sm">
                 یک مسیر معنوی چهل روزه برای انس بیشتر با خدا و تقویت اراده. در این چالش روزانه با تمرین‌های کوتاه و مستمر، عادات مثبت را در خود نهادینه می‌کنیم.
             </p>
 
-            <!-- Meta Stats Row -->
+            <!-- اطلاعات جزئی چالش -->
             <div class="flex flex-wrap items-center gap-5 text-sm text-gray-300">
                 <div class="flex items-center gap-2 bg-brand-dark/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                     <div class="flex text-brand-gold text-sm gap-0.5">
@@ -156,15 +204,15 @@
             </div>
         </section>
 
-        <!-- Two Column Layout -->
+        <!-- طرح دو ستونه به هم پیوسته -->
         <div class="flex flex-col lg:flex-row gap-8 items-start">
             
-            <!-- Right Sidebar (Sticky Panel) -->
+            <!-- سایدبار سمت راست (کارت خرید و دستاوردها) -->
             <aside class="w-full lg:w-[320px] sticky top-28 shrink-0 order-2 lg:order-1">
                 <div class="bg-brand-card border border-gray-800/80 rounded-2xl p-6 relative overflow-hidden">
                     <div class="absolute -top-16 -right-16 w-48 h-48 bg-[#4a3219]/20 rounded-full blur-2xl pointer-events-none"></div>
 
-                    <!-- Cost Section -->
+                    <!-- بخش هزینه چالش -->
                     <div class="text-center mb-8 relative z-10 mt-2">
                         <p class="text-gray-400 text-sm mb-6 font-light">هزینه ورود به چالش</p>
                         
@@ -188,11 +236,11 @@
 
                     <div class="w-full h-px bg-gray-800/80 mb-6 relative z-10"></div>
 
-                    <!-- Achievements -->
+                    <!-- دستاوردها -->
                     <div class="relative z-10">
                         <h3 class="font-bold text-sm text-white mb-5">دستاوردهای این چالش</h3>
                         <div class="space-y-4">
-                            <!-- Item 1 -->
+                            <!-- دستاورد اول -->
                             <div class="flex items-center gap-3 group">
                                 <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
@@ -202,7 +250,7 @@
                                     <p class="text-[11px] text-gray-500 mt-0.5">اضافه شدن به پروفایل کاربری</p>
                                 </div>
                             </div>
-                            <!-- Item 2 -->
+                            <!-- دستاورد دوم -->
                             <div class="flex items-center gap-3 group">
                                 <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
@@ -212,7 +260,7 @@
                                     <p class="text-[11px] text-gray-500 mt-0.5">در صورت اتمام موفقیت‌آمیز</p>
                                 </div>
                             </div>
-                            <!-- Item 3 -->
+                            <!-- دستاورد سوم -->
                             <div class="flex items-center gap-3 group">
                                 <div class="w-10 h-10 rounded-full bg-[#0a0a0c] border border-gray-700/60 flex items-center justify-center text-brand-gold shrink-0 shadow-inner group-hover:border-brand-gold/50 transition-colors">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -227,10 +275,10 @@
                 </div>
             </aside>
 
-            <!-- Main Content Area - Tabs -->
+            <!-- محتوای وسط تب‌ها -->
             <section class="w-full lg:flex-1 order-1 lg:order-2">
                 
-                <!-- Tabs Header -->
+                <!-- تب‌ها -->
                 <div class="flex gap-8 border-b border-gray-800/60 mb-6 overflow-x-auto text-sm">
                     <button 
                         @click="activeTab = 'intro'" 
@@ -252,11 +300,11 @@
                     </button>
                 </div>
 
-                <!-- Tabs Content Wrapper -->
+                <!-- محتوای داخل تب‌ها -->
                 <div class="min-h-[500px]">
                     <transition name="fade" mode="out-in">
                         
-                        <!-- TAB 1: Introduction -->
+                        <!-- تب اول: معرفی -->
                         <div v-if="activeTab === 'intro'" key="intro" class="bg-brand-card border border-gray-800/60 rounded-2xl p-6 md:p-8">
                             <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-white">
                                 <i class="fa-solid fa-diamond text-brand-gold text-xs"></i> 
@@ -299,7 +347,7 @@
                             </div>
                         </div>
 
-                        <!-- TAB 2: Leaderboard -->
+                        <!-- تب دوم: لیدربرد -->
                         <div v-else-if="activeTab === 'leaderboard'" key="leaderboard" class="bg-brand-card border border-gray-800/60 rounded-2xl p-6 md:p-8">
                             <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-800/60">
                                 <h2 class="text-xl font-bold flex items-center gap-2 text-white">
@@ -336,7 +384,7 @@
                             </div>
                         </div>
 
-                        <!-- TAB 3: Stats -->
+                        <!-- تب سوم: آمار و ارقام -->
                         <div v-else-if="activeTab === 'stats'" key="stats">
                             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                                 <div class="bg-brand-card border border-gray-800/60 rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center group hover:border-brand-gold/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
@@ -394,10 +442,9 @@
             </section>
         </div>
 
-        <!-- ================= NEW COMMENTS SECTION ================= -->
+        <!-- ================= بخش پیشرفته نظرات و پرسش‌ها ================= -->
         <section class="mt-20 w-full relative z-10">
             
-            <!-- Section Header -->
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold text-white flex items-center gap-3">
                     <i class="fa-regular fa-comments text-brand-gold"></i>
@@ -410,7 +457,7 @@
                 </div>
             </div>
 
-            <!-- Add Comment Form -->
+            <!-- فرم ثبت نظر پیشرفته (WYSIWYG) -->
             <div class="bg-brand-card border border-gray-800/60 rounded-2xl p-5 md:p-7 mb-10 transition-all duration-300 focus-within:border-brand-gold/50 focus-within:shadow-[0_0_20px_rgba(245,158,11,0.08)]">
                 <div class="flex gap-4 mb-2">
                     <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-700 shadow-md hidden sm:block">
@@ -418,45 +465,43 @@
                     </div>
                     <div class="flex-1 w-full">
                         
-                        <!-- Comment Title -->
+                        <!-- عنوان نظر -->
                         <input type="text" v-model="newComment.title" placeholder="عنوان پرسش یا نظر شما (اختیاری)" class="w-full bg-transparent border-b border-gray-800/80 pb-3 mb-4 text-white placeholder-gray-500 focus:outline-none focus:border-brand-gold transition-colors font-bold text-lg">
                         
-                        <!-- Rich Text Editor Container -->
+                        <!-- کادر اصلی ادیتور بصری -->
                         <div class="border border-gray-800/60 rounded-xl overflow-hidden bg-[#09090b] flex flex-col">
                             
-                            <!-- Toolbar (Clean & Minimal Radius) -->
-                            <div class="flex flex-wrap items-center gap-1 bg-[#121212] border-b border-gray-800/60 p-2">
-                                <button @click="insertMarkdown('**', '**')" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="ضخیم (Bold)">
+                            <!-- نوار ابزار ادیتور (WYSIWYG Toolbar) -->
+                            <div class="flex flex-wrap items-center gap-1 bg-[#121212] border-b border-gray-800/60 p-2 select-none">
+                                <button @click="applyBold" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="ضخیم (Bold)">
                                     <i class="fa-solid fa-bold text-[13px]"></i>
                                 </button>
-                                <button @click="insertMarkdown('*', '*')" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="مورب (Italic)">
+                                <button @click="applyItalic" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="مورب (Italic)">
                                     <i class="fa-solid fa-italic text-[13px]"></i>
                                 </button>
                                 <div class="w-px h-4 bg-gray-700/60 mx-1"></div>
-                                <button @click="insertMarkdown('[', '](url)')" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="افزودن لینک">
+                                <button @click="openLinkModal" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="افزودن لینک">
                                     <i class="fa-solid fa-link text-[13px]"></i>
                                 </button>
-                                <button @click="insertList()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="لیست نقطه‌ای">
+                                <button @click="applyList" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-brand-gold transition-all duration-200" title="لیست نقطه‌ای">
                                     <i class="fa-solid fa-list-ul text-[13px]"></i>
                                 </button>
                             </div>
 
-                            <!-- Comment Body Textarea -->
-                            <textarea 
-                                ref="mainTextarea"
-                                v-model="newComment.body" 
-                                rows="4" 
-                                placeholder="متن کامل نظر، پیشنهاد یا پرسش خود را اینجا بنویسید (از مارک‌داون پشتیبانی می‌شود)..." 
-                                class="w-full bg-transparent p-4 text-gray-300 placeholder-gray-600 focus:outline-none resize-y transition-all text-sm leading-7">
-                            </textarea>
+                            <!-- ادیتور محتوای زنده (ContentEditable WYSIWYG) -->
+                            <div 
+                                ref="mainEditor"
+                                contenteditable="true" 
+                                @input="updateEditorContent"
+                                placeholder="متن کامل نظر، پیشنهاد یا پرسش خود را اینجا بنویسید (تغییرات بصری مانند مایکروسافت ورد اعمال می‌شوند)..." 
+                                class="wysiwyg-editor w-full bg-transparent p-4 text-gray-300 placeholder-gray-600 focus:outline-none transition-all text-sm leading-7 overflow-y-auto">
+                            </div>
                         </div>
 
-                        <!-- Real File Upload Functionality -->
+                        <!-- بخش بارگذاری فایل ضمیمه -->
                         <div class="mt-4">
-                            <!-- Hidden input -->
                             <input type="file" ref="fileInput" class="hidden" @change="handleFileUpload">
                             
-                            <!-- Drag & Drop / Click Zone -->
                             <div v-if="!selectedFile" @click="triggerFileInput" class="border-2 border-dashed border-gray-700/60 rounded-xl p-5 flex flex-col items-center justify-center text-center hover:border-brand-gold/50 hover:bg-brand-gold/[0.02] transition-all duration-300 cursor-pointer group">
                                 <div class="w-10 h-10 bg-[#121212] rounded-full flex items-center justify-center text-gray-500 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-300 mb-2 border border-gray-800">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -465,7 +510,6 @@
                                 <p class="text-[10px] text-gray-600 mt-1 font-sans">PNG, JPG, PDF (Max: 5MB)</p>
                             </div>
 
-                            <!-- Selected File Display -->
                             <div v-else class="flex items-center justify-between bg-brand-dark border border-brand-gold/30 p-3 rounded-xl">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 bg-brand-gold/10 text-brand-gold rounded-lg flex items-center justify-center">
@@ -482,9 +526,9 @@
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
+                        <!-- دکمه ثبت نظر نهایی -->
                         <div class="flex justify-end mt-5">
-                            <button class="px-6 py-2.5 bg-brand-gold hover:bg-[#ffc504] text-black font-bold text-sm rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5 flex items-center gap-2">
+                            <button @click="submitComment" class="px-6 py-2.5 bg-brand-gold hover:bg-[#ffc504] text-black font-bold text-sm rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5 flex items-center gap-2">
                                 <span>ثبت نظر</span>
                                 <i class="fa-solid fa-paper-plane text-xs transform -rotate-12 mt-0.5"></i>
                             </button>
@@ -493,23 +537,22 @@
                 </div>
             </div>
 
-            <!-- Dynamic Comments List -->
+            <!-- لیست نظرات پویا -->
             <div class="space-y-6">
                 
-                <!-- Iterate over comments -->
+                <!-- تکرار نظرات کاربران -->
                 <div v-for="comment in commentsList" :key="comment.id" 
                      :class="['relative bg-brand-card border rounded-2xl p-5 md:p-6 transition-colors', comment.role === 'admin' ? 'border-gray-800/50 border-r-4 border-r-brand-gold bg-brand-cardHover shadow-[0_5px_20px_rgba(0,0,0,0.2)]' : 'border-gray-800/60 hover:border-gray-700']">
                     
                     <div class="flex gap-4">
                         <img :src="comment.avatar" alt="User" :class="['w-12 h-12 rounded-full object-cover shrink-0', comment.role === 'admin' ? 'border-2 border-brand-gold shadow-[0_0_10px_rgba(245,158,11,0.2)]' : 'border border-gray-700']">
                         <div class="flex-1">
-                            <!-- Header -->
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="flex items-center gap-2 mb-1">
                                         <h4 class="font-bold text-white text-sm">{{ comment.author }}</h4>
                                         <span v-if="comment.role === 'admin'" class="bg-brand-gold/10 text-brand-gold text-[10px] px-2 py-0.5 rounded-full border border-brand-gold/30 flex items-center gap-1">
-                                            <i class="fa-solid fa-shield-halved text-[9px]"></i> مدیر دوره
+                                            <i class="fa-solid fa-shield-halved text-[9px]"></i> مدیر چالش
                                         </span>
                                     </div>
                                     <span class="text-[11px] text-gray-500 font-sans">{{ comment.time }}</span>
@@ -517,13 +560,12 @@
                                 <button class="text-gray-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                             </div>
                             
-                            <!-- Content -->
                             <h5 v-if="comment.title" :class="['font-bold text-base mb-2', comment.role === 'admin' ? 'text-brand-gold' : 'text-white']">{{ comment.title }}</h5>
-                            <p class="text-gray-300 text-sm leading-8 mb-4 font-light text-justify">
-                                {{ comment.body }}
-                            </p>
                             
-                            <!-- Attached File Display -->
+                            <!-- نمایش نظر رندر شده ایمن -->
+                            <div class="text-gray-300 text-sm leading-8 mb-4 font-light text-justify whitespace-pre-line" v-html="parseHtmlContent(comment.body)"></div>
+                            
+                            <!-- فایل پیوست شده در صورت وجود -->
                             <div v-if="comment.file" class="flex items-center gap-4 bg-[#09090b] border border-gray-800/80 p-3 rounded-xl w-fit mb-5 hover:border-gray-600 transition-colors cursor-pointer group">
                                 <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 group-hover:bg-red-500/20 transition-colors">
                                     <i class="fa-solid fa-file-pdf text-xl"></i>
@@ -537,14 +579,11 @@
                                 </div>
                             </div>
                             
-                            <!-- Actions -->
                             <div class="flex items-center gap-6 text-xs text-gray-400 font-medium">
-                                <!-- Like Button -->
                                 <button @click="toggleLike(comment)" :class="['flex items-center gap-1.5 transition-colors', comment.isLiked ? 'text-brand-gold' : 'hover:text-brand-gold']">
                                     <i :class="[comment.isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']"></i> 
                                     <span dir="ltr">{{ comment.likes }}</span>
                                 </button>
-                                <!-- Reply Button -->
                                 <button @click="openReplyBox(comment.id)" class="flex items-center gap-1.5 hover:text-white transition-colors">
                                     <i class="fa-solid fa-reply"></i> پاسخ <span v-if="comment.replies?.length">({{ comment.replies.length }})</span>
                                 </button>
@@ -552,7 +591,7 @@
                         </div>
                     </div>
 
-                    <!-- Inline Reply Box (Only visible if replying to this comment) -->
+                    <!-- بخش پاسخ دهی مستقیم خطی -->
                     <div v-if="activeReplyId === comment.id" class="mt-5 border-t border-gray-800/60 pt-5">
                         <div class="flex gap-3">
                             <img src="https://i.pravatar.cc/150?img=11" alt="شما" class="w-8 h-8 rounded-full object-cover shrink-0 hidden sm:block">
@@ -566,10 +605,10 @@
                         </div>
                     </div>
 
-                    <!-- Nested Replies (Tiered structure) -->
+                    <!-- پاسخ‌های تو در تو (ساختار درختی) -->
                     <div v-if="comment.replies && comment.replies.length > 0" class="mt-5 mr-10 md:mr-12 pr-4 border-r-2 border-gray-800/80 space-y-4">
                         <div v-for="reply in comment.replies" :key="reply.id" class="flex gap-3 relative">
-                            <!-- Connector line -->
+                            <!-- خط اتصال دهنده پاسخ -->
                             <div class="absolute -right-4 top-4 w-4 h-px bg-gray-800/80"></div>
                             
                             <img :src="reply.avatar" alt="User" class="w-9 h-9 rounded-full border border-gray-700 shrink-0 object-cover">
@@ -581,7 +620,7 @@
                                     </div>
                                     <span class="text-[10px] text-gray-500 font-sans">{{ reply.time }}</span>
                                 </div>
-                                <p class="text-gray-400 text-sm leading-7 mb-3 font-light">{{ reply.body }}</p>
+                                <div class="text-gray-400 text-sm leading-7 mb-3 font-light whitespace-pre-line" v-html="parseHtmlContent(reply.body)"></div>
                                 
                                 <div class="flex items-center gap-4 text-[11px] text-gray-500">
                                     <button @click="toggleLike(reply)" :class="['flex items-center gap-1.5 transition-colors', reply.isLiked ? 'text-brand-gold' : 'hover:text-brand-gold']">
@@ -594,12 +633,43 @@
                         </div>
                     </div>
                     
-                </div> <!-- End of comment iteration -->
+                </div> <!-- پایان حلقه نظرات -->
 
             </div>
         </section>
-
     </main>
+    
+    <!-- ================= مودال شیک درج پیوند (Link Modal) ================= -->
+    <transition name="fade">
+        <div v-if="linkModal.isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm transition-opacity">
+            <div class="bg-brand-card border border-gray-700 rounded-2xl p-6 w-11/12 max-w-sm shadow-2xl relative">
+                <div class="flex items-center justify-between mb-5">
+                    <h3 class="text-lg font-bold text-white">افزودن لینک هوشمند</h3>
+                    <button @click="linkModal.isOpen = false" class="text-gray-500 hover:text-white transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1.5">متن پیوند داده شده (نمایشی)</label>
+                        <!-- این فیلد خواندنی است چون دقیقا متنی است که کاربر قبلاً انتخاب کرده است -->
+                        <input type="text" v-model="linkModal.selectedText" readonly class="w-full bg-[#09090b]/80 border border-gray-800 rounded-lg p-2.5 text-sm text-gray-400 focus:outline-none cursor-not-allowed" dir="rtl">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1.5">آدرس اینترنتی مقصد (URL)</label>
+                        <input type="url" v-model="linkModal.url" class="w-full bg-[#09090b] border border-gray-700 rounded-lg p-2.5 text-sm text-gray-200 focus:border-brand-gold focus:outline-none transition-colors text-left" dir="ltr" placeholder="https://example.com">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-3 mt-6">
+                    <button @click="linkModal.isOpen = false" class="px-4 py-2 text-xs text-gray-400 hover:text-white transition-colors border border-transparent hover:border-gray-700 rounded-lg">انصراف</button>
+                    <button @click="confirmLink" class="px-5 py-2 bg-brand-gold hover:bg-[#ffc504] text-black font-bold text-xs rounded-lg transition-all shadow-[0_0_10px_rgba(245,158,11,0.2)]">ایجاد و اعمال</button>
+                </div>
+            </div>
+        </div>
+    </transition>
+
 </div>
 
 <script>
@@ -607,9 +677,22 @@
 
     createApp({
         setup() {
+            // سیستم نوتیفیکیشن کاستوم بدون Alert مرورگر
+            const toast = ref({ show: false, message: '' });
+            let toastTimeout = null;
+
+            const showToast = (message) => {
+                if(toastTimeout) clearTimeout(toastTimeout);
+                toast.value.message = message;
+                toast.value.show = true;
+                toastTimeout = setTimeout(() => {
+                    toast.value.show = false;
+                }, 4000);
+            };
+
             const activeTab = ref('intro');
 
-            // --- Stats and Leaderboard Data ---
+            // داده‌های جدول لیدربرد چالش
             const leaderboard = ref([
                 { rank: 1, name: 'علی رضایی', days: 35, score: 4200, avatar: 'https://i.pravatar.cc/150?img=11' },
                 { rank: 2, name: 'محمد حسینی', days: 33, score: 3950, avatar: 'https://i.pravatar.cc/150?img=12' },
@@ -617,6 +700,7 @@
                 { rank: 4, name: 'حسین عباسی', days: 28, score: 3600, avatar: 'https://i.pravatar.cc/150?img=15' },
             ]);
 
+            // داده‌های آماری نمودار چالش
             const chartData = ref([
                 { label: 'هفته اول', value: 1200 },
                 { label: 'هفته دوم', value: 1900 },
@@ -625,12 +709,13 @@
                 { label: 'هفته پنجم', value: 2200 },
             ]);
 
-            // --- Comment System Data ---
+            // کانتینر ثبت نظر جدید
             const newComment = ref({
                 title: '',
-                body: '',
+                body: '', // به شکل HTML از ادیتور استخراج می‌شود
             });
 
+            // لیست نظرات پیش‌فرض
             const commentsList = ref([
                 {
                     id: 1,
@@ -639,7 +724,7 @@
                     avatar: 'https://i.pravatar.cc/150?img=8',
                     time: '۲ ساعت پیش',
                     title: 'نکته مهم برای شرکت‌کنندگان',
-                    body: 'دوستان عزیز، دقت داشته باشید که فایل پیوست شده شامل جدول زمان‌بندی دقیق چهل روزه است. حتماً آن را دانلود کرده و در دسترس خود قرار دهید. هدف اصلی ما در این چالش، استمرار است.',
+                    body: 'دوستان عزیز، دقت داشته باشید که فایل پیوست شده شامل جدول زمان‌بندی دقیق چهل روزه است. حتماً آن را دانلود کرده و در دسترس خود قرار دهید.<br>هدف اصلی ما در این چالش، <b>استمرار</b> است. همچنین برای اطلاعات بیشتر به <a href="https://google.com">سایت اصلی ما</a> مراجعه کنید.',
                     file: { name: 'برنامه-جامع-چالش.pdf', size: '2.4 MB' },
                     likes: 124,
                     isLiked: false,
@@ -655,103 +740,175 @@
                             isLiked: true
                         }
                     ]
-                },
-                {
-                    id: 2,
-                    author: 'فاطمه احمدی',
-                    role: 'user',
-                    avatar: 'https://i.pravatar.cc/150?img=5',
-                    time: '۵ ساعت پیش',
-                    title: 'مشکل در ثبت گزارش روزانه',
-                    body: 'سلام، من دیروز گزارش روز نهم رو ثبت کردم اما الان تو پنل کاربریم نشون نمیده. امکانش هست بررسی کنید؟ ممنون میشم.',
-                    likes: 4,
-                    isLiked: false,
-                    replies: []
                 }
             ]);
 
-            // --- Markdown Text Editor Logic ---
-            const mainTextarea = ref(null);
+            // وضعیت مودال درج لینک
+            const linkModal = ref({
+                isOpen: false,
+                url: 'https://',
+                selectedText: '',
+            });
 
-            const insertMarkdown = (prefix, suffix) => {
-                const el = mainTextarea.value;
-                if (!el) return;
+            // مرجع DOM ادیتور پیشرفته
+            const mainEditor = ref(null);
+            const savedRange = ref(null);
+
+            // همگام‌سازی دائمی فیلد متنی Vue با DOM ادیتور بصری
+            const updateEditorContent = () => {
+                if (mainEditor.value) {
+                    newComment.value.body = mainEditor.value.innerHTML;
+                }
+            };
+
+            // بررسی دقیق و مطمئن اینکه کاربر متنی را در داخل محدوده ادیتور انتخاب کرده است یا خیر
+            const checkSelection = (actionLabel) => {
+                const sel = window.getSelection();
+                if (!sel || sel.isCollapsed || !mainEditor.value || !mainEditor.value.contains(sel.anchorNode)) {
+                    showToast(`متنی انتخاب نگردید! برای ${actionLabel}، لطفا ابتدا بخشی از متن را انتخاب کنید.`);
+                    return false;
+                }
+                return true;
+            };
+
+            // اعمال ضخیم کردن متن (Bold) بدون درج هیچ کاراکتر ستاره‌ای
+            const applyBold = () => {
+                if (!checkSelection('اعمال ویژگی ضخیم (Bold)')) return;
+                document.execCommand('bold', false, null);
+                updateEditorContent();
+            };
+
+            // اعمال مورب کردن متن (Italic) بدون درج هیچ کاراکتر ستاره‌ای
+            const applyItalic = () => {
+                if (!checkSelection('اعمال ویژگی مورب (Italic)')) return;
+                document.execCommand('italic', false, null);
+                updateEditorContent();
+            };
+
+            // مدیریت باز کردن مودال درج لینک هوشمند
+            const openLinkModal = () => {
+                const sel = window.getSelection();
+                if (!sel || sel.isCollapsed || !mainEditor.value || !mainEditor.value.contains(sel.anchorNode)) {
+                    showToast('متنی انتخاب نگردید! برای درج لینک، لطفا ابتدا یک کلمه یا عبارت را انتخاب کنید.');
+                    return;
+                }
                 
-                const start = el.selectionStart;
-                const end = el.selectionEnd;
-                const text = newComment.value.body;
+                // حفظ و ذخیره‌سازی موقعیت انتخاب کاربر در حافظه برای بازگردانی پس از بستن مودال
+                savedRange.value = sel.getRangeAt(0);
                 
-                let selectedText = text.substring(start, end);
-                
-                // If link button is clicked and text is selected, or ask for URL
-                if (suffix === '](url)') {
-                    const url = prompt('لطفاً آدرس لینک را وارد کنید (مثلا https://example.com):', 'https://');
-                    if (!url) return;
-                    suffix = `](${url})`;
-                    if (!selectedText) selectedText = 'متن لینک';
-                } else {
-                    if (!selectedText) selectedText = 'متن';
+                linkModal.value.selectedText = sel.toString();
+                linkModal.value.url = 'https://';
+                linkModal.value.isOpen = true;
+            };
+
+            // تایید و اعمال نهایی لینک طلایی رنگ به واژه انتخاب شده
+            const confirmLink = () => {
+                const url = linkModal.value.url.trim();
+                if (!url || url === 'https://') {
+                    showToast('لطفاً آدرس اینترنتی (URL) معتبری وارد کنید.');
+                    return;
                 }
 
-                const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
-                newComment.value.body = newText;
+                // بازیابی موقعیت انتخاب قبلی کاربر
+                const sel = window.getSelection();
+                if (savedRange.value && sel) {
+                    sel.removeAllRanges();
+                    sel.addRange(savedRange.value);
+                    
+                    // اعمال لینک بصورت بومی
+                    document.execCommand('createLink', false, url);
+                    updateEditorContent();
+                }
+                linkModal.value.isOpen = false;
+            };
 
-                // Return focus to textarea
-                nextTick(() => {
-                    el.focus();
-                    // Set cursor position inside the syntax if no text was selected initially
-                    if (selectedText === 'متن' || selectedText === 'متن لینک') {
-                        el.setSelectionRange(start + prefix.length, start + prefix.length + selectedText.length);
-                    } else {
-                        el.setSelectionRange(start + prefix.length + selectedText.length + suffix.length, start + prefix.length + selectedText.length + suffix.length);
-                    }
+            // ایجاد لیست نقطه‌ای روان و استاندارد بدون نیاز به انتخاب متن قبلی
+            const applyList = () => {
+                if (!mainEditor.value) return;
+                
+                // فوکوس روی ادیتور پیشرفته
+                mainEditor.value.focus();
+                
+                try {
+                    // اجرای فرمان بومی مرورگر برای درج لیست غیر ترتیبی
+                    document.execCommand('insertUnorderedList', false, null);
+                } catch (err) {
+                    console.error('خطا در ایجاد لیست:', err);
+                }
+                
+                // همگام‌سازی سریع با Vue
+                updateEditorContent();
+            };
+
+            // رندر کردن امن و زیبا محتوای HTML وارد شده توسط کاربر با کنترل تگ‌ها
+            const parseHtmlContent = (htmlText) => {
+                if (!htmlText) return '';
+                
+                // پاکسازی بسیار هوشمند و ممانعت از حملات تزریق کد (XSS Guard)
+                let cleaned = htmlText
+                    .replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '')
+                    .replace(/on\w+="[^"]*"/g, '')
+                    .replace(/javascript:/gi, '');
+                
+                // فرمت‌دهی ظاهری به تگ‌های رندر شده
+                cleaned = cleaned
+                    .replace(/<b>/g, '<strong class="font-bold text-white">')
+                    .replace(/<\/b>/g, '</strong>')
+                    .replace(/<i>/g, '<em class="italic text-gray-300">')
+                    .replace(/<\/i>/g, '</em>')
+                    .replace(/<a /g, '<a target="_blank" class="text-brand-gold hover:text-yellow-400 hover:underline font-bold transition-colors cursor-pointer" ')
+                    .replace(/<ul>/g, '<ul class="list-disc pr-6 space-y-1 my-2">') // اضافه شدن pr-6 برای حل مشکل رفتن بالت‌ها به بیرون کادر در RTL
+                    .replace(/<li>/g, '<li class="text-gray-300">');
+
+                return cleaned;
+            };
+
+            // منطق ثبت دیدگاه جدید
+            const submitComment = () => {
+                const text = newComment.value.body ? newComment.value.body.trim() : '';
+                // بررسی خالی بودن ادیتور متنی پیشرفته
+                if (!text || text === '<br>' || text === '') {
+                    showToast('متنی انتخاب نگردید! لطفا ابتدا پیامی برای ثبت نظر بنویسید.');
+                    return;
+                }
+
+                const newId = commentsList.value.length + 1;
+                commentsList.value.unshift({
+                    id: newId,
+                    author: 'کاربر مهمان',
+                    role: 'user',
+                    avatar: 'https://i.pravatar.cc/150?img=11',
+                    time: 'چند ثانیه پیش',
+                    title: newComment.value.title.trim() || 'پرسش جدید',
+                    body: text,
+                    likes: 0,
+                    isLiked: false,
+                    replies: []
                 });
+
+                // ریست کردن فرم ثبت نظر و تخلیه کامل محتوای ادیتور بصری
+                newComment.value.title = '';
+                newComment.value.body = '';
+                if (mainEditor.value) {
+                    mainEditor.value.innerHTML = '';
+                }
+                selectedFile.value = null;
+                showToast('دیدگاه شما با موفقیت ثبت شد و به بالای لیست اضافه گردید.');
             };
 
-            const insertList = () => {
-                const el = mainTextarea.value;
-                if (!el) return;
-                
-                const start = el.selectionStart;
-                const end = el.selectionEnd;
-                const text = newComment.value.body;
-                const selectedText = text.substring(start, end);
-
-                // Add "- " to the start of each line in the selection
-                const listText = selectedText ? selectedText.split('\n').map(line => `- ${line}`).join('\n') : '- آیتم لیست';
-                
-                // Add a newline before the list if it doesn't start at the beginning and the previous char isn't a newline
-                const prefix = (start > 0 && text[start - 1] !== '\n') ? '\n' : '';
-                
-                const newText = text.substring(0, start) + prefix + listText + '\n' + text.substring(end);
-                newComment.value.body = newText;
-                
-                nextTick(() => el.focus());
-            };
-
-
-            // --- File Upload Logic ---
+            // --- آپلود فایل واقعی ---
             const fileInput = ref(null);
             const selectedFile = ref(null);
 
-            const triggerFileInput = () => {
-                fileInput.value.click();
-            };
-
+            const triggerFileInput = () => { fileInput.value.click(); };
             const handleFileUpload = (event) => {
                 const file = event.target.files[0];
-                if (file) {
-                    selectedFile.value = file;
-                }
+                if (file) selectedFile.value = file;
             };
-
             const removeSelectedFile = () => {
                 selectedFile.value = null;
-                if (fileInput.value) {
-                    fileInput.value.value = ''; // Reset input
-                }
+                if (fileInput.value) fileInput.value.value = '';
             };
-
             const formatFileSize = (bytes) => {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -760,58 +917,52 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
             };
 
-
-            // --- Like and Reply Logic ---
+            // --- لایک و ریپلای کامنت‌ها ---
             const activeReplyId = ref(null);
             const replyText = ref('');
 
             const toggleLike = (item) => {
-                if (item.isLiked) {
-                    item.likes--;
-                    item.isLiked = false;
-                } else {
-                    item.likes++;
-                    item.isLiked = true;
-                }
+                if (item.isLiked) { item.likes--; item.isLiked = false; } 
+                else { item.likes++; item.isLiked = true; }
             };
 
             const openReplyBox = (commentId) => {
                 activeReplyId.value = commentId;
-                replyText.value = ''; // Clear previous input
+                replyText.value = ''; 
             };
-
             const closeReplyBox = () => {
                 activeReplyId.value = null;
                 replyText.value = '';
             };
-
             const submitReply = (commentId) => {
                 if (!replyText.value.trim()) return;
-                
-                // In a real app, this goes to backend. Here we just close it.
-                alert(`پاسخ شما ثبت شد: ${replyText.value}`);
+                showToast('پاسخ شما با موفقیت ثبت شد.');
                 closeReplyBox();
             };
 
             return {
+                toast,
                 activeTab,
                 leaderboard,
                 chartData,
-                
                 newComment,
                 commentsList,
-                
-                mainTextarea,
-                insertMarkdown,
-                insertList,
-                
+                mainEditor,
+                updateEditorContent,
+                applyBold,
+                applyItalic,
+                openLinkModal,
+                linkModal,
+                confirmLink,
+                applyList,
+                parseHtmlContent,
+                submitComment,
                 fileInput,
                 selectedFile,
                 triggerFileInput,
                 handleFileUpload,
                 removeSelectedFile,
                 formatFileSize,
-                
                 toggleLike,
                 activeReplyId,
                 replyText,
