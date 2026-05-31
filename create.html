@@ -14,9 +14,15 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { vazirmatn: ['Vazirmatn', 'sans-serif'] },
+                    fontFamily: { vazirmatn: ["Shabnam", 'Vazirmatn', 'sans-serif'] },
                     colors: {
-                        brand: { dark: '#0f172a', panel: '#1e293b', gold: '#facc15', goldHover: '#fde047' }
+                        brand: {
+                            dark: '#09090b',       
+                            card: '#121212',       
+                            cardHover: '#18181b',  
+                            gold: '#f59e0b',       
+                            goldHover: '#d97706'
+                        }
                     }
                 }
             }
@@ -24,8 +30,8 @@
     </script>
 
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background-color: #0f172a; margin: 0; overflow: hidden; overscroll-behavior: none; }
-        .bg-canvas-dots { background-color: #0f172a; background-image: radial-gradient(#334155 1.5px, transparent 1.5px); background-size: 28px 28px; }
+        body { font-family: "Shabnam", 'Vazirmatn', sans-serif; background-color: #09090b; margin: 0; overflow: hidden; overscroll-behavior: none; }
+        .bg-canvas-dots { background-color: #09090b; background-image: radial-gradient(#27272a 1.5px, transparent 1.5px); background-size: 28px 28px; }
         
         .canvas-container { cursor: grab; user-select: none; touch-action: none; }
         .canvas-container:active { cursor: grabbing; }
@@ -34,16 +40,16 @@
         .node-box { cursor: grab !important; touch-action: none; }
         .node-box:active { cursor: grabbing !important; }
         
-        .path-line { stroke: #64748b; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; animation: dashFlow 30s linear infinite; transition: stroke 0.2s; pointer-events: auto; cursor: pointer; }
+        .path-line { stroke: #52525b; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; animation: dashFlow 30s linear infinite; transition: stroke 0.2s; pointer-events: auto; cursor: pointer; }
         .path-hitbox { stroke: transparent; stroke-width: 15; fill: none; pointer-events: auto; cursor: crosshair; }
-        .path-line:hover, .path-hitbox:hover + .path-line { stroke: #facc15; }
-        .path-temp { stroke: #facc15; stroke-width: 3; fill: none; stroke-dasharray: 6 6; animation: dashFlow 15s linear infinite reverse; }
+        .path-line:hover, .path-hitbox:hover + .path-line { stroke: #f59e0b; }
+        .path-temp { stroke: #f59e0b; stroke-width: 3; fill: none; stroke-dasharray: 6 6; animation: dashFlow 15s linear infinite reverse; }
         @keyframes dashFlow { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
         
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
         
         .mode-select .node-box { cursor: grab; }
         .mode-select .node-box:active { cursor: grabbing; }
@@ -62,39 +68,38 @@
         .fade-slide-enter-from, .fade-slide-leave-to { opacity: 0; transform: translateX(-15px); }
 
         .modal-scale-enter-active, .modal-scale-leave-active { transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .modal-scale-enter-active .bg-slate-900, .modal-scale-leave-active .bg-slate-900 { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-scale-enter-active .bg-brand-card, .modal-scale-leave-active .bg-brand-card { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .modal-scale-enter-from { opacity: 0; }
-        .modal-scale-enter-from .bg-slate-900 { transform: scale(0.92) translateY(15px); opacity: 0; }
+        .modal-scale-enter-from .bg-brand-card { transform: scale(0.92) translateY(15px); opacity: 0; }
         .modal-scale-leave-to { opacity: 0; }
-        .modal-scale-leave-to .bg-slate-900 { transform: scale(0.96) translateY(5px); opacity: 0; }
-    </style>
+        .modal-scale-leave-to .bg-brand-card { transform: scale(0.96) translateY(5px); opacity: 0; }
     </style>
 </head>
-<body class="text-slate-200 h-screen w-full flex flex-col overflow-hidden">
+<body class="text-gray-200 h-screen w-full flex flex-col overflow-hidden selection:bg-brand-gold selection:text-black">
 
     <div id="app" class="h-full w-full flex flex-col" :class="'mode-' + currentMode">
         
-        <header class="h-14 md:h-16 bg-brand-panel border-b border-slate-700 flex items-center justify-between px-4 md:px-6 shrink-0 z-40 shadow-md">
+        <header class="h-14 md:h-16 bg-brand-card border-b border-gray-800/60 flex items-center justify-between px-4 md:px-6 shrink-0 z-40 shadow-md">
             <div class="flex items-center gap-3 md:gap-4">
                 <div class="text-lg md:text-xl font-black text-brand-gold flex items-center gap-1.5 md:gap-2">
                     <i class="ph-fill ph-hexagon text-xl md:text-2xl"></i>
                     <span class="hidden sm:inline">حفظ النور</span>
                 </div>
-                <div class="h-5 md:h-6 w-px bg-slate-600 hidden sm:block"></div>
+                <div class="h-5 md:h-6 w-px bg-gray-800 hidden sm:block"></div>
                 <div class="flex items-center gap-2 text-xs md:text-sm">
-                    <span class="text-slate-400 hidden md:inline">کارگاه سازندگان</span>
-                    <i class="ph ph-caret-left text-slate-500 text-xs hidden md:inline"></i>
-                    <h1 class="font-bold text-slate-100 truncate max-w-[150px] sm:max-w-none">طراحی چالش</h1>
+                    <span class="text-gray-400 hidden md:inline">کارگاه سازندگان</span>
+                    <i class="ph ph-caret-left text-gray-500 text-xs hidden md:inline"></i>
+                    <h1 class="font-bold text-white truncate max-w-[150px] sm:max-w-none">طراحی چالش</h1>
                 </div>
             </div>
             <div class="flex items-center gap-3 md:gap-4">
-                <div class="text-[10px] md:text-xs bg-slate-800 px-3 py-1.5 rounded-lg text-slate-400 border border-slate-700 hidden lg:block">
+                <div class="text-[10px] md:text-xs bg-brand-dark px-3 py-1.5 rounded-lg text-gray-400 border border-gray-800/60 hidden lg:block font-light">
                     <span v-if="currentMode === 'select'">ابزار انتخاب: جابجایی نقشه | تک‌کلیک روی گام برای تنظیمات</span>
                     <span v-if="currentMode === 'connect'" class="text-emerald-400">ابزار اتصال: کشیدن از یک گره به گره دیگر</span>
                     <span v-if="currentMode === 'delete'" class="text-red-400">ابزار حذف: کلیک روی گره یا مسیر جهت پاک کردن</span>
                 </div>
                 
-                <button class="flex items-center justify-center gap-2 px-3 py-2 md:px-5 md:py-2.5 bg-brand-gold hover:bg-brand-goldHover text-brand-dark text-xs md:text-sm font-bold rounded-lg md:rounded-xl shadow-[0_0_15px_rgba(250,204,21,0.25)] transition-all">
+                <button class="flex items-center justify-center gap-2 px-3 py-2 md:px-5 md:py-2.5 bg-brand-gold hover:bg-[#ffc504] text-black text-xs md:text-sm font-bold rounded-lg md:rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all">
                     <i class="ph ph-paper-plane-right text-base md:text-lg"></i>
                     <span class="hidden sm:inline">ذخیره و انتشار</span>
                 </button>
@@ -120,8 +125,8 @@
 
                         <svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
                             <defs>
-                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
-                                <marker id="arrowhead-gold" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#facc15" /></marker>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#52525b" /></marker>
+                                <marker id="arrowhead-gold" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b" /></marker>
                                 <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" /></marker>
                             </defs>
                             
@@ -144,12 +149,12 @@
                              @click.stop="handleNodeClick(node, $event)"
                              @dblclick="startEdit(node)"
                              :style="{ left: node.x + 'px', top: node.y + 'px', width: node.w + 'px' }"
-                             class="absolute z-10 node-box transition-all duration-200"
+                             class="absolute z-10 node-box transition-all duration-200 shadow-xl"
                              :class="[
                                  node.bg, node.border,
-                                 isDragging && dragNode?.id === node.id ? 'shadow-[0_0_20px_rgba(250,204,21,0.4)] scale-105 z-20' : 'shadow-lg',
-                                 currentMode === 'delete' ? 'hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'hover:shadow-xl',
-                                 currentMode === 'connect' && connectingStartNode?.id === node.id ? 'border-brand-gold shadow-[0_0_15px_rgba(250,204,21,0.6)]' : ''
+                                 isDragging && dragNode?.id === node.id ? 'shadow-[0_0_20px_rgba(245,158,11,0.3)] scale-105 z-20' : '',
+                                 currentMode === 'delete' ? 'hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'hover:border-gray-700',
+                                 currentMode === 'connect' && connectingStartNode?.id === node.id ? 'border-brand-gold shadow-[0_0_15px_rgba(245,158,11,0.4)]' : ''
                              ]"
                              style="border-width: 1.5px;">
                             
@@ -157,66 +162,69 @@
                                 <div class="flex items-center justify-center rounded-lg w-7 h-7 md:w-8 md:h-8 shrink-0" :class="node.iconBg">
                                     <i :class="['ph text-lg md:text-xl', node.icon, node.color]"></i>
                                 </div>
-                                <span v-if="editingNodeId !== node.id" class="text-xs md:text-sm font-semibold text-slate-200 truncate select-none flex-1">
+                                <span v-if="editingNodeId !== node.id" class="text-xs md:text-sm font-semibold text-gray-200 truncate select-none flex-1">
                                     {{ node.title }}
                                 </span>
                                 <input v-else type="text" v-model="node.title" @blur="stopEdit" @keyup.enter="stopEdit" v-focus
-                                       class="flex-1 bg-slate-800 text-xs md:text-sm text-white font-semibold border border-brand-gold rounded px-2 py-1 outline-none w-full" />
+                                       class="flex-1 bg-brand-cardHover text-xs md:text-sm text-white font-semibold border border-brand-gold rounded px-2 py-1 outline-none w-full" />
                             </div>
 
-                            <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
-                            <div v-if="node.type !== 'start'" class="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
-                            <div class="absolute top-1/2 -left-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
-                            <div class="absolute top-1/2 -right-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-panel border-2 border-slate-500 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-card border-2 border-gray-600 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div v-if="node.type !== 'start'" class="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-brand-card border-2 border-gray-600 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div class="absolute top-1/2 -left-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-card border-2 border-gray-600 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
+                            <div class="absolute top-1/2 -right-1.5 transform -translate-y-1/2 w-3 h-3 bg-brand-card border-2 border-gray-600 rounded-full" :class="{'border-emerald-400 bg-emerald-400': currentMode === 'connect'}"></div>
                         </div>
 
                     </div>
                 </div>
             </transition>
 
+            <!-- ابزارهای سمت راست -->
             <div class="absolute top-4 right-4 md:top-6 md:right-6 flex gap-4 z-30 pointer-events-none">
-                <div class="w-12 md:w-14 bg-brand-panel border border-slate-700 rounded-xl md:rounded-2xl flex flex-col items-center py-2 md:py-4 gap-1.5 md:gap-2 shadow-2xl pointer-events-auto backdrop-blur-sm bg-opacity-90">
-                    <button @click="setMode('select')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="جابجایی و ویرایش" :class="currentMode === 'select' ? 'bg-brand-gold/10 text-brand-gold shadow-[0_0_10px_rgba(250,204,21,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph-fill ph-cursor text-xl md:text-2xl"></i></button>
-                    <button @click="setMode('connect')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="اتصال مراحل (فلوچارت)" :class="currentMode === 'connect' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-link text-xl md:text-2xl"></i></button>
-                    <button @click="setMode('delete')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="حذف مرحله یا مسیر" :class="currentMode === 'delete' ? 'bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-slate-400 hover:text-red-300 hover:bg-slate-700/50'"><i class="ph ph-trash text-xl md:text-2xl"></i></button>
-                    <div class="w-6 md:w-8 h-px bg-slate-700 my-1 md:my-2"></div>
-                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="افزودن محتوای جدید" :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'"><i class="ph ph-squares-four text-xl md:text-2xl"></i></button>
+                <div class="w-12 md:w-14 bg-brand-card border border-gray-800/60 rounded-xl md:rounded-2xl flex flex-col items-center py-2 md:py-4 gap-1.5 md:gap-2 shadow-2xl pointer-events-auto backdrop-blur-sm bg-opacity-90">
+                    <button @click="setMode('select')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="جابجایی و ویرایش" :class="currentMode === 'select' ? 'bg-brand-gold/10 text-brand-gold shadow-[0_0_10px_rgba(245,158,11,0.2)]' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'"><i class="ph-fill ph-cursor text-xl md:text-2xl"></i></button>
+                    <button @click="setMode('connect')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="اتصال مراحل (فلوچارت)" :class="currentMode === 'connect' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'"><i class="ph ph-link text-xl md:text-2xl"></i></button>
+                    <button @click="setMode('delete')" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="حذف مرحله یا مسیر" :class="currentMode === 'delete' ? 'bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-gray-400 hover:text-red-300 hover:bg-gray-800/50'"><i class="ph ph-trash text-xl md:text-2xl"></i></button>
+                    <div class="w-6 md:w-8 h-px bg-gray-800 my-1 md:my-2"></div>
+                    <button @click="isContentPanelOpen = !isContentPanelOpen" class="p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all tooltip relative group" title="افزودن محتوای جدید" :class="isContentPanelOpen ? 'bg-blue-500/10 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'"><i class="ph ph-squares-four text-xl md:text-2xl"></i></button>
                 </div>
 
                 <transition name="fade-slide">
-                    <div v-if="isContentPanelOpen" class="fixed inset-0 sm:absolute sm:inset-auto sm:top-0 sm:right-[72px] md:right-[80px] w-full h-full sm:w-64 sm:h-auto bg-slate-950/95 sm:bg-brand-panel border-0 sm:border border-slate-700 sm:rounded-2xl z-50 shadow-2xl flex flex-col overflow-hidden pointer-events-auto backdrop-blur-md sm:backdrop-blur-sm bg-opacity-100 sm:bg-opacity-95">
-                        <div class="p-4 border-b border-slate-700/80 bg-slate-800/50 flex justify-between items-center mt-12 sm:mt-0">
-                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="ph ph-squares-four text-blue-400"></i> افزودن محتوای جدید</h2>
-                            <button @click="isContentPanelOpen = false" class="p-2 rounded-lg bg-slate-800 sm:bg-transparent text-slate-300 hover:text-white"><i class="ph ph-x"></i></button>
+                    <div v-if="isContentPanelOpen" class="fixed inset-0 sm:absolute sm:inset-auto sm:top-0 sm:right-[72px] md:right-[80px] w-full h-full sm:w-64 sm:h-auto bg-brand-dark/95 sm:bg-brand-card border-0 sm:border border-gray-800/60 sm:rounded-2xl z-50 shadow-2xl flex flex-col overflow-hidden pointer-events-auto backdrop-blur-md sm:backdrop-blur-sm bg-opacity-100 sm:bg-opacity-95">
+                        <div class="p-4 border-b border-gray-800/60 bg-brand-dark flex justify-between items-center mt-12 sm:mt-0">
+                            <h2 class="text-sm font-bold text-gray-200 flex items-center gap-2"><i class="ph ph-squares-four text-blue-400"></i> افزودن محتوای جدید</h2>
+                            <button @click="isContentPanelOpen = false" class="p-2 rounded-lg bg-brand-card sm:bg-transparent text-gray-400 hover:text-white"><i class="ph ph-x"></i></button>
                         </div>
                         <div class="p-4 grid grid-cols-2 gap-3 overflow-y-auto sm:max-h-[calc(100vh-200px)] custom-scrollbar">
                             <button @click="addNode('chapter')" class="col-span-2 flex flex-col items-center justify-center py-4 border border-dashed border-brand-gold/40 bg-brand-gold/5 rounded-xl hover:bg-brand-gold/10 hover:border-brand-gold/80 transition-all gap-2 group">
                                 <i class="ph ph-plus-circle text-3xl text-brand-gold group-hover:scale-110 transition-transform"></i>
                                 <span class="text-xs font-bold text-brand-gold">ایجاد فصل (اتاق) جدید</span>
                             </button>
-                            <button @click="addNode('quiz')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-exam text-2xl text-blue-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">آزمون</span></button>
-                            <button @click="addNode('video')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-video-camera text-2xl text-purple-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">ویدیو</span></button>
-                            <button @click="addNode('practice')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-pencil-simple text-2xl text-green-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">متن / تمرین</span></button>
-                            <button @click="addNode('stage')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-slate-700 bg-brand-dark rounded-xl hover:border-slate-500 hover:bg-slate-800 transition-colors gap-2 group"><i class="ph ph-flag-checkered text-2xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-slate-300 font-medium">مرحله ترکیبی</span></button>
+                            <button @click="addNode('quiz')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-gray-800/60 bg-brand-dark rounded-xl hover:border-gray-600 hover:bg-brand-cardHover transition-colors gap-2 group"><i class="ph ph-exam text-2xl text-blue-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-gray-300 font-medium">آزمون</span></button>
+                            <button @click="addNode('video')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-gray-800/60 bg-brand-dark rounded-xl hover:border-gray-600 hover:bg-brand-cardHover transition-colors gap-2 group"><i class="ph ph-video-camera text-2xl text-purple-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-gray-300 font-medium">ویدیو</span></button>
+                            <button @click="addNode('practice')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-gray-800/60 bg-brand-dark rounded-xl hover:border-gray-600 hover:bg-brand-cardHover transition-colors gap-2 group"><i class="ph ph-pencil-simple text-2xl text-green-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-gray-300 font-medium">متن / تمرین</span></button>
+                            <button @click="addNode('stage')" class="flex flex-col items-center justify-center p-4 sm:p-3 border border-gray-800/60 bg-brand-dark rounded-xl hover:border-gray-600 hover:bg-brand-cardHover transition-colors gap-2 group"><i class="ph ph-flag-checkered text-2xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i><span class="text-xs text-gray-300 font-medium">مرحله ترکیبی</span></button>
                         </div>
                     </div>
                 </transition>
             </div>
 
-            <div class="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-brand-panel border border-slate-700 rounded-xl md:rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] z-40 p-1.5 md:p-2 gap-2 md:gap-4 pointer-events-auto">
-                <button @click="nextChapter" :disabled="currentChapterIndex === chapters.length - 1" class="flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-[11px] md:text-sm rounded-lg transition-colors" :class="currentChapterIndex === chapters.length - 1 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'"><i class="ph-bold ph-caret-right"></i> <span class="hidden sm:inline">فصل</span> بعد</button>
-                <div class="w-px h-5 md:h-6 bg-slate-700 my-auto"></div>
+            <!-- پنل پیمایش فصل‌ها (پایین صفحه) -->
+            <div class="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-brand-card border border-gray-800/60 rounded-xl md:rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.8)] z-40 p-1.5 md:p-2 gap-2 md:gap-4 pointer-events-auto">
+                <button @click="nextChapter" :disabled="currentChapterIndex === chapters.length - 1" class="flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-[11px] md:text-sm rounded-lg transition-colors" :class="currentChapterIndex === chapters.length - 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 hover:text-brand-gold hover:bg-brand-cardHover'"><i class="ph-bold ph-caret-right"></i> <span class="hidden sm:inline">فصل</span> بعد</button>
+                <div class="w-px h-5 md:h-6 bg-gray-800/80 my-auto"></div>
                 
-                <div v-if="!isEditingChapter" @dblclick="isEditingChapter = true" class="text-brand-gold font-bold text-xs md:text-sm min-w-[80px] md:min-w-[120px] max-w-[120px] md:max-w-none truncate text-center cursor-pointer hover:text-brand-goldHover flex items-center justify-center gap-1 tooltip" title="دابل-کلیک برای تغییر نام">
+                <div v-if="!isEditingChapter" @dblclick="isEditingChapter = true" class="text-brand-gold font-bold text-xs md:text-sm min-w-[80px] md:min-w-[120px] max-w-[120px] md:max-w-none truncate text-center cursor-pointer hover:text-[#ffc504] flex items-center justify-center gap-1 tooltip" title="دابل-کلیک برای تغییر نام">
                     <span class="truncate">{{ activeChapter.title }}</span>
                     <i class="ph ph-pencil-simple text-[10px] opacity-60 shrink-0 hidden sm:inline"></i>
                 </div>
-                <input v-else type="text" v-model="activeChapter.title" @blur="isEditingChapter = false" @keyup.enter="isEditingChapter = false" v-focus class="bg-slate-800 text-xs md:text-sm text-brand-gold font-bold border border-brand-gold rounded px-2 py-1 outline-none text-center min-w-[80px] md:min-w-[120px]" />
+                <input v-else type="text" v-model="activeChapter.title" @blur="isEditingChapter = false" @keyup.enter="isEditingChapter = false" v-focus class="bg-brand-cardHover text-xs md:text-sm text-brand-gold font-bold border border-brand-gold rounded px-2 py-1 outline-none text-center min-w-[80px] md:min-w-[120px]" />
                 
-                <div class="w-px h-5 md:h-6 bg-slate-700 my-auto"></div>
-                <button @click="prevChapter" :disabled="currentChapterIndex === 0" class="flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-[11px] md:text-sm rounded-lg transition-colors" :class="currentChapterIndex === 0 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-brand-gold hover:bg-slate-800'"><span class="hidden sm:inline">فصل</span> قبل <i class="ph-bold ph-caret-left"></i></button>
+                <div class="w-px h-5 md:h-6 bg-gray-800/80 my-auto"></div>
+                <button @click="prevChapter" :disabled="currentChapterIndex === 0" class="flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-[11px] md:text-sm rounded-lg transition-colors" :class="currentChapterIndex === 0 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 hover:text-brand-gold hover:bg-brand-cardHover'"><span class="hidden sm:inline">فصل</span> قبل <i class="ph-bold ph-caret-left"></i></button>
             </div>
 
+            <!-- فراخوانی کامپوننت زوم به درستی -->
             <zoom-controls :zoom-level="zoomLevel" @zoom-in="zoomIn" @zoom-out="zoomOut" @reset-zoom="resetZoom"></zoom-controls>
 
         </main>
@@ -225,6 +233,7 @@
 
     </div>
 
+    <!-- اسکریپت اصلی -->
     <script type="module">
         import { NodeModal } from './components/NodeModal.js';
         import { ZoomControls } from './components/ZoomControls.js';
@@ -262,17 +271,16 @@
                 const mousePos = ref({ x: 0, y: 0 });
                 const editingNodeId = ref(null);
 
-                // محاسبه خودکار و داینامیک مرکز صفحه کاربر برای جاگذاری آیتم‌های پیش‌فرض
                 const initialX = typeof window !== 'undefined' ? Math.max(50, (window.innerWidth / 2) - 80) : 450;
 
+                // دقت کنید رنگ‌های پیش‌فرض گره‌ها هم بر اساس قالب جدید کارتی آپدیت شدند
                 const chapters = ref([
                     {
                         id: 1,
                         title: 'فصل ۱: مبانی اولیه',
                         nodes: [
-                            // استفاده از initialX برای مرکزچین شدن اتوماتیک
-                            { id: 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: initialX, y: 80, w: 160 },
-                            { id: 2, type: 'stage', title: 'مرحله اول', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark', x: initialX, y: 220, w: 160, stageMission: '', rewardXp: 50, rewardCoins: 10, requireApproval: false, quizQuestions: [] }
+                            { id: 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-black', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-cardHover', x: initialX, y: 80, w: 160 },
+                            { id: 2, type: 'stage', title: 'مرحله اول', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-gray-800/60 rounded-xl', bg: 'bg-brand-dark', x: initialX, y: 220, w: 160, stageMission: '', rewardXp: 50, rewardCoins: 10, requireApproval: false, quizQuestions: [] }
                         ],
                         connections: [{ from: 1, to: 2 }]
                     }
@@ -477,8 +485,7 @@
                         chapters.value.push({
                             id: Date.now(),
                             title: `فصل ${chapters.value.length + 1}: عنوان جدید`,
-                            // جاگذاری مرکزچین برای فصل جدید
-                            nodes: [{ id: Date.now() + 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-brand-dark', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-panel', x: targetX, y: 80, w: 160 }],
+                            nodes: [{ id: Date.now() + 1, type: 'start', title: 'شروع فصل', icon: 'ph-play', color: 'text-black', iconBg: 'bg-brand-gold', border: 'border-brand-gold rounded-full', bg: 'bg-brand-cardHover', x: targetX, y: 80, w: 160 }],
                             connections: []
                         });
                         transitionName.value = 'slide-next';
@@ -488,13 +495,12 @@
                     }
 
                     const id = Date.now();
-                    // جاگذاری مرکزچین برای آیتم‌های جدید در مرکز دید فعلی کاربر
                     let newNode = { id, type, x: targetX > 0 ? targetX : 50, y: targetY > 0 ? targetY : 80, w: 160, rewardXp: 50, rewardCoins: 10, quizQuestions: [] };
 
                     if (type === 'quiz') newNode = { ...newNode, title: 'آزمون جدید', icon: 'ph-exam', color: 'text-blue-400', iconBg: 'bg-blue-400/10', border: 'border-blue-500/30 rounded-xl', bg: 'bg-brand-dark', quizType: 'multiple' };
                     if (type === 'video') newNode = { ...newNode, title: 'ویدیو آموزشی', icon: 'ph-video-camera', color: 'text-purple-400', iconBg: 'bg-purple-400/10', border: 'border-purple-500/30 rounded-xl', bg: 'bg-brand-dark' };
                     if (type === 'practice') newNode = { ...newNode, title: 'توضیح / تمرین', icon: 'ph-pencil-simple', color: 'text-green-400', iconBg: 'bg-green-400/10', border: 'border-green-500/30 rounded-xl', bg: 'bg-brand-dark' };
-                    if (type === 'stage') newNode = { ...newNode, title: 'مرحله جدید', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-slate-700 rounded-xl', bg: 'bg-brand-dark' };
+                    if (type === 'stage') newNode = { ...newNode, title: 'مرحله جدید', icon: 'ph-flag-checkered', color: 'text-emerald-400', iconBg: 'bg-emerald-400/10', border: 'border-gray-800/60 rounded-xl', bg: 'bg-brand-dark' };
                     
                     activeChapter.value.nodes.push(newNode);
                     isContentPanelOpen.value = false;

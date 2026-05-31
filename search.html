@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پلتفرم چالش‌های نور - جستجوی دوره‌ها</title>
 
-
     <!-- FontAwesome برای آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -16,23 +15,23 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- پیکربندی طلایی لوکس و جدید Tailwind -->
+    <!-- پیکربندی Tailwind با پالت رنگی هماهنگ شده با صفحه Course -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ["Shabnam"],
+                        sans: ["Shabnam", "Vazirmatn", "sans-serif"],
                     },
                     colors: {
-                        darkBase: '#080C16',
-                        darkPanel: '#111726',
-                        darkPanelHover: '#182135',
-                        darkBorder: '#1F293D',
-                        goldPrimary: '#E5B865',
-                        goldHover: '#F3D090',
-                        textMain: '#E2E8F0',
-                        textMuted: '#94A3B8',
+                        darkBase: '#09090b',       
+                        darkPanel: '#121212',      
+                        darkPanelHover: '#18181b', 
+                        darkBorder: '#27272a',     
+                        goldPrimary: '#f59e0b',    
+                        goldHover: '#d97706',      
+                        textMain: '#ffffff',       
+                        textMuted: '#a1a1aa',      
                     }
                 }
             }
@@ -41,38 +40,32 @@
 
     <style>
         body {
-            background-color: #080C16;
-            color: #E2E8F0;
+            background-color: #09090b; 
+            color: #ffffff;
         }
 
         /* اسکرول بار اختصاصی لوکس */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #080C16;
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #1F293D;
-            border-radius: 4px;
+            background: #3f3f46;
+            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #E5B865;
+            background: #f59e0b;
         }
 
         /* افکت شیشه‌ای محو برای بنر هیرو */
         .glass-banner {
-            background: linear-gradient(135deg, rgba(229, 184, 101, 0.15) 0%, rgba(17, 23, 38, 0.85) 100%);
-            border: 1px solid rgba(229, 184, 101, 0.2);
-        }
-
-        /* افکت نئونی ملایم کارت‌ها */
-        .neon-hover:hover {
-            box-shadow: 0 0 15px rgba(229, 184, 101, 0.1);
-            border-color: rgba(229, 184, 101, 0.3);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(18, 18, 18, 0.85) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
         /* کلاس‌های ترنزیشن برای انیمیشن صفحه‌بندی و لودینگ چالش‌ها */
@@ -105,7 +98,7 @@
     </style>
 </head>
 
-<body class="antialiased min-h-screen">
+<body class="antialiased min-h-screen selection:bg-goldPrimary selection:text-black">
     <div id="app" class="max-w-7xl mx-auto sm:px-20 md:px-20 py-8 space-y-8">
 
         <!-- هدر لوکس -->
@@ -113,7 +106,7 @@
             class="flex justify-between items-center bg-darkPanel p-4 rounded-2xl border border-darkBorder shadow-lg">
             <div class="flex items-center gap-3">
                 <div
-                    class="w-10 h-10 bg-goldPrimary rounded-xl flex items-center justify-center text-darkBase text-xl shadow-[0_0_15px_rgba(229,184,101,0.3)]">
+                    class="w-10 h-10 bg-goldPrimary rounded-xl flex items-center justify-center text-darkBase text-xl shadow-[0_0_15px_rgba(245,158,11,0.3)]">
                     <i class="fa-solid fa-book-open-reader"></i>
                 </div>
                 <div>
@@ -149,27 +142,21 @@
                         <div>
                             <label class="block text-xs text-textMuted mb-2 font-bold">دسته‌بندی چالش</label>
                             
-                            <!-- نگهدارنده اصلی با z-index بالا برای منوی کشویی -->
                             <div class="relative z-50">
-                                
-                                <!-- لایه نامرئی برای بستن منو در صورت کلیک در بیرون -->
                                 <div v-if="isCategoryOpen" @click="isCategoryOpen = false" class="fixed inset-0 z-40"></div>
                                 
-                                <!-- باکس اصلی سلکت -->
                                 <div @click="isCategoryOpen = !isCategoryOpen"
                                      class="relative z-50 w-full bg-darkBase border rounded-xl py-3 pr-3 pl-8 text-xs focus:outline-none transition-all duration-300 cursor-pointer flex justify-between items-center group shadow-sm"
-                                     :class="isCategoryOpen ? 'border-goldPrimary shadow-[0_0_12px_rgba(229,184,101,0.15)] text-white' : 'border-darkBorder text-textMain hover:border-goldPrimary/50'">
+                                     :class="isCategoryOpen ? 'border-goldPrimary shadow-[0_0_12px_rgba(245,158,11,0.15)] text-white' : 'border-darkBorder text-textMain hover:border-goldPrimary/50'">
                                     
                                     <span class="font-bold">{{ currentCategoryLabel }}</span>
                                     
-                                    <!-- آیکون فلش اختصاصی با انیمیشن چرخش -->
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fa-solid fa-chevron-down transition-transform duration-300 text-[10px]"
                                            :class="isCategoryOpen ? 'text-goldPrimary -rotate-180' : 'text-textMuted group-hover:text-goldPrimary/70'"></i>
                                     </div>
                                 </div>
 
-                                <!-- منوی کشویی سفارشی -->
                                 <transition name="dropdown-fade">
                                     <div v-if="isCategoryOpen" class="absolute z-50 w-full mt-2 bg-darkPanel border border-darkBorder rounded-xl shadow-2xl overflow-hidden py-1.5 top-full left-0">
                                         <div v-for="cat in categories" :key="cat.value" @click="selectCategory(cat.value)"
@@ -184,35 +171,30 @@
                             </div>
                         </div>
 
-                        <!-- مرتب سازی (تغییر به تم جذاب طلایی) -->
+                        <!-- مرتب سازی -->
                         <div class="relative z-30">
                             <label class="block text-xs text-textMuted mb-3 font-bold">مرتب‌سازی بر اساس</label>
                             <div class="space-y-3">
-                                <!-- گزینه ۱ -->
                                 <label class="flex items-center gap-2.5 cursor-pointer group">
                                     <div class="relative flex items-center justify-center">
                                         <input type="radio" v-model="filters.sort" value="newest" class="peer sr-only">
-                                        <!-- دایره بیرونی با استایل طلایی -->
-                                        <div class="w-4 h-4 rounded-full border-2 border-darkBorder group-hover:border-goldPrimary/50 peer-checked:border-goldPrimary transition-all duration-300 peer-checked:shadow-[0_0_8px_rgba(229,184,101,0.3)]"></div>
-                                        <!-- نقطه داخلی طلایی -->
+                                        <div class="w-4 h-4 rounded-full border-2 border-darkBorder group-hover:border-goldPrimary/50 peer-checked:border-goldPrimary transition-all duration-300 peer-checked:shadow-[0_0_8px_rgba(245,158,11,0.3)]"></div>
                                         <div class="absolute w-1.5 h-1.5 rounded-full bg-goldPrimary opacity-0 peer-checked:opacity-100 transition-all duration-300 scale-0 peer-checked:scale-100"></div>
                                     </div>
                                     <span class="text-xs text-textMuted group-hover:text-gray-300 peer-checked:text-goldPrimary transition-colors font-medium">جدیدترین‌ها</span>
                                 </label>
-                                <!-- گزینه ۲ -->
                                 <label class="flex items-center gap-2.5 cursor-pointer group">
                                     <div class="relative flex items-center justify-center">
                                         <input type="radio" v-model="filters.sort" value="popular" class="peer sr-only">
-                                        <div class="w-4 h-4 rounded-full border-2 border-darkBorder group-hover:border-goldPrimary/50 peer-checked:border-goldPrimary transition-all duration-300 peer-checked:shadow-[0_0_8px_rgba(229,184,101,0.3)]"></div>
+                                        <div class="w-4 h-4 rounded-full border-2 border-darkBorder group-hover:border-goldPrimary/50 peer-checked:border-goldPrimary transition-all duration-300 peer-checked:shadow-[0_0_8px_rgba(245,158,11,0.3)]"></div>
                                         <div class="absolute w-1.5 h-1.5 rounded-full bg-goldPrimary opacity-0 peer-checked:opacity-100 transition-all duration-300 scale-0 peer-checked:scale-100"></div>
                                     </div>
                                     <span class="text-xs text-textMuted group-hover:text-gray-300 peer-checked:text-goldPrimary transition-colors font-medium">پرطرفدارترین</span>
                                 </label>
-                                <!-- گزینه ۳ -->
                                 <label class="flex items-center gap-2.5 cursor-pointer group">
                                     <div class="relative flex items-center justify-center">
                                         <input type="radio" v-model="filters.sort" value="rating" class="peer sr-only">
-                                        <div class="w-4 h-4 rounded-full border-2 border-darkBorder group-hover:border-goldPrimary/50 peer-checked:border-goldPrimary transition-all duration-300 peer-checked:shadow-[0_0_8px_rgba(229,184,101,0.3)]"></div>
+                                        <div class="w-4 h-4 rounded-full border-2 border-darkBorder group-hover:border-goldPrimary/50 peer-checked:border-goldPrimary transition-all duration-300 peer-checked:shadow-[0_0_8px_rgba(245,158,11,0.3)]"></div>
                                         <div class="absolute w-1.5 h-1.5 rounded-full bg-goldPrimary opacity-0 peer-checked:opacity-100 transition-all duration-300 scale-0 peer-checked:scale-100"></div>
                                     </div>
                                     <span class="text-xs text-textMuted group-hover:text-gray-300 peer-checked:text-goldPrimary transition-colors font-medium">بالاترین امتیاز</span>
@@ -236,37 +218,33 @@
                     </div>
                 </div>
 
-                <!-- پنل چالش‌های داغ (بازطراحی مینیمال و مدرن) -->
+                <!-- پنل چالش‌های داغ -->
                 <div class="bg-darkPanel rounded-2xl p-5 border border-darkBorder shadow-lg relative z-20 overflow-hidden">
                     <h3 class="text-white font-bold text-sm mb-4 flex items-center gap-2 border-b border-darkBorder pb-3">
-                        <i class="fa-solid fa-fire text-orange-500 animate-pulse"></i> چالش‌های داغ
+                        <i class="fa-solid fa-fire text-goldPrimary animate-pulse"></i> چالش‌های داغ
                     </h3>
                     <div class="space-y-3 relative">
                         <div v-for="(course, index) in popularCourses" :key="course.id" @click="startChallenge(course)"
                             class="group relative flex items-center gap-3 p-2.5 rounded-2xl bg-darkBase/40 border border-transparent hover:bg-darkBase hover:border-darkBorder/60 transition-all duration-300 cursor-pointer overflow-hidden">
                             
-                            <!-- رتبه (واترمارک پس‌زمینه) -->
                             <div class="absolute -left-2 -bottom-2 text-darkBorder/40 text-5xl font-black italic pointer-events-none group-hover:text-goldPrimary/10 transition-colors duration-300 z-0">
                                 #{{ index + 1 }}
                             </div>
 
-                            <!-- تصویر -->
                             <div class="relative shrink-0 z-10">
                                 <img :src="course.image"
                                     class="w-14 h-14 rounded-xl object-cover border border-darkBorder group-hover:border-goldPrimary/50 transition-all duration-300">
-                                <!-- نشان داغ فقط برای اولین آیتم -->
-                                <div v-if="index === 0" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-[8px] text-white shadow-[0_0_10px_rgba(249,115,22,0.6)] animate-pulse">
+                                <div v-if="index === 0" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-goldPrimary rounded-full flex items-center justify-center text-[8px] text-black font-bold shadow-[0_0_10px_rgba(245,158,11,0.6)] animate-pulse">
                                     <i class="fa-solid fa-fire"></i>
                                 </div>
                             </div>
 
-                            <!-- محتوا -->
                             <div class="flex-1 min-w-0 z-10">
                                 <h4 class="text-xs font-bold text-gray-200 line-clamp-2 leading-relaxed group-hover:text-goldPrimary transition-colors duration-300">
                                     {{ course.title }}
                                 </h4>
                                 <div class="flex items-center gap-3 mt-1.5 text-[9px] font-medium text-textMuted">
-                                    <span class="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded-md">
+                                    <span class="flex items-center gap-1 bg-goldPrimary/10 text-goldPrimary px-1.5 py-0.5 rounded-md">
                                         <i class="fa-solid fa-star text-[8px]"></i> {{ course.rating }}
                                     </span>
                                     <span class="flex items-center gap-1 opacity-80">
@@ -310,46 +288,46 @@
                     </div>
                 </div>
 
-                <!-- کارت‌های آماری (با آیکون‌های واترمارک) -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- کارت‌های آماری (با ترنزیشن‌های پیشرفته و مشابه صفحه اول) -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- کارت ۱ -->
-                    <div class="bg-darkPanel border border-darkBorder hover:border-blue-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
-                        <div class="absolute -right-4 -bottom-4 text-blue-500/5 text-6xl pointer-events-none group-hover:text-blue-500/10 transition-colors duration-300"><i class="fa-solid fa-users"></i></div>
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-2.5 text-lg z-10">
-                            <i class="fa-solid fa-users"></i>
+                    <div class="bg-darkPanel border border-darkBorder rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center text-center group hover:border-goldPrimary/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                        <div class="absolute -bottom-4 -right-2 text-white/[0.02] text-[80px] pointer-events-none group-hover:text-goldPrimary/[0.05] group-hover:-rotate-12 transition-all duration-500"><i class="fa-solid fa-users"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 text-goldPrimary flex items-center justify-center mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                            <i class="fa-solid fa-users text-lg"></i>
                         </div>
-                        <span class="text-xl font-black text-white z-10">{{ stats.totalStudents }}</span>
-                        <span class="text-[10px] text-textMuted mt-0.5 z-10">دانشجوی فعال</span>
+                        <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105 inline-block">{{ stats.totalStudents }}</span>
+                        <span class="text-[11px] text-textMuted font-light relative z-10 group-hover:text-gray-300 transition-colors">دانشجوی فعال</span>
                     </div>
                     
                     <!-- کارت ۲ -->
-                    <div class="bg-darkPanel border border-darkBorder hover:border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
-                        <div class="absolute -right-4 -bottom-4 text-green-500/5 text-6xl pointer-events-none group-hover:text-green-500/10 transition-colors duration-300"><i class="fa-solid fa-layer-group"></i></div>
-                        <div class="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center mb-2.5 text-lg z-10">
-                            <i class="fa-solid fa-book-open"></i>
+                    <div class="bg-darkPanel border border-darkBorder rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center text-center group hover:border-goldPrimary/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                        <div class="absolute -bottom-4 -right-2 text-white/[0.02] text-[80px] pointer-events-none group-hover:text-goldPrimary/[0.05] group-hover:-rotate-12 transition-all duration-500"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 text-goldPrimary flex items-center justify-center mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                            <i class="fa-solid fa-book-open text-lg"></i>
                         </div>
-                        <span class="text-xl font-black text-white z-10">{{ stats.totalCourses }}</span>
-                        <span class="text-[10px] text-textMuted mt-0.5 z-10">چالش و دوره</span>
+                        <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105 inline-block">{{ stats.totalCourses }}</span>
+                        <span class="text-[11px] text-textMuted font-light relative z-10 group-hover:text-gray-300 transition-colors">چالش و دوره</span>
                     </div>
 
                     <!-- کارت ۳ -->
-                    <div class="bg-darkPanel border border-darkBorder hover:border-purple-500/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
-                        <div class="absolute -right-4 -bottom-4 text-purple-500/5 text-6xl pointer-events-none group-hover:text-purple-500/10 transition-colors duration-300"><i class="fa-solid fa-clock"></i></div>
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mb-2.5 text-lg z-10">
-                            <i class="fa-solid fa-clock"></i>
+                    <div class="bg-darkPanel border border-darkBorder rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center text-center group hover:border-goldPrimary/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                        <div class="absolute -bottom-4 -right-2 text-white/[0.02] text-[80px] pointer-events-none group-hover:text-goldPrimary/[0.05] group-hover:-rotate-12 transition-all duration-500"><i class="fa-solid fa-clock"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 text-goldPrimary flex items-center justify-center mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                            <i class="fa-solid fa-clock text-lg"></i>
                         </div>
-                        <span class="text-xl font-black text-white z-10">{{ stats.totalHours }}</span>
-                        <span class="text-[10px] text-textMuted mt-0.5 z-10">ساعت آموزش</span>
+                        <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105 inline-block">{{ stats.totalHours }}</span>
+                        <span class="text-[11px] text-textMuted font-light relative z-10 group-hover:text-gray-300 transition-colors">ساعت آموزش</span>
                     </div>
 
                     <!-- کارت ۴ -->
-                    <div class="bg-darkPanel border border-darkBorder hover:border-goldPrimary/30 rounded-2xl p-4 flex flex-col items-center justify-center text-center neon-hover transition-all duration-300 hover:-translate-y-2 cursor-default relative overflow-hidden group">
-                        <div class="absolute -right-4 -bottom-4 text-goldPrimary/5 text-6xl pointer-events-none group-hover:text-goldPrimary/10 transition-colors duration-300"><i class="fa-solid fa-medal"></i></div>
-                        <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 text-goldPrimary flex items-center justify-center mb-2.5 text-lg z-10">
-                            <i class="fa-solid fa-star"></i>
+                    <div class="bg-darkPanel border border-darkBorder rounded-xl py-5 relative overflow-hidden flex flex-col items-center justify-center text-center group hover:border-goldPrimary/30 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_-10px_rgba(245,158,11,0.25)] transition-all duration-300 cursor-default">
+                        <div class="absolute -bottom-4 -right-2 text-white/[0.02] text-[80px] pointer-events-none group-hover:text-goldPrimary/[0.05] group-hover:-rotate-12 transition-all duration-500"><i class="fa-solid fa-medal"></i></div>
+                        <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 text-goldPrimary flex items-center justify-center mb-2 relative z-10 group-hover:text-yellow-400 group-hover:scale-110 transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                            <i class="fa-solid fa-star text-lg"></i>
                         </div>
-                        <span class="text-xl font-black text-white z-10">{{ stats.totalXP }} <span class="text-xs font-normal text-goldPrimary">XP</span></span>
-                        <span class="text-[10px] text-textMuted mt-0.5 z-10">کل امتیازات</span>
+                        <span class="text-2xl font-bold text-white mb-1 relative z-10 transition-transform duration-300 group-hover:scale-105 inline-block">{{ stats.totalXP }} <span class="text-xs font-normal text-goldPrimary group-hover:text-yellow-400 transition-colors">XP</span></span>
+                        <span class="text-[11px] text-textMuted font-light relative z-10 group-hover:text-gray-300 transition-colors">کل امتیازات</span>
                     </div>
                 </div>
 
@@ -363,17 +341,13 @@
                         class="w-full bg-darkPanel border border-darkBorder rounded-2xl py-3.5 pr-11 pl-4 text-xs text-white placeholder-textMuted focus:outline-none focus:border-goldPrimary focus:ring-1 focus:ring-goldPrimary transition-all shadow-lg">
                 </div>
 
-                <!-- استفاده از تگ transition برای اعمال انیمیشن نرم بین وضعیت‌های لودینگ، نمایش لیست و وضعیت خالی -->
                 <transition name="page-slide" mode="out-in">
                     
-                    <!-- 1. وضعیت انیمیشن لودینگ خفن و لوکس (وقتی کاربر فیلتر/مرتب‌سازی میکنه) -->
+                    <!-- وضعیت انیمیشن لودینگ -->
                     <div v-if="isLoading" key="loader" class="flex flex-col items-center justify-center py-24 w-full bg-darkBase/20 rounded-2xl border border-darkBorder/30 min-h-[450px]">
                         <div class="relative w-16 h-16 mb-6">
-                            <!-- حلقه بیرونی -->
                             <div class="absolute inset-0 rounded-full border-t-2 border-r-2 border-goldPrimary/80 animate-[spin_1.5s_linear_infinite]"></div>
-                            <!-- حلقه داخلی -->
                             <div class="absolute inset-2 rounded-full border-b-2 border-l-2 border-goldPrimary/40 animate-[spin_1s_linear_infinite_reverse]"></div>
-                            <!-- آیکون پالس‌زن مرکز -->
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <i class="fa-solid fa-layer-group text-goldPrimary/60 text-lg animate-pulse"></i>
                             </div>
@@ -386,14 +360,13 @@
                         </div>
                     </div>
 
-                    <!-- 2. نمایش لیست چالش‌ها (اگر دیتایی وجود داشت) -->
+                    <!-- نمایش لیست چالش‌ها -->
                     <div v-else-if="paginatedCourses.length > 0" :key="'grid-' + currentPage" class="grid gap-6 pt-2 grid-cols-1 min-[760px]:grid-cols-2 min-[1280px]:grid-cols-3 justify-items-center w-full min-h-[450px]">
 
                         <!-- کارت چالش -->
                         <div v-for="course in paginatedCourses" :key="course.id"
                             class="w-full max-w-[340px] min-[760px]:max-w-none bg-darkPanel rounded-2xl border border-darkBorder overflow-hidden hover:border-goldPrimary/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col group shadow-lg">
                             
-                            <!-- تصویر کارت -->
                             <div class="h-36 bg-darkBase relative overflow-hidden flex items-center justify-center">
                                 <img :src="course.image"
                                     class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-75 group-hover:scale-105 transition-all duration-500">
@@ -402,27 +375,23 @@
                                 <i
                                     class="fa-solid fa-book-quran text-5xl text-goldPrimary/10 absolute z-0 group-hover:scale-110 transition-all duration-500"></i>
 
-                                <!-- نشان معتبر بودن -->
                                 <div v-if="course.isVerified"
                                     class="absolute top-2.5 right-2.5 bg-darkBase/85 backdrop-blur-sm text-goldPrimary text-[9px] font-bold px-2 py-1 rounded-md flex items-center gap-1 border border-goldPrimary/20 z-10 shadow-sm">
                                     <i class="fa-solid fa-circle-check text-emerald-400"></i><span>معتبر</span>
                                 </div>
 
-                                <!-- تعداد شرکت کنندگان -->
                                 <div
                                     class="absolute top-2.5 left-2.5 bg-darkBase/85 px-2 py-1 rounded-md text-[9px] font-bold backdrop-blur-sm border border-darkBorder text-gray-300 flex items-center gap-1 z-10">
                                     <i class="fa-solid fa-users text-goldPrimary"></i><span>{{
                                         course.students.toLocaleString('fa-IR') }}</span>
                                 </div>
 
-                                <!-- دسته چالش -->
                                 <div
                                     class="absolute bottom-2.5 right-2.5 bg-darkBase/90 backdrop-blur-md border border-darkBorder/60 text-goldPrimary text-[9px] font-bold px-2 py-0.5 rounded-md z-10">
                                     {{ course.categoryFa }}
                                 </div>
                             </div>
 
-                            <!-- بدنه کارت -->
                             <div class="p-4 flex-1 flex flex-col justify-between space-y-3.5">
                                 <div class="flex justify-between items-start gap-2">
                                     <h3 class="font-bold text-sm text-white group-hover:text-goldPrimary transition-colors duration-300 line-clamp-2 leading-relaxed"
@@ -430,44 +399,42 @@
                                         {{ course.title }}
                                     </h3>
                                     <div
-                                        class="flex items-center gap-0.5 text-yellow-400 text-[10px] font-bold bg-yellow-400/10 px-1.5 py-0.5 rounded-md shrink-0">
-                                        <i class="fa-solid fa-star text-yellow-500"></i><span>{{ course.rating }}</span>
+                                        class="flex items-center gap-0.5 text-goldPrimary text-[10px] font-bold bg-goldPrimary/10 px-1.5 py-0.5 rounded-md shrink-0">
+                                        <i class="fa-solid fa-star text-goldPrimary"></i><span>{{ course.rating }}</span>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center gap-2 text-[11px] text-gray-400 border-b border-darkBorder/30 pb-2.5">
-                                    <div class="w-5 h-5 rounded-full bg-goldPrimary text-darkBase flex items-center justify-center font-black text-[9px] shadow-sm shrink-0">
+                                    <div class="w-5 h-5 rounded-full bg-goldPrimary text-black flex items-center justify-center font-black text-[9px] shadow-sm shrink-0">
                                         {{ course.instructor ? course.instructor[0] : 'ن' }}
                                     </div>
                                     <div class="truncate">
                                         <span class="text-gray-400">توسط: </span>
                                         <span class="text-gray-200 font-medium">{{ course.instructor }}</span>
                                     </div>
-                                    <i class="fa-solid fa-badge-check text-blue-400 text-[10px] shrink-0"></i>
+                                    <i class="fa-solid fa-badge-check text-goldPrimary text-[10px] shrink-0"></i>
                                 </div>
 
-                                <!-- آمار ۳ گانه کارت -->
                                 <div class="grid grid-cols-3 text-center text-[10px] text-gray-400 bg-darkBase/40 p-2 rounded-xl border border-darkBorder/40 gap-0.5">
                                     <div class="flex flex-col items-center justify-center border-l border-darkBorder/40 py-0.5">
                                         <span class="font-bold text-gray-200">{{ course.hours }} روز</span>
                                         <span class="text-[8px] text-gray-500 mt-0.5">زمان</span>
                                     </div>
                                     <div class="flex flex-col items-center justify-center border-l border-darkBorder/40 py-0.5">
-                                        <span class="font-bold text-blue-400">+{{ course.hours * 5 }} XP</span>
+                                        <span class="font-bold text-goldPrimary">+{{ course.hours * 5 }} XP</span>
                                         <span class="text-[8px] text-gray-500 mt-0.5">پاداش</span>
                                     </div>
                                     <div class="flex flex-col items-center justify-center py-0.5">
                                         <span :class="course.price === 0 ? 'text-emerald-400' : 'text-goldPrimary'" class="font-bold">
-                                            {{ course.price === 0 ? 'رایگان' : course.price + ' سکه' }}
+                                            {{ course.price === 0 ? 'رایگان' : course.price + ' توکن' }}
                                         </span>
                                         <span class="text-[8px] text-gray-500 mt-0.5">ورودی</span>
                                     </div>
                                 </div>
 
-                                <!-- دکمه ورود -->
                                 <div class="pt-1">
                                     <button @click="startChallenge(course)"
-                                        class="w-full py-2 bg-darkBase hover:bg-goldPrimary text-goldPrimary hover:text-darkBase border border-goldPrimary/50 hover:border-goldPrimary rounded-xl transition-all duration-300 font-bold text-xs flex items-center justify-center gap-1.5 group/btn shadow-sm">
+                                        class="w-full py-2 bg-darkBase hover:bg-goldPrimary text-goldPrimary hover:text-black border border-goldPrimary/50 hover:border-goldPrimary rounded-xl transition-all duration-300 font-bold text-xs flex items-center justify-center gap-1.5 group/btn shadow-sm">
                                         <span>ورود به نقشه راه</span>
                                         <i class="fa-solid fa-arrow-left text-[9px] transform group-hover/btn:-translate-x-1 transition-transform"></i>
                                     </button>
@@ -477,7 +444,7 @@
 
                     </div>
 
-                    <!-- 3. وضعیت خالی (اگر نتیجه‌ای یافت نشد) -->
+                    <!-- وضعیت خالی -->
                     <div v-else key="empty" class="bg-darkPanel rounded-2xl border border-darkBorder py-16 flex flex-col items-center justify-center text-center w-full min-h-[450px]">
                         <i class="fa-regular fa-folder-open text-6xl text-darkBorder mb-4"></i>
                         <h3 class="text-lg font-bold text-white mb-2">نتیجه‌ای یافت نشد</h3>
@@ -496,7 +463,7 @@
 
                     <button v-for="page in totalPages" :key="page" @click="currentPage = page"
                         class="w-9 h-9 rounded-xl flex items-center justify-center border font-bold text-xs transition-all"
-                        :class="currentPage === page ? 'bg-goldPrimary border-goldPrimary text-darkBase' : 'border-darkBorder text-textMain hover:border-goldPrimary hover:text-goldPrimary bg-darkPanel'">
+                        :class="currentPage === page ? 'bg-goldPrimary border-goldPrimary text-black' : 'border-darkBorder text-textMain hover:border-goldPrimary hover:text-goldPrimary bg-darkPanel'">
                         {{ page }}
                     </button>
 
@@ -548,7 +515,7 @@
                                 :class="step.completed ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-darkBase/40 border-darkBorder hover:border-darkBorder/80'"
                                 class="p-3 rounded-xl border flex items-center justify-between gap-3 transition-all">
                                 <div class="flex items-center gap-3">
-                                    <div :class="step.completed ? 'bg-emerald-500 text-darkBase' : 'bg-darkBorder text-textMuted'"
+                                    <div :class="step.completed ? 'bg-emerald-500 text-black' : 'bg-darkBorder text-textMuted'"
                                         class="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold shrink-0">
                                         {{ index + 1 }}
                                     </div>
@@ -556,7 +523,7 @@
                                         class="text-xs font-medium">{{ step.title }}</span>
                                 </div>
                                 <button @click="toggleStep(step, selectedChallenge)"
-                                    :class="step.completed ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-goldPrimary text-darkBase hover:bg-goldHover'"
+                                    :class="step.completed ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-goldPrimary text-black hover:bg-goldHover'"
                                     class="px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all">
                                     {{ step.completed ? 'انجام شد' : 'تکمیل گام' }}
                                 </button>
@@ -565,7 +532,7 @@
                     </div>
 
                     <div class="p-4 bg-darkBase border-t border-darkBorder/60 flex justify-between items-center">
-                        <span class="text-[10px] text-textMuted">با اتمام گام‌ها موجودی سکه شما افزایش می‌یابد.</span>
+                        <span class="text-[10px] text-textMuted">با اتمام گام‌ها موجودی توکن شما افزایش می‌یابد.</span>
                         <button @click="selectedChallenge = null"
                             class="px-4 py-1.5 bg-darkBorder text-white rounded-xl text-xs font-bold transition-colors hover:bg-darkBorder/80">
                             بستن نقشه راه
@@ -597,11 +564,9 @@
 
                 const searchQuery = ref('');
                 
-                // متغیرهای مربوط به لودینگ و سلکت باکس اختصاصی
                 const isLoading = ref(false);
                 const isCategoryOpen = ref(false);
                 
-                // لیست دسته‌بندی‌ها برای سلکت باکس
                 const categories = ref([
                     { value: 'all', label: 'همه دسته‌ها' },
                     { value: 'memorize', label: 'حفظ قرآن' },
@@ -619,27 +584,24 @@
                 const currentPage = ref(1);
                 const itemsPerPage = 6;
 
-                // پیدا کردن لیبل دسته‌بندی فعلی برای نمایش روی باکس بسته
                 const currentCategoryLabel = computed(() => {
                     const cat = categories.value.find(c => c.value === filters.value.category);
                     return cat ? cat.label : 'همه دسته‌ها';
                 });
 
-                // تابع انتخاب از منوی کشویی کاستوم
                 const selectCategory = (val) => {
-                    isCategoryOpen.value = false; // بستن منو (خروج از حالت فوکوس)
-                    filters.value.category = val; // این خط به طور خودکار باعث روشن شدن لودینگ توسط Watcher زیر میشه
+                    isCategoryOpen.value = false;
+                    filters.value.category = val;
                 };
 
-                // Watcher جادویی: هر زمان فیلتری عوض شه، صفحه به مدت نرمی میره رو حالت لودینگ
                 let loadingTimeout;
                 watch(() => filters.value, () => {
                     isLoading.value = true;
                     clearTimeout(loadingTimeout);
                     loadingTimeout = setTimeout(() => {
                         isLoading.value = false;
-                        currentPage.value = 1; // ریست کردن صفحه بعد از فیلتر
-                    }, 650); // نمایش لودینگ لوکس برای ۶۵۰ میلی‌ثانیه
+                        currentPage.value = 1;
+                    }, 650);
                 }, { deep: true });
 
 
@@ -850,7 +812,7 @@
 
                 const startChallenge = (course) => {
                     if (course.price > 0 && user.value.coins < course.price) {
-                        alert("تعداد سکه های نور شما کافی نمی باشد! لطفاً چالش های رایگان را ابتدا طی کنید.");
+                        alert("تعداد توکن‌های نور شما کافی نمی‌باشد! لطفاً ابتدا چالش‌های رایگان را طی کنید.");
                         return;
                     }
                     if (course.price > 0) {
@@ -900,5 +862,4 @@
         }).mount('#app')
     </script>
 </body>
-
 </html>
