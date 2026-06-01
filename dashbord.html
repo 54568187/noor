@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد چالش‌های نور</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#1a1d24',
+                            800: '#232731',
+                            700: '#2c313d',
+                        },
+                        gold: {
+                            400: '#e1c271',
+                            500: '#c5a34f',
+                            100: '#fcf1d3',
+                        },
+                        success: '#2ecc71',
+                        danger: '#e74c3c',
+                        info: '#3498db'
+                    },
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'Tahoma', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #1a1d24;
+            color: #e2e8f0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1d24;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2c313d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c5a34f;
+        }
+
+        /* Glass effect for panels */
+        .glass-panel {
+            background: rgba(35, 39, 49, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Shake Animation for insufficient funds/errors */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* Fire Animation for Streak */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        .fire-icon {
+            animation: flicker 2s infinite ease-in-out;
+            color: #ff9d00;
+            text-shadow: 0 0 10px rgba(255, 157, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen relative overflow-x-hidden">
+    <div id="app" class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto relative">
+        
+        <!-- نوتیفیکیشن زنده (Live Notification) -->
+        <transition name="fade" mode="out-in">
+            <div v-if="liveNotification.show" class="absolute top-4 left-4 z-50 bg-dark-800/90 backdrop-blur border border-gold-400/30 px-4 py-2 rounded-xl shadow-lg shadow-gold-400/10 flex items-center gap-3 transition-all duration-500">
+                <div class="w-8 h-8 rounded-full bg-gold-400/20 flex items-center justify-center text-gold-400">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-300">{{ liveNotification.message }}</p>
+                    <p class="text-[10px] text-gray-500 mt-0.5">همین الان</p>
+                </div>
+            </div>
+        </transition>
+
+        <!-- نوار بالایی: استریک روزانه -->
+        <div class="mb-6 flex justify-between items-center bg-dark-800/50 p-3 rounded-2xl border border-dark-700">
+            <div class="flex items-center gap-3">
+                <img :src="user.avatar" class="w-10 h-10 rounded-full border-2 border-gold-400 shadow-lg" alt="Avatar">
+                <div>
+                    <h1 class="text-sm font-bold text-white">سلام، {{ user.name }} <i class="fa-solid fa-hand-wave text-yellow-500"></i></h1>
+                    <p class="text-xs text-gray-400">سطح {{ user.level }} | {{ user.title }}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-dark-900 px-4 py-2 rounded-xl border border-orange-500/30">
+                <i class="fa-solid fa-fire fire-icon text-lg"></i>
+                <div class="flex flex-col">
+                    <span class="text-xs font-bold text-orange-400">{{ streakDays }} روز پیاپی!</span>
+                    <span class="text-[10px] text-gray-500">روند ورود شما</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Right Column -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- مأموریت‌های روزانه -->
+                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden border border-blue-900/30">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+
+                    <div class="flex justify-between items-center mb-6 relative z-10">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-blue-400"></i> مأموریت‌های امروز
+                        </h2>
+                        <!-- تایمر معکوس تا پایان روز -->
+                        <span class="text-[10px] text-gray-400 bg-dark-900 px-2 py-1 rounded border border-dark-700 font-mono">
+                            پایان در: {{ formatTime(midnightCountdown) }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-4 relative z-10">
+                        <div v-for="quest in dailyQuests" :key="quest.id" class="p-3 rounded-xl border transition-all duration-300" :class="quest.completed ? 'bg-success/5 border-success/20' : 'bg-dark-800/50 border-dark-700 hover:border-blue-400/30'">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center border" :class="quest.completed ? 'bg-success/10 border-success/30 text-success' : 'bg-dark-900 border-dark-700 text-blue-400'">
+                                        <i :class="quest.icon"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold" :class="quest.completed ? 'text-success' : 'text-gray-200'">{{ quest.title }}</h4>
+                                        <p class="text-[10px] text-blue-300/80 mt-1 font-medium">از چالش: {{ quest.challengeName }}</p>
+                                        <p class="text-[10px] text-gray-500 mt-0.5"><i class="fa-solid fa-gift text-gold-400 ml-1"></i>پاداش: {{ quest.reward }}</p>
+                                    </div>
+                                </div>
+                                <div v-if="quest.completed" class="text-success text-xs font-bold flex items-center gap-1">
+                                    <i class="fa-solid fa-check"></i> 
+                                </div>
+                                <div v-else class="text-xs text-gray-400 bg-dark-900 px-2 py-0.5 rounded">
+                                    {{ quest.current }} / {{ quest.total }}
+                                </div>
+                            </div>
+                            <div class="w-full bg-dark-900 rounded-full h-1.5 mt-3 overflow-hidden">
+                                <div class="h-1.5 rounded-full transition-all duration-1000" :class="quest.completed ? 'bg-success' : 'bg-blue-400'" :style="{ width: (quest.current / quest.total * 100) + '%' }"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- پیشنهادات ویژه -->
+                <div class="glass-panel p-6 rounded-2xl bg-gradient-to-b from-dark-800 to-dark-900">
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-gold-400"></i> پیشنهادات ویژه شما
+                    </h2>
+                    <p class="text-xs text-gray-400 mb-4">بر اساس فعالیت‌های اخیر در جزء ۳۰</p>
+                    
+                    <div class="space-y-3">
+                        <div v-for="rec in recommendations" :key="rec.id" class="relative overflow-hidden rounded-xl bg-dark-800 border border-dark-700 p-4 group cursor-pointer hover:border-gold-400/50 transition">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-gold-400"></div>
+                            <h4 class="text-sm font-bold text-white group-hover:text-gold-400 transition">{{ rec.title }}</h4>
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-1">{{ rec.desc }}</p>
+                            <div class="mt-3 flex justify-between items-center text-xs">
+                                <span class="text-gray-400"><i class="fa-solid fa-gift text-gold-400 mr-1"></i> جایزه: {{ rec.reward }}</span>
+                                <span class="bg-gold-400/10 text-gold-400 px-2 py-1 rounded-md font-medium group-hover:bg-gold-400 group-hover:text-dark-900 transition">شروع <i class="fa-solid fa-arrow-left ml-1 text-[10px]"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تاریخچه فعالیت‌ها -->
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-gray-400"></i> تاریخچه فعالیت‌ها
+                    </h2>
+                    <div class="relative pl-4 border-r border-dark-700 space-y-6">
+                        <div class="relative pr-4">
+                            <div class="absolute top-1 -right-[5px] w-2 h-2 rounded-full bg-success ring-4 ring-dark-800"></div>
+                            <p class="text-sm text-gray-200">تکمیل مرحله ۵ چالش جزء ۳۰</p>
+                            <p class="text-xs text-gray-500 mt-1">۲ ساعت پیش • +۵۰ XP</p>
+                        </div>
+                        <div class="relative pr-4">
+                            <div class="absolute top-1 -right-[5px] w-2 h-2 rounded-full bg-gold-400 ring-4 ring-dark-800"></div>
+                            <p class="text-sm text-gray-200">دریافت جایزه ورود روزانه</p>
+                            <p class="text-xs text-gray-500 mt-1">امروز صبح • +۲۰ سکه</p>
+                        </div>
+                        <div class="relative pr-4">
+                            <div class="absolute top-1 -right-[5px] w-2 h-2 rounded-full bg-blue-400 ring-4 ring-dark-800"></div>
+                            <p class="text-sm text-gray-200">کسب نشان "مبتدی مصمم"</p>
+                            <p class="text-xs text-gray-500 mt-1">۳ روز پیش</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Left Column -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- کارت‌های آماری بالا -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- موجودی کیف پول -->
+                    <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-gold-400/50 transition duration-300">
+                        <h3 class="text-gray-400 text-xs mb-2 flex justify-between">
+                            موجودی سکه <i class="fa-solid fa-wallet text-gray-500"></i>
+                        </h3>
+                        <div class="flex items-end gap-1 mt-3">
+                            <span class="text-2xl font-bold text-gold-400" dir="ltr">{{ user.walletBalance.toLocaleString() }}</span>
+                            <span class="text-xs text-gray-500 mb-1">NRC</span>
+                        </div>
+                    </div>
+
+                    <!-- چالش‌های فعال -->
+                    <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-gold-400/50 transition duration-300 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-gray-400 text-xs mb-2">چالش‌های فعال</h3>
+                            <div class="flex items-end gap-2 mt-3">
+                                <span class="text-2xl font-bold text-white">{{ activeChallengesCount }}</span>
+                                <span class="text-[10px] text-success mb-1 flex items-center"><i class="fa-solid fa-arrow-trend-up ml-1"></i> در جریان</span>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 relative">
+                            <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                                <path class="text-dark-700" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="text-gold-400" stroke-dasharray="60, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- مجموع XP -->
+                    <div class="glass-panel p-4 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-500 border-none relative overflow-hidden shadow-[0_0_15px_rgba(225,194,113,0.15)] transform hover:-translate-y-1 transition duration-300">
+                        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                        <h3 class="text-dark-900/80 text-xs mb-2 font-bold flex justify-between">
+                            امتیاز (XP) <i class="fa-solid fa-star text-dark-900/60"></i>
+                        </h3>
+                        <div class="mt-3">
+                            <span class="text-2xl font-black text-dark-900" dir="ltr">{{ user.xp.toLocaleString() }}</span>
+                        </div>
+                        <p class="text-dark-900/70 text-[10px] mt-1 font-medium">۲۵۰ امتیاز تا سطح بعدی</p>
+                    </div>
+
+                    <!-- رتبه کل -->
+                    <div class="glass-panel p-4 rounded-2xl hover:border-gold-400/50 transition duration-300">
+                        <h3 class="text-gray-400 text-xs mb-2 flex justify-between">
+                            رتبه کل <i class="fa-solid fa-trophy text-gray-500"></i>
+                        </h3>
+                        <div class="mt-3 flex items-end gap-2">
+                            <span class="text-2xl font-bold text-white" dir="ltr">#{{ user.rank }}</span>
+                            <span class="text-[10px] text-danger mb-1 flex items-center"><i class="fa-solid fa-arrow-trend-down ml-1"></i> -۱۲</span>
+                        </div>
+                        <div class="mt-3 flex -space-x-2 space-x-reverse">
+                            <img class="w-5 h-5 border border-dark-800 rounded-full z-30" src="https://placehold.co/30x30/3498db/fff?text=1" alt="">
+                            <img class="w-5 h-5 border border-dark-800 rounded-full z-20" src="https://placehold.co/30x30/e74c3c/fff?text=2" alt="">
+                            <img class="w-5 h-5 border border-dark-800 rounded-full z-10" src="https://placehold.co/30x30/2ecc71/fff?text=3" alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- نمودار پیشرفت چالش‌ها -->
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-bold text-white">نمودار پیشرفت چالش‌ها (مراحل)</h2>
+                        <div class="flex gap-2 bg-dark-900 p-1 rounded-lg border border-dark-700">
+                            <button class="px-3 py-1 text-xs rounded-md text-gray-400 hover:text-white transition">هفتگی</button>
+                            <button class="px-3 py-1 text-xs rounded-md bg-dark-700 text-gold-400 font-bold shadow transition">ماهانه</button>
+                        </div>
+                    </div>
+                    
+                    <div class="h-64 w-full relative">
+                        <canvas id="progressChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <!-- مسیرهای در حال اجرا -->
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-bold text-white">مسیرهای در حال اجرا</h2>
+                        <a href="#" class="text-sm text-gold-400 hover:text-gold-100 transition">مشاهده همه</a>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div v-for="challenge in myChallenges" :key="challenge.id" class="bg-dark-900 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between border border-dark-700 hover:border-gold-400/30 transition gap-4 md:gap-0" :style="`border-right: 4px solid ${challenge.color}`">
+                            <div class="flex items-center gap-4 w-full md:w-auto">
+                                <div class="w-12 h-12 shrink-0 rounded-lg flex items-center justify-center bg-dark-800 border border-dark-700">
+                                    <i :class="[challenge.icon]" :style="`color: ${challenge.color}`" class="text-xl"></i>
+                                </div>
+                                <div class="w-full md:w-64">
+                                    <h4 class="font-bold text-white text-sm">{{ challenge.title }}</h4>
+                                    <p class="text-xs text-gray-400 mt-1">{{ challenge.description }}</p>
+                                    <div class="flex items-center gap-2 mt-2 w-full">
+                                        <div class="flex-grow h-1.5 bg-dark-800 rounded-full overflow-hidden">
+                                            <div class="h-full transition-all duration-1000" :style="{ width: challenge.progress + '%', backgroundColor: challenge.color }"></div>
+                                        </div>
+                                        <span class="text-xs w-8 text-right font-bold" :style="`color: ${challenge.color}`">{{ challenge.progress }}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t border-dark-800 md:border-t-0">
+                                <span class="text-xs text-gray-500 mb-0 md:mb-2" v-if="challenge.progress < 100">مرحله {{ challenge.currentStage }} از {{ challenge.totalStages }}</span>
+                                <span class="text-xs mb-0 md:mb-2 font-bold flex items-center gap-1" :style="`color: ${challenge.color}`" v-else><i class="fa-solid fa-medal"></i> تکمیل شده</span>
+                                
+                                <button v-if="challenge.progress < 100" @click="continueChallenge(challenge)" class="px-4 py-1.5 bg-dark-800 hover:bg-opacity-80 text-white border rounded-lg text-sm font-medium transition duration-200" :style="`border-color: ${challenge.color}50; color: ${challenge.color}`" onmouseover="this.style.backgroundColor=this.dataset.color" onmouseout="this.style.backgroundColor='#232731'; this.style.color=this.dataset.color" :data-color="challenge.color">
+                                    ادامه مسیر
+                                </button>
+                                <button v-else class="px-4 py-1.5 bg-opacity-10 border rounded-lg text-sm font-medium cursor-default" :style="`background-color: ${challenge.color}15; color: ${challenge.color}; border-color: ${challenge.color}40`">
+                                    مشاهده گواهی
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- پیام‌های Toast -->
+        <div v-if="toast.show" class="fixed bottom-4 left-4 right-4 md:right-auto md:w-80 text-white p-4 rounded-xl shadow-lg flex items-center justify-between z-50 transition-all duration-300 transform" :class="[toast.type === 'error' ? 'bg-danger/90' : 'bg-success/90', {'translate-y-0 opacity-100': toast.show, 'translate-y-10 opacity-0': !toast.show}]">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid text-xl" :class="toast.type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'"></i>
+                <span class="text-sm font-medium">{{ toast.message }}</span>
+            </div>
+            <button @click="toast.show = false" class="text-white/80 hover:text-white">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp, ref, reactive, onMounted, onUnmounted } = Vue;
+
+        createApp({
+            setup() {
+                const user = reactive({
+                    name: 'علی احمدی',
+                    avatar: 'https://placehold.co/100x100/2c313d/e1c271?text=AA',
+                    level: 12,
+                    title: 'حافظ پویا',
+                    walletBalance: 1250,
+                    xp: 4850,
+                    rank: 342
+                });
+
+                const activeChallengesCount = ref(3);
+                const streakDays = ref(5);
+
+                // مسیرهای در حال اجرا (اضافه شدن تاریخچه پیشرفت و رنگ اختصاصی برای نمودار)
+                const myChallenges = ref([
+                    { id: 1, title: 'حفظ سرعتی جزء ۳۰', description: 'دوره فشرده ۷ روزه', progress: 65, currentStage: 5, totalStages: 7, icon: 'fa-solid fa-bolt', color: '#e1c271', history: [0, 0, 1, 2, 4, 5] },
+                    { id: 2, title: 'کارگاه عملی تجوید', description: 'اصلاح مخارج حروف', progress: 30, currentStage: 3, totalStages: 10, icon: 'fa-solid fa-microphone', color: '#3498db', history: [0, 1, 1, 2, 2, 3] },
+                    { id: 3, title: 'مرور شبانه سوره‌های مکی', description: 'چالش مستمر روزانه', progress: 100, currentStage: 30, totalStages: 30, icon: 'fa-solid fa-moon', color: '#2ecc71', history: [5, 10, 15, 20, 25, 30] }, 
+                ]);
+
+                const dailyQuests = ref([
+                    { id: 1, title: 'حفظ سوره النبأ (آیات ۱ تا ۲۰)', challengeName: 'حفظ سرعتی جزء ۳۰', reward: '+۵۰ سکه', current: 12, total: 20, completed: false, icon: 'fa-solid fa-book-quran' },
+                    { id: 2, title: 'تمرین مخارج حروف حلق', challengeName: 'کارگاه عملی تجوید', reward: '+۳۰ XP', current: 1, total: 1, completed: true, icon: 'fa-solid fa-microphone' },
+                    { id: 3, title: 'مرور ۳ صفحه اول', challengeName: 'مرور شبانه سوره‌های مکی', reward: 'مدال سرعت', current: 0, total: 1, completed: false, icon: 'fa-solid fa-moon' }
+                ]);
+
+                const recommendations = ref([
+                    { id: 201, title: 'تثبیت جزء ۲۹ - ویژه شما', desc: 'بر اساس تسلط شما در جزء ۳۰ پیشنهاد می‌شود.', reward: 'مدال نقره‌ای + ۲۰۰ XP' },
+                    { id: 202, title: 'آزمون صوتی تجوید (سطح ۲)', desc: 'مهارت تلفظ خود را در یک چالش عملی بسنجید.', reward: 'ارتقای سطح پروفایل' },
+                ]);
+
+                const toast = reactive({ show: false, message: '', type: 'success' });
+                const liveNotification = reactive({ show: false, message: '' });
+                let timerInterval;
+                let notificationInterval;
+
+                const calculateSecondsToMidnight = () => {
+                    const now = new Date();
+                    const midnight = new Date(now);
+                    midnight.setHours(24, 0, 0, 0);
+                    return Math.floor((midnight - now) / 1000);
+                };
+                const midnightCountdown = ref(calculateSecondsToMidnight());
+
+                const randomMessages = [
+                    "رضا همین الان چالش تجوید را به پایان رساند!",
+                    "شما ۵۰ امتیاز تجربه برای فعالیت دیروز دریافت کردید.",
+                    "کاربر 'حافظِ نور' رکورد سرعت جزء ۳۰ را شکست.",
+                    "مؤسسه نورین یک چالش جدید منتشر کرد."
+                ];
+
+                onMounted(() => {
+                    // داینامیک کردن داده‌های نمودار بر اساس myChallenges
+                    const chartDatasets = myChallenges.value.map(challenge => {
+                        return {
+                            label: challenge.title, // راهنمای نام چالش
+                            data: challenge.history, // داده‌های مراحل برای هر ماه
+                            borderColor: challenge.color, // اختصاص رنگ چالش
+                            backgroundColor: challenge.color + '1A', // رنگ پس زمینه کمرنگ (10% opacity)
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#1a1d24',
+                            pointBorderColor: challenge.color,
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    });
+
+                    const canvas = document.getElementById('progressChart');
+                    if(canvas) {
+                        const ctx = canvas.getContext('2d');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'],
+                                datasets: chartDatasets
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
+                                plugins: {
+                                    // فعالسازی و تنظیم ظاهر راهنمای چالش‌ها (Legend)
+                                    legend: { 
+                                        display: true,
+                                        position: 'top',
+                                        rtl: true,
+                                        labels: {
+                                            color: '#e2e8f0',
+                                            font: { family: 'Vazirmatn', size: 12 },
+                                            usePointStyle: true,
+                                            boxWidth: 8,
+                                            padding: 20
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(35, 39, 49, 0.9)',
+                                        titleFont: { family: 'Vazirmatn', size: 13 },
+                                        bodyFont: { family: 'Vazirmatn', size: 12 },
+                                        borderColor: '#2c313d',
+                                        borderWidth: 1,
+                                        rtl: true,
+                                        textDirection: 'rtl',
+                                        padding: 10
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'مراحل طی شده', // تغییر عنوان محور Y
+                                            color: '#94a3b8',
+                                            font: { family: 'Vazirmatn', size: 11 }
+                                        },
+                                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                        ticks: { 
+                                            color: '#94a3b8', 
+                                            font: { family: 'Vazirmatn' },
+                                            stepSize: 5
+                                        }
+                                    },
+                                    x: {
+                                        grid: { display: false },
+                                        ticks: { color: '#94a3b8', font: { family: 'Vazirmatn' } }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    timerInterval = setInterval(() => {
+                        if (midnightCountdown.value > 0) {
+                            midnightCountdown.value--;
+                        } else {
+                            midnightCountdown.value = calculateSecondsToMidnight();
+                        }
+                    }, 1000);
+
+                    notificationInterval = setInterval(() => {
+                        if(!liveNotification.show) {
+                            liveNotification.message = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+                            liveNotification.show = true;
+                            setTimeout(() => { liveNotification.show = false; }, 4000);
+                        }
+                    }, 15000);
+                });
+
+                onUnmounted(() => {
+                    if (timerInterval) clearInterval(timerInterval);
+                    if (notificationInterval) clearInterval(notificationInterval);
+                });
+
+                const formatTime = (seconds) => {
+                    if (!seconds) return '00:00:00';
+                    const h = Math.floor(seconds / 3600);
+                    const m = Math.floor((seconds % 3600) / 60);
+                    const s = seconds % 60;
+                    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                };
+
+                const showToast = (message, type = 'success') => {
+                    toast.message = message;
+                    toast.type = type;
+                    toast.show = true;
+                    setTimeout(() => { toast.show = false; }, 3000);
+                };
+
+                const continueChallenge = (challenge) => {
+                    showToast(`در حال هدایت به بخش ${challenge.title} برای مرحله ${challenge.currentStage}...`, 'success');
+                };
+
+                return {
+                    user,
+                    streakDays,
+                    activeChallengesCount,
+                    myChallenges,
+                    dailyQuests,
+                    recommendations,
+                    continueChallenge,
+                    toast,
+                    liveNotification,
+                    midnightCountdown,
+                    formatTime
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
