@@ -156,6 +156,10 @@
 
                     <!-- لیست کارت‌های متصل -->
                     <div class="flex flex-col gap-4">
+                        <div v-if="bankCards.length === 0" class="text-center py-10 px-4 text-gray-500 border-2 border-dashed border-gray-700/50 rounded-[24px]">
+                            شما هنوز کارت بانکی متصل نکرده‌اید.
+                        </div>
+                        
                         <div v-for="card in bankCards" :key="card.id" class="relative w-full h-48 rounded-[24px] p-6 flex flex-col justify-between overflow-hidden group border border-gray-700/50 shadow-2xl cursor-pointer">
                             <!-- Card BG Gradients -->
                             <div class="absolute inset-0 bg-gradient-to-br z-0" :class="card.bgGradient"></div>
@@ -795,18 +799,7 @@
                 const spentThisMonth = ref(1240);
 
                 // لیست کارت‌های متصل 
-                const bankCards = ref([
-                    {
-                        id: 1,
-                        bankName: 'بانک سامان',
-                        logo: svgSaman,
-                        cardNumber: '6219 **** **** 4598',
-                        cardholder: 'محمد احمدی',
-                        cvv2: '134',
-                        expiry: '04/06',
-                        bgGradient: 'from-[#1c1c1c] via-[#0f0f0f] to-black'
-                    }
-                ]);
+                const bankCards = ref([]);
 
                 // Quick Actions Data
                 const quickActions = ref([
