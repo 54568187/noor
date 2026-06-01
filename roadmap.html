@@ -22,7 +22,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ["Shabnam" , 'Vazirmatn', 'sans-serif'],
+                        sans: ["Shabnam",'Vazirmatn', 'sans-serif'],
                     },
                     colors: {
                         darkBg: '#0f1016',
@@ -34,16 +34,11 @@
                     },
                     animation: {
                         'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
                     },
                     keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-12px)' },
-                        },
                         pulseGlow: {
-                            '0%, 100%': { boxShadow: '0 0 15px rgba(255, 138, 0, 0.5)' },
-                            '50%': { boxShadow: '0 0 35px rgba(255, 138, 0, 1)' },
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(255, 138, 0, 0.5)' },
+                            '50%': { boxShadow: '0 0 40px rgba(255, 138, 0, 1)' },
                         }
                     }
                 }
@@ -78,14 +73,23 @@
         .roadmap-path {
             fill: none;
             stroke: url(#lineGradient);
-            stroke-width: 6;
-            stroke-dasharray: 12, 12;
+            stroke-width: 7;
+            stroke-dasharray: 14, 14;
             stroke-linecap: round;
-            filter: drop-shadow(0 0 10px rgba(255, 138, 0, 0.7));
+            filter: drop-shadow(0 0 12px rgba(255, 138, 0, 0.7));
             animation: dash 40s linear infinite;
         }
         @keyframes dash {
             to { stroke-dashoffset: -1000; }
+        }
+
+        /* Custom Float Animation for Trophy to maintain centering */
+        @keyframes floatTrophy {
+            0%, 100% { transform: translate(-50%, -50%); }
+            50% { transform: translate(-50%, calc(-50% - 15px)); }
+        }
+        .animate-float-trophy {
+            animation: floatTrophy 5s ease-in-out infinite;
         }
 
         /* 3D Game Badge Styles */
@@ -99,19 +103,19 @@
         }
 
         .badge-core {
-            width: 72px;
-            height: 72px;
+            width: 88px;
+            height: 88px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: inset 0 4px 6px rgba(255, 255, 255, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.4), 0 10px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 5px 8px rgba(255, 255, 255, 0.35), inset 0 -5px 8px rgba(0, 0, 0, 0.45), 0 12px 20px rgba(0, 0, 0, 0.6);
         }
         .badge-core::after {
             content: '';
             position: absolute;
-            inset: 3px;
+            inset: 4px;
             border-radius: 50%;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -125,7 +129,7 @@
         }
         .status-completed .glow-ring {
             background: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
         }
 
         .status-active .badge-core {
@@ -135,7 +139,7 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .status-active .glow-ring {
-            background: rgba(255, 138, 0, 0.3);
+            background: rgba(255, 138, 0, 0.35);
             animation: pulseGlow 1.5s infinite;
         }
 
@@ -143,7 +147,7 @@
             background: linear-gradient(135deg, #374151, #1f2937);
             border: 4px solid #4b5563;
             color: #9ca3af;
-            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.6), 0 5px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 5px 8px rgba(0, 0, 0, 0.6), 0 6px 12px rgba(0, 0, 0, 0.5);
         }
 
         /* Labels */
@@ -153,10 +157,10 @@
             transform: translateY(-50%);
             background: linear-gradient(90deg, rgba(30, 32, 44, 0.95), rgba(20, 22, 30, 0.95));
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 6px 16px;
-            border-radius: 12px;
+            padding: 8px 18px;
+            border-radius: 14px;
             white-space: nowrap;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #e2e8f0;
             backdrop-filter: blur(8px);
             pointer-events: none;
@@ -165,7 +169,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
         .game-badge:hover .level-label {
@@ -202,43 +206,68 @@
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Mobile Responsiveness Rules */
+        @media (max-width: 640px) {
+            .badge-core {
+                width: 68px;
+                height: 68px;
+            }
+            .badge-core i.fa-lock { font-size: 1.5rem; }
+            .badge-core i.fa-check { font-size: 1.75rem; }
+            .badge-core span { font-size: 1.75rem; }
+            
+            .level-label {
+                padding: 6px 12px;
+                gap: 8px;
+                font-size: 0.75rem;
+            }
+            .level-label span:last-child {
+                font-size: 0.8rem;
+            }
+            .level-label span:first-child {
+                font-size: 0.6rem;
+            }
+        }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col items-center py-12">
+<body class="antialiased min-h-screen flex flex-col items-center py-10 px-4 md:py-12 md:px-0">
 
     <!-- Vue App Mount Point -->
-    <div id="app" class="w-full h-full flex flex-col items-center">
+    <div id="app" class="w-full h-full flex flex-col items-center max-w-full">
         
         <!-- Animated Starry Background generated by Vue -->
-        <div class="fixed inset-0 z-[-1] pointer-events-none">
+        <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
             <div v-for="star in stars" :key="star.id" class="star" :style="star.style"></div>
         </div>
 
         <!-- Header -->
-        <header class="text-center z-10 mb-20 fade-in-up">
+        <header class="text-center z-10 mb-28 md:mb-32 fade-in-up">
             <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-primary to-primaryDark mb-4 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
-                مسیر فتح
+                مسیر قهرمانی
             </h1>
             <p class="text-gray-400 text-sm md:text-base tracking-widest font-light bg-black/30 px-6 py-2 rounded-full border border-gray-800 backdrop-blur-sm inline-block">
-                سیستم ردیابی پیشرفته 
+                <span class="text-primary font-bold"> سیستم ردیابی پیشرفت </span>
             </p>
         </header>
 
         <!-- Roadmap Container -->
         <main class="relative w-full max-w-4xl flex justify-center fade-in-up" style="animation-delay: 0.2s;">
             
-            <!-- Target Trophy (Top) -->
-            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-[85%] z-20 text-center animate-float flex flex-col items-center">
-                <div class="w-24 h-24 bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(255,215,0,0.5)] border-4 border-yellow-100 mb-3 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-white/20 w-1/2 rotate-45 transform -translate-x-full animate-[shimmer_3s_infinite]"></div>
-                    <i class="fa-solid fa-trophy text-4xl text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]"></i>
+            <!-- SVG Container - Height stretched for more distance between stages -->
+            <div class="relative w-full max-w-[340px] md:max-w-[480px] h-[950px] md:h-[1150px]" ref="svgContainer">
+                
+                <!-- Target Trophy (Top) - Fixed positioning to sit exactly at the top of the path -->
+                <div class="absolute top-0 left-1/2 animate-float-trophy z-20 text-center flex flex-col items-center">
+                    <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(255,215,0,0.5)] border-4 border-yellow-100 mb-3 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-white/20 w-1/2 rotate-45 transform -translate-x-full animate-[shimmer_3s_infinite]"></div>
+                        <i class="fa-solid fa-trophy text-3xl md:text-4xl text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]"></i>
+                    </div>
+                    <span class="text-yellow-400 font-extrabold text-base md:text-lg bg-black/60 px-4 md:px-5 py-1 md:py-1.5 rounded-xl backdrop-blur-md border border-yellow-500/40 shadow-lg whitespace-nowrap">قله افتخار</span>
                 </div>
-                <span class="text-yellow-400 font-extrabold text-lg bg-black/60 px-5 py-1.5 rounded-xl backdrop-blur-md border border-yellow-500/40 shadow-lg">قله افتخار</span>
-            </div>
 
-            <!-- SVG Container -->
-            <div class="relative w-[320px] md:w-[450px] h-[850px]" ref="svgContainer">
-                <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="none" class="absolute inset-0 z-0">
+                <!-- Path SVG (Stretched viewBox and smooth curve to match the new heights) -->
+                <svg width="100%" height="100%" viewBox="0 0 400 1000" preserveAspectRatio="none" class="absolute inset-0 z-0">
                     <defs>
                         <linearGradient id="lineGradient" x1="0%" y1="100%" x2="0%" y2="0%">
                             <stop offset="0%" stop-color="#10b981" />
@@ -246,8 +275,8 @@
                             <stop offset="100%" stop-color="#e52e71" />
                         </linearGradient>
                     </defs>
-                    <!-- S-Curve Path -->
-                    <path ref="routePath" d="M 200,780 C 380,680 380,550 200,450 C 20,350 20,220 200,120 C 280,70 250,50 200,30" class="roadmap-path"/>
+                    <!-- Perfect Curve over 1000px height viewbox -->
+                    <path ref="routePath" d="M 200,980 C 350,850 350,680 200,550 C 50,420 50,250 200,120 C 280,70 250,40 200,0" class="roadmap-path"/>
                 </svg>
 
                 <!-- Dynamic Nodes -->
@@ -266,21 +295,23 @@
                             
                             <!-- The 3D Badge -->
                             <div class="badge-core">
-                                <i v-if="node.status === 'locked'" class="fa-solid fa-lock text-2xl opacity-70"></i>
-                                <i v-else-if="node.status === 'completed'" class="fa-solid fa-check text-3xl"></i>
-                                <span v-else class="font-extrabold text-3xl font-sans">{{ node.id }}</span>
+                                <i v-if="node.status === 'locked'" class="fa-solid fa-lock text-3xl opacity-70"></i>
+                                <i v-else-if="node.status === 'completed'" class="fa-solid fa-check text-4xl"></i>
+                                <span v-else class="font-extrabold text-3xl md:text-4xl font-sans">{{ node.id }}</span>
                             </div>
 
-                            <!-- Floating Label Banner -->
-                            <div class="level-label" :class="node.isLeft ? 'right-[calc(100%+20px)] flex-row-reverse' : 'left-[calc(100%+20px)]'">
-                                <div class="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" 
+                            <!-- Floating Label Banner 
+                                 For larger nodes, spacing is slightly adjusted to feel perfectly proportioned -->
+                            <div class="level-label" 
+                                 :class="node.isNodeOnLeftHalf ? 'left-[calc(100%+14px)] md:left-[calc(100%+20px)] flex-row-reverse' : 'right-[calc(100%+14px)] md:right-[calc(100%+20px)]'">
+                                <div class="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_currentColor] shrink-0" 
                                      :class="{
                                          'bg-emerald-400 text-emerald-400': node.status === 'completed',
                                          'bg-orange-400 text-orange-400': node.status === 'active',
                                          'bg-gray-500 text-gray-500': node.status === 'locked'
                                      }"></div>
-                                <div class="flex flex-col text-right">
-                                    <span class="text-[0.65rem] text-gray-400 font-bold tracking-wider opacity-80 uppercase">مرحله {{ node.id }}</span>
+                                <div class="flex flex-col" :class="node.isNodeOnLeftHalf ? 'text-left' : 'text-right'">
+                                    <span class="text-gray-400 font-bold tracking-wider opacity-80 uppercase">مرحله {{ node.id }}</span>
                                     <span class="font-bold whitespace-nowrap">{{ node.title }}</span>
                                 </div>
                             </div>
@@ -365,7 +396,6 @@
                     { id: 7, title: "جمع‌آوری سنگ‌های قدرت", status: "locked", icon: "fa-gem" },
                     { id: 8, title: "تسلط بر جادوی باستان", status: "locked", icon: "fa-wand-magic-sparkles" },
                     { id: 9, title: "آمادگی برای فتح قله", status: "locked", icon: "fa-mountain" },
-
                 ];
 
                 // --- Stars Logic ---
@@ -396,29 +426,29 @@
                     
                     const path = routePath.value;
                     const pathLength = path.getTotalLength();
-                    const usableLength = pathLength * 0.92; 
-                    const startOffset = pathLength * 0.04;
+                    
+                    // Distribute nodes over 82% of the path, starting from 8% offset
+                    // This leaves the last 10% of the path completely empty for a beautiful line leading to the Trophy
+                    const usableLength = pathLength * 0.82; 
+                    const startOffset = pathLength * 0.08;
+                    
                     const numLevels = levelsData.length;
                     const segmentLength = usableLength / (numLevels - 1);
 
                     const tempNodes = [];
 
                     levelsData.forEach((level, index) => {
-                        // index 0 goes to the bottom of the path
                         const point = path.getPointAtLength(startOffset + (segmentLength * index));
                         
-                        // Check slope to alternate label sides nicely
-                        const nextPoint = path.getPointAtLength(Math.min(pathLength, startOffset + (segmentLength * index) + 10));
-                        const isGoingRight = (nextPoint.x - point.x) > 0;
-                        
-                        // We decide label placement based on curve direction and position
-                        const isLeft = point.x < 200;
+                        // Check if node is on the left half of the SVG viewBox (400px wide)
+                        // If it is on the left, we'll force the label to point right (inwards) to avoid mobile edge overflow
+                        const isNodeOnLeftHalf = point.x < 200;
 
                         tempNodes.push({
                             ...level,
                             x: (point.x / 400) * 100, // percentages for responsiveness
-                            y: (point.y / 800) * 100,
-                            isLeft: isLeft
+                            y: (point.y / 1000) * 100, // Adjusted for 1000px height viewbox
+                            isNodeOnLeftHalf: isNodeOnLeftHalf
                         });
                     });
                     
