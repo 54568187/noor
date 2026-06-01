@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسیر رشد - Vue Roadmap</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Font: Vazirmatn -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Shabnam" , 'Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#0f1016',
+                        primary: '#ff8a00',
+                        primaryDark: '#e52e71',
+                        completed: '#10b981',
+                        completedDark: '#047857',
+                        lockedBg: '#232533',
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(255, 138, 0, 0.5)' },
+                            '50%': { boxShadow: '0 0 35px rgba(255, 138, 0, 1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f1016;
+            color: white;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Animated Stars */
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            animation-delay: var(--delay);
+        }
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: var(--max-opacity); transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* Roadmap Path */
+        .roadmap-path {
+            fill: none;
+            stroke: url(#lineGradient);
+            stroke-width: 6;
+            stroke-dasharray: 12, 12;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 10px rgba(255, 138, 0, 0.7));
+            animation: dash 40s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        /* 3D Game Badge Styles */
+        .game-badge {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .game-badge:hover {
+            transform: scale(1.15);
+            z-index: 20;
+        }
+
+        .badge-core {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 4px 6px rgba(255, 255, 255, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.4), 0 10px 15px rgba(0, 0, 0, 0.5);
+        }
+        .badge-core::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Status Variations */
+        .status-completed .badge-core {
+            background: linear-gradient(135deg, #34d399, #059669);
+            border: 4px solid #a7f3d0;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .status-completed .glow-ring {
+            background: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .status-active .badge-core {
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+            border: 4px solid #ffe6a7;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .status-active .glow-ring {
+            background: rgba(255, 138, 0, 0.3);
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        .status-locked .badge-core {
+            background: linear-gradient(135deg, #374151, #1f2937);
+            border: 4px solid #4b5563;
+            color: #9ca3af;
+            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.6), 0 5px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Labels */
+        .level-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg, rgba(30, 32, 44, 0.95), rgba(20, 22, 30, 0.95));
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 16px;
+            border-radius: 12px;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            opacity: 0.85;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .game-badge:hover .level-label {
+            opacity: 1;
+            border-color: rgba(255, 138, 0, 0.5);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* Glassmorphism Modal */
+        .glass-modal {
+            background: rgba(25, 27, 38, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* Vue Transitions */
+        .modal-enter-active, .modal-leave-active {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-enter-from, .modal-leave-to {
+            opacity: 0;
+        }
+        .modal-enter-from .modal-content, .modal-leave-to .modal-content {
+            transform: scale(0.9) translateY(20px);
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col items-center py-12">
+
+    <!-- Vue App Mount Point -->
+    <div id="app" class="w-full h-full flex flex-col items-center">
+        
+        <!-- Animated Starry Background generated by Vue -->
+        <div class="fixed inset-0 z-[-1] pointer-events-none">
+            <div v-for="star in stars" :key="star.id" class="star" :style="star.style"></div>
+        </div>
+
+        <!-- Header -->
+        <header class="text-center z-10 mb-20 fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-primary to-primaryDark mb-4 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+                مسیر قهرمانی
+            </h1>
+            <p class="text-gray-400 text-sm md:text-base tracking-widest font-light bg-black/30 px-6 py-2 rounded-full border border-gray-800 backdrop-blur-sm inline-block">
+                سیستم ردیابی پیشرفت • <span class="text-primary font-bold">Vue Edition</span>
+            </p>
+        </header>
+
+        <!-- Roadmap Container -->
+        <main class="relative w-full max-w-4xl flex justify-center fade-in-up" style="animation-delay: 0.2s;">
+            
+            <!-- Target Trophy (Top) -->
+            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-[85%] z-20 text-center animate-float flex flex-col items-center">
+                <div class="w-24 h-24 bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(255,215,0,0.5)] border-4 border-yellow-100 mb-3 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-white/20 w-1/2 rotate-45 transform -translate-x-full animate-[shimmer_3s_infinite]"></div>
+                    <i class="fa-solid fa-trophy text-4xl text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]"></i>
+                </div>
+                <span class="text-yellow-400 font-extrabold text-lg bg-black/60 px-5 py-1.5 rounded-xl backdrop-blur-md border border-yellow-500/40 shadow-lg">قله افتخار</span>
+            </div>
+
+            <!-- SVG Container -->
+            <div class="relative w-[320px] md:w-[450px] h-[850px]" ref="svgContainer">
+                <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="none" class="absolute inset-0 z-0">
+                    <defs>
+                        <linearGradient id="lineGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="#10b981" />
+                            <stop offset="50%" stop-color="#ff8a00" />
+                            <stop offset="100%" stop-color="#e52e71" />
+                        </linearGradient>
+                    </defs>
+                    <!-- S-Curve Path -->
+                    <path ref="routePath" d="M 200,780 C 380,680 380,550 200,450 C 20,350 20,220 200,120 C 280,70 250,50 200,30" class="roadmap-path"/>
+                </svg>
+
+                <!-- Dynamic Nodes -->
+                <div class="absolute inset-0 z-10 pointer-events-none">
+                    <div v-for="(node, index) in positionedNodes" :key="node.id" 
+                         class="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+                         :style="{ left: node.x + '%', top: node.y + '%' }">
+                        
+                        <!-- Single Node Wrapper -->
+                        <div class="game-badge flex items-center justify-center cursor-pointer"
+                             :class="'status-' + node.status"
+                             @click="openModal(node)">
+                             
+                            <!-- Glow Effect for Completed/Active -->
+                            <div v-if="node.status !== 'locked'" class="absolute w-[140%] h-[140%] rounded-full glow-ring blur-md -z-10 transition-opacity"></div>
+                            
+                            <!-- The 3D Badge -->
+                            <div class="badge-core">
+                                <i v-if="node.status === 'locked'" class="fa-solid fa-lock text-2xl opacity-70"></i>
+                                <i v-else-if="node.status === 'completed'" class="fa-solid fa-check text-3xl"></i>
+                                <span v-else class="font-extrabold text-3xl font-sans">{{ node.id }}</span>
+                            </div>
+
+                            <!-- Floating Label Banner -->
+                            <div class="level-label" :class="node.isLeft ? 'right-[calc(100%+20px)] flex-row-reverse' : 'left-[calc(100%+20px)]'">
+                                <div class="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" 
+                                     :class="{
+                                         'bg-emerald-400 text-emerald-400': node.status === 'completed',
+                                         'bg-orange-400 text-orange-400': node.status === 'active',
+                                         'bg-gray-500 text-gray-500': node.status === 'locked'
+                                     }"></div>
+                                <div class="flex flex-col text-right">
+                                    <span class="text-[0.65rem] text-gray-400 font-bold tracking-wider opacity-80 uppercase">مرحله {{ node.id }}</span>
+                                    <span class="font-bold whitespace-nowrap">{{ node.title }}</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Vue Transition for Modal -->
+        <transition name="modal">
+            <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="closeModal"></div>
+                
+                <!-- Modal Content -->
+                <div class="glass-modal rounded-3xl p-8 max-w-sm w-full relative modal-content text-center">
+                    
+                    <!-- Close button -->
+                    <button @click="closeModal" class="absolute top-5 right-5 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+
+                    <!-- Icon Header -->
+                    <div class="flex justify-center mb-6 mt-2">
+                        <div class="w-20 h-20 rounded-[20px] flex items-center justify-center shadow-2xl transform rotate-3"
+                             :class="modalIconBgClass">
+                            <i class="fa-solid text-3xl text-white drop-shadow-md transform -rotate-3" :class="selectedNode?.icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Text Content -->
+                    <div class="mb-8">
+                        <span class="text-xs font-bold text-gray-400 tracking-widest bg-gray-800/50 px-3 py-1 rounded-full mb-3 inline-block">
+                            مرحله {{ selectedNode?.id }}
+                        </span>
+                        <h3 class="text-2xl font-extrabold text-white mb-3">{{ selectedNode?.title }}</h3>
+                        <p class="text-gray-300 text-sm leading-relaxed px-2">
+                            {{ getModalDescription(selectedNode) }}
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 mt-4">
+                        <button @click="closeModal" class="flex-1 py-3 px-4 rounded-xl border border-gray-600/50 bg-white/5 text-gray-300 font-medium hover:bg-white/10 hover:text-white transition-all duration-200">
+                            انصراف
+                        </button>
+                        <button @click="proceedAction" 
+                                class="flex-[1.5] py-3 px-4 rounded-xl font-bold shadow-lg transition-all duration-200 hover:-translate-y-1"
+                                :class="selectedNode?.status === 'locked' ? 'bg-gray-700 text-gray-400 cursor-not-allowed shadow-none' : 'bg-gradient-to-r from-primary to-primaryDark text-white shadow-primary/30 hover:shadow-primary/50'">
+                            <span v-if="isLoading"><i class="fa-solid fa-spinner fa-spin mr-2"></i> پردازش...</span>
+                            <span v-else>{{ selectedNode?.status === 'completed' ? 'مرور مجدد' : (selectedNode?.status === 'locked' ? 'قفل است' : 'شروع ماموریت') }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted, computed, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                // --- Data ---
+                const routePath = ref(null);
+                const positionedNodes = ref([]);
+                const isModalOpen = ref(false);
+                const selectedNode = ref(null);
+                const stars = ref([]);
+                const isLoading = ref(false);
+
+                const levelsData = [
+                    { id: 1, title: "شروع ماجراجویی", status: "active", icon: "fa-flag" },
+                    { id: 2, title: "حفظ اصول و قوانین", status: "locked", icon: "fa-shield-halved" },
+                    { id: 3, title: "کشف رازهای نهان", status: "locked", icon: "fa-map-location-dot" },
+                    { id: 4, title: "نبرد با باس فایت اول", status: "locked", icon: "fa-dragon" },
+                    { id: 5, title: "ارتقاء زره و سلاح", status: "locked", icon: "fa-hammer" },
+                    { id: 6, title: "ورود به سرزمین تاریک", status: "locked", icon: "fa-skull" },
+                    { id: 7, title: "جمع‌آوری سنگ‌های قدرت", status: "locked", icon: "fa-gem" },
+                    { id: 8, title: "تسلط بر جادوی باستان", status: "locked", icon: "fa-wand-magic-sparkles" },
+                    { id: 9, title: "آمادگی برای فتح قله", status: "locked", icon: "fa-mountain" },
+
+                ];
+
+                // --- Stars Logic ---
+                const generateStars = () => {
+                    const tempStars = [];
+                    for (let i = 0; i < 80; i++) {
+                        const size = Math.random() * 2.5 + 0.5;
+                        tempStars.push({
+                            id: i,
+                            style: {
+                                width: `${size}px`,
+                                height: `${size}px`,
+                                left: `${Math.random() * 100}%`,
+                                top: `${Math.random() * 100}%`,
+                                '--delay': `${Math.random() * 5}s`,
+                                '--duration': `${Math.random() * 3 + 2}s`,
+                                '--max-opacity': Math.random() * 0.6 + 0.2,
+                                backgroundColor: Math.random() > 0.8 ? '#ff8a00' : (Math.random() > 0.9 ? '#34d399' : '#ffffff')
+                            }
+                        });
+                    }
+                    stars.value = tempStars;
+                };
+
+                // --- Roadmap Math ---
+                const calculatePositions = () => {
+                    if (!routePath.value) return;
+                    
+                    const path = routePath.value;
+                    const pathLength = path.getTotalLength();
+                    const usableLength = pathLength * 0.92; 
+                    const startOffset = pathLength * 0.04;
+                    const numLevels = levelsData.length;
+                    const segmentLength = usableLength / (numLevels - 1);
+
+                    const tempNodes = [];
+
+                    levelsData.forEach((level, index) => {
+                        // index 0 goes to the bottom of the path
+                        const point = path.getPointAtLength(startOffset + (segmentLength * index));
+                        
+                        // Check slope to alternate label sides nicely
+                        const nextPoint = path.getPointAtLength(Math.min(pathLength, startOffset + (segmentLength * index) + 10));
+                        const isGoingRight = (nextPoint.x - point.x) > 0;
+                        
+                        // We decide label placement based on curve direction and position
+                        const isLeft = point.x < 200;
+
+                        tempNodes.push({
+                            ...level,
+                            x: (point.x / 400) * 100, // percentages for responsiveness
+                            y: (point.y / 800) * 100,
+                            isLeft: isLeft
+                        });
+                    });
+                    
+                    positionedNodes.value = tempNodes;
+                };
+
+                // --- Modal Methods ---
+                const openModal = (node) => {
+                    selectedNode.value = node;
+                    isModalOpen.value = true;
+                };
+
+                const closeModal = () => {
+                    if(isLoading.value) return; // Prevent closing while processing
+                    isModalOpen.value = false;
+                    setTimeout(() => {
+                        selectedNode.value = null;
+                    }, 300); // wait for animation
+                };
+
+                const getModalDescription = (node) => {
+                    if(!node) return "";
+                    if(node.status === 'completed') return "شما این مرحله را با موفقیت پشت سر گذاشته‌اید. آیا می‌خواهید دوباره آن را مرور کنید؟";
+                    if(node.status === 'locked') return "دسترسی به این منطقه مسدود است. برای ورود باید مراحل قبلی را با موفقیت به اتمام برسانید.";
+                    return `شما در آستانه ورود به "${node.title}" هستید. تجهیزات خود را آماده کنید، چالش جدیدی در انتظار شماست!`;
+                };
+
+                const modalIconBgClass = computed(() => {
+                    if(!selectedNode.value) return '';
+                    if(selectedNode.value.status === 'completed') return 'bg-gradient-to-br from-emerald-400 to-emerald-700 shadow-emerald-500/40 border border-emerald-400/50';
+                    if(selectedNode.value.status === 'locked') return 'bg-gradient-to-br from-gray-700 to-gray-900 shadow-gray-900/50 border border-gray-600';
+                    return 'bg-gradient-to-br from-primary to-primaryDark shadow-primary/40 border border-primary/50';
+                });
+
+                const proceedAction = () => {
+                    if(selectedNode.value?.status === 'locked') return;
+                    
+                    isLoading.value = true;
+                    // Simulate API call or routing
+                    setTimeout(() => {
+                        isLoading.value = false;
+                        closeModal();
+                        console.log(`Navigating to: ${selectedNode.value.title}`);
+                    }, 1000);
+                };
+
+                // --- Lifecycle ---
+                onMounted(() => {
+                    generateStars();
+                    
+                    // Wait for DOM & SVG to fully render before calculating path math
+                    nextTick(() => {
+                        // Slight delay to ensure fonts/CSS are loaded so SVG bounding box is accurate
+                        setTimeout(() => {
+                            calculatePositions();
+                        }, 100);
+                    });
+
+                    // Recalculate on resize
+                    window.addEventListener('resize', () => {
+                        requestAnimationFrame(calculatePositions);
+                    });
+                });
+
+                return {
+                    routePath,
+                    positionedNodes,
+                    stars,
+                    isModalOpen,
+                    selectedNode,
+                    openModal,
+                    closeModal,
+                    getModalDescription,
+                    modalIconBgClass,
+                    proceedAction,
+                    isLoading
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
