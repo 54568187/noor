@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>داشبورد کاربری - چالش‌های نور</title>
     
-    <!-- فونت فارسی وزیرمتن -->
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <!-- فونت وزیرمتن (نسخه اعداد فارسی برای کیف پول) -->
-    <link href="https://unpkg.com/vazirmatn@33.0.0/Vazirmatn-FD-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
     
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,29 +21,30 @@
     
     <!-- تنظیمات سفارشی Tailwind ترکیب شده -->
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Vazirmatn', '"Vazirmatn FD"', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            dark: '#111315',
-                            card: '#1C1F22',
-                            cardLight: '#24282D',
-                            border: '#2C3035',
-                            gold: '#E5B869',        // Base profile gold
-                            goldHover: '#CFA356',
-                            goldLight: '#F3E5AB',   // From Wallet
-                            red: '#ef4444',         // From Wallet
-                            green: '#22c55e'        // From Wallet
-                        }
-                    }
+tailwind.config = {
+    darkMode: 'class',
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Zain', 'sans-serif'],
+            },
+            colors: {
+                brand: {
+                    // یکپارچه‌سازی با پالت زینک و طلایی لوکس کل پروژه (بدون تغییر در اسم کلیدها)
+                    dark: '#09090b',         // پس‌زمینه اصلی مشکی زینک عمیق (جایگزین #111315)
+                    card: '#121212',         // پس‌زمینه کارت‌ها و پنل‌های اصلی (جایگزین #1C1F22)
+                    cardLight: '#18181b',    // کارت‌های لایه دوم یا وضعیت‌های هاور (جایگزین #24282D)
+                    border: '#27272a',       // رنگ بوردرها و خطوط جداکننده ظریف (جایگزین #2C3035)
+                    gold: '#f59e0b',         // طلایی اصلی و پخته پلتفرم (جایگزین #E5B869)
+                    goldHover: '#d97706',    // طلایی تیره برای حالت هاور دکمه‌ها (جایگزین #CFA356)
+                    goldLight: '#fbbf24',    // طلایی روشن برای بدج‌ها و متون فرعی (جایگزین #F3E5AB)
+                    red: '#e74c3c',          // رنگ قرمز بخش مالی/اخطارها (هماهنگ با danger - جایگزین #ef4444)
+                    green: '#2ecc71'         // رنگ سبز موفقیت/تراکنش مثبت (هماهنگ با success - جایگزین #22c55e)
                 }
             }
         }
+    }
+}
     </script>
 
     <style>
@@ -323,10 +324,10 @@
                                         <span class="text-[9px] font-bold text-brand-gold block mb-1 uppercase tracking-wider">چالش‌های پیش رو</span>
                                         <h4 class="text-xs font-black text-gray-900 dark:text-white mb-1.5">{{ nextMedalName }}</h4>
                                         <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-sans mb-1">
-                                            امتیاز فعلی: <span class="text-brand-gold font-bold font-['Vazirmatn_FD']">{{ currentPoints }}</span> از <span class="font-bold font-['Vazirmatn_FD']">{{ nextMedalThreshold }}</span>
+                                            امتیاز فعلی: <span class="text-brand-gold font-bold  ">{{ currentPoints }}</span> از <span class="font-bold  ">{{ nextMedalThreshold }}</span>
                                         </p>
                                         <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-sans">
-                                            فقط <span class="text-brand-gold font-black font-['Vazirmatn_FD']">{{ remainingPoints }} امتیاز</span> دیگر تا کسب این نشان قرآنی فاصله دارید! با شرکت در چالش‌های فعال و تایید صحت قرائت می‌توانید این امتیاز را سریعاً به دست آورید.
+                                            فقط <span class="text-brand-gold font-black  ">{{ remainingPoints }} امتیاز</span> دیگر تا کسب این نشان قرآنی فاصله دارید! با شرکت در چالش‌های فعال و تایید صحت قرائت می‌توانید این امتیاز را سریعاً به دست آورید.
                                         </p>
                                     </div>
                                 </div>
@@ -357,7 +358,7 @@
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                             
                             <!-- ستون اول (سمت راست در RTL): کارت موجودی و اطلاعات کارت‌های بانکی متصل (به پهنای ۴ ستون) -->
-                            <div class="lg:col-span-4 flex flex-col gap-8 font-['Vazirmatn_FD']">
+                            <div class="lg:col-span-4 flex flex-col gap-8">
                                 
                                 <!-- Balance Card (موجودی فعلی) -->
                                 <div class="bg-white dark:bg-brand-card rounded-[32px] p-8 border border-gray-100 dark:border-brand-border/60 shadow-lg relative overflow-hidden transition-all duration-300">
@@ -388,17 +389,17 @@
                                     </div>
 
                                     <!-- آمار ماهانه -->
-                                    <div class="grid grid-cols-2 gap-4 border-t border-gray-100 dark:border-brand-border/60 pt-6 font-sans">
+                                    <div class="grid grid-cols-2 gap-4 border-t border-gray-100 dark:border-brand-border/60 pt-6 ">
                                         <div class="text-center">
                                             <p class="text-xs text-gray-400 mb-1">کسب شده این ماه</p>
-                                            <p class="text-sm font-bold text-brand-green font-['Vazirmatn_FD']">
+                                            <p class="text-sm font-bold text-brand-green ">
                                                 {{ isVisible ? formatWithCommas(earnedThisMonth.toString()) : '***' }} 
                                                 <span class="text-xs text-gray-500 dark:text-gray-400 font-sans">سکه</span>
                                             </p>
                                         </div>
                                         <div class="text-center border-r border-gray-100 dark:border-brand-border/60">
                                             <p class="text-xs text-gray-400 mb-1">مصرف شده این ماه</p>
-                                            <p class="text-sm font-bold text-brand-red font-['Vazirmatn_FD']">
+                                            <p class="text-sm font-bold text-brand-red ">
                                                 {{ isVisible ? formatWithCommas(spentThisMonth.toString()) : '***' }} 
                                                 <span class="text-xs text-gray-500 dark:text-gray-400 font-sans">سکه</span>
                                             </p>
@@ -868,7 +869,7 @@
                                                                 <!-- Details -->
                                                                 <div class="flex flex-col gap-1.5">
                                                                     <span class="text-[15px] font-bold text-gray-900 dark:text-gray-100 font-sans">{{ tx.title }}</span>
-                                                                    <span class="text-[12px] text-gray-500 font-medium flex items-center gap-1.5 font-['Vazirmatn_FD']">
+                                                                    <span class="text-[12px] text-gray-500 font-medium flex items-center gap-1.5  ">
                                                                         <span :class="tx.status === 'ناموفق' ? 'text-brand-red font-sans' : 'text-brand-green font-sans'">{{ tx.status }}</span>
                                                                         <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
                                                                         {{ tx.date }}
@@ -877,7 +878,7 @@
                                                             </div>
 
                                                             <!-- Amount -->
-                                                            <div class="text-lg font-bold whitespace-nowrap text-gray-900 dark:text-white font-['Vazirmatn_FD']">
+                                                            <div class="text-lg font-bold whitespace-nowrap text-gray-900 dark:text-white  ">
                                                                 <span v-if="tx.type === 'deposit'">+</span>
                                                                 <span v-if="tx.type === 'withdraw'">-</span>
                                                                 {{ tx.amount }} <span class="text-xs text-gray-500 font-medium ml-1 font-sans">سکه</span>
@@ -895,7 +896,7 @@
                                                             <span class="text-sm font-bold">قبلی</span>
                                                         </button>
 
-                                                        <div class="flex items-center gap-1.5 font-['Vazirmatn_FD']">
+                                                        <div class="flex items-center gap-1.5  ">
                                                             <button v-for="page in totalPages" :key="page"
                                                                     @click="goToPage(page)"
                                                                     class="w-8 h-8 rounded-lg text-sm font-bold flex items-center justify-center transition-all"
@@ -1046,7 +1047,7 @@
 
                     <div v-if="customAmount" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
                         <span class="text-xs text-gray-600 dark:text-gray-400 font-bold">مبلغ نهایی برای شارژ:</span>
-                        <span class="text-lg font-black text-brand-gold font-['Vazirmatn_FD']">
+                        <span class="text-lg font-black text-brand-gold  ">
                             {{ formatWithCommas(customAmount) }} <span class="text-xs font-normal text-gray-500 dark:text-gray-300 font-sans">سکه</span>
                         </span>
                     </div>
@@ -1104,7 +1105,7 @@
 
                     <div v-if="sendAmount" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
                         <span class="text-xs text-gray-600 dark:text-gray-400 font-bold">مقدار نهایی کسر از حساب:</span>
-                        <span class="text-lg font-black text-brand-gold font-['Vazirmatn_FD']">
+                        <span class="text-lg font-black text-brand-gold  ">
                             {{ formatWithCommas(sendAmount) }} <span class="text-xs font-normal text-gray-500 dark:text-gray-300 font-sans">سکه</span>
                         </span>
                     </div>
@@ -1115,7 +1116,7 @@
                             <span>تایید و ارسال سریع</span>
                             <svg v-if="isSendFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                         </button>
-                        <p class="text-[11px] text-gray-500 mt-2.5 text-center font-['Vazirmatn_FD']">موجودی مجاز شما: {{ balanceCoins }} <span class="font-sans">سکه</span></p>
+                        <p class="text-[11px] text-gray-500 mt-2.5 text-center  ">موجودی مجاز شما: {{ balanceCoins }} <span class="font-sans">سکه</span></p>
                     </div>
                 </form>
             </div>
@@ -1199,7 +1200,7 @@
 
                     <div v-if="sendAmountByUsername && selectedTargetContact" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
                         <span class="text-xs text-gray-600 dark:text-gray-400 font-bold">مقدار نهایی کسر از حساب:</span>
-                        <span class="text-lg font-black text-brand-gold font-['Vazirmatn_FD']">
+                        <span class="text-lg font-black text-brand-gold  ">
                             {{ formatWithCommas(sendAmountByUsername) }} <span class="text-xs font-normal text-gray-500 dark:text-gray-300 font-sans">سکه</span>
                         </span>
                     </div>
@@ -1210,7 +1211,7 @@
                             <span>ارسال سکه</span>
                             <svg v-if="isSendByUsernameFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                         </button>
-                        <p class="text-[11px] text-gray-500 mt-2.5 text-center font-['Vazirmatn_FD']">موجودی مجاز شما: {{ balanceCoins }} <span class="font-sans">سکه</span></p>
+                        <p class="text-[11px] text-gray-500 mt-2.5 text-center  ">موجودی مجاز شما: {{ balanceCoins }} <span class="font-sans">سکه</span></p>
                     </div>
                 </form>
             </div>

@@ -11,6 +11,10 @@
       rel="stylesheet"
       type="text/css"
     />
+        <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
 
     <!-- آیکون‌ها -->
     <link
@@ -21,27 +25,28 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
+tailwind.config = {
+    theme: {
+        extend: {
             fontFamily: {
-              sans: ["Vazirmatn", "sans-serif"],
+                sans: ["Zain", "Vazirmatn", "sans-serif"],
             },
             colors: {
-              brand: {
-                dark: "#000000",
-                light: "#171717",
-                gold: "#fbbf24",
-                goldHover: "#f59e0b",
-                accent: "#fbbf24",
-              },
+                brand: {
+                    dark: '#09090b',       // بک‌گراند اصلی سایت
+                    card: '#121212',       // رنگ کارت‌ها و فرم‌ها
+                    cardHover: '#18181b',  // هاور کارت‌ها
+                    gold: '#f59e0b',       // طلایی اصلی (دکمه‌ها، آیکون‌ها، مدال‌ها)
+                    goldHover: '#d97706',  // طلایی تیره‌تر برای هاور دکمه‌ها
+                }
             },
-            transitionTimingFunction: {
-              slide: "cubic-bezier(0.645, 0.045, 0.355, 1.000)",
-            },
-          },
-        },
-      };
+            boxShadow: {
+                'gold-glow': '0 0 15px rgba(245, 158, 11, 0.15)',
+                'gold-glow-strong': '0 0 25px rgba(245, 158, 11, 0.3)',
+            }
+        }
+    }
+}
     </script>
 
     <!-- Vue 3 -->
@@ -49,7 +54,7 @@
 
     <style>
       body {
-        font-family: "Vazirmatn", sans-serif;
+        font-family: "Zain", sans-serif;
         background: linear-gradient(135deg, #000000 0%, #111111 100%);
         min-height: 100vh;
         color: white;

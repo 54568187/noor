@@ -10,27 +10,38 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 
+        <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
+
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { vazirmatn: ["Shabnam", 'Vazirmatn', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            dark: '#09090b',       
-                            card: '#121212',       
-                            cardHover: '#18181b',  
-                            gold: '#f59e0b',       
-                            goldHover: '#d97706'
-                        }
-                    }
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ["Zain", "Vazirmatn", "sans-serif"],
+            },
+            colors: {
+                brand: {
+                    dark: '#09090b',       // بک‌گراند اصلی سایت
+                    card: '#121212',       // رنگ کارت‌ها و فرم‌ها
+                    cardHover: '#18181b',  // هاور کارت‌ها
+                    gold: '#f59e0b',       // طلایی اصلی (دکمه‌ها، آیکون‌ها، مدال‌ها)
+                    goldHover: '#d97706',  // طلایی تیره‌تر برای هاور دکمه‌ها
                 }
+            },
+            boxShadow: {
+                'gold-glow': '0 0 15px rgba(245, 158, 11, 0.15)',
+                'gold-glow-strong': '0 0 25px rgba(245, 158, 11, 0.3)',
             }
         }
+    }
+}
     </script>
 
     <style>
-        body { font-family: "Shabnam", 'Vazirmatn', sans-serif; background-color: #09090b; margin: 0; overflow: hidden; overscroll-behavior: none; }
+        body { font-family: "Zain", 'Vazirmatn', sans-serif; background-color: #09090b; margin: 0; overflow: hidden; overscroll-behavior: none; }
         .bg-canvas-dots { background-color: #09090b; background-image: radial-gradient(#27272a 1.5px, transparent 1.5px); background-size: 28px 28px; }
         
         .canvas-container { cursor: grab; user-select: none; touch-action: none; }

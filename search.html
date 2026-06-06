@@ -16,26 +16,44 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- پیکربندی Tailwind با پالت رنگی هماهنگ شده با صفحه Course -->
+         <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ["Shabnam", "Vazirmatn", "sans-serif"],
-                    },
-                    colors: {
-                        darkBase: '#09090b',       
-                        darkPanel: '#121212',      
-                        darkPanelHover: '#18181b', 
-                        darkBorder: '#27272a',     
-                        goldPrimary: '#f59e0b',    
-                        goldHover: '#d97706',      
-                        textMain: '#ffffff',       
-                        textMuted: '#a1a1aa',      
-                    }
-                }
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ["Zain", "Vazirmatn", "sans-serif"],
+            },
+            colors: {
+                // رنگ‌های اصلی خودت (بدون کوچکترین تغییر تا کدهای قبلیت خراب نشن)
+                darkBase: '#09090b',       
+                darkPanel: '#121212',      
+                darkPanelHover: '#18181b', 
+                darkBorder: '#27272a',     
+                goldPrimary: '#f59e0b',    
+                goldHover: '#d97706',      
+                textMain: '#ffffff',       
+                textMuted: '#a1a1aa',      
+
+                // رنگ‌های اختصاصی جدید برای بخش سرچ
+                searchBg: '#161618',          // پس‌زمینه داخل فیلد سرچ
+                searchPlaceholder: '#52525b', // رنگ متن راهنمای داخل اینپوت
+            },
+            boxShadow: {
+                // افکت‌های نوری اختصاصی برای فوکوس سرچ و فیلترها
+                'search-focus': '0 0 20px rgba(245, 158, 11, 0.15), 0 0 0 2px rgba(245, 158, 11, 0.4)', 
+                'filter-glow': '0 0 12px rgba(245, 158, 11, 0.25)', 
+            },
+            animation: {
+                // انیمیشن لودینگ اسکلتون برای نتایج سرچ
+                'shimmer': 'pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             }
         }
+    }
+}
     </script>
 
     <style>

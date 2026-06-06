@@ -8,40 +8,45 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        dark: {
-                            900: '#1a1d24',
-                            800: '#232731',
-                            700: '#2c313d',
-                        },
-                        gold: {
-                            400: '#e1c271',
-                            500: '#c5a34f',
-                            100: '#fcf1d3',
-                        },
-                        success: '#2ecc71',
-                        danger: '#e74c3c',
-                        info: '#3498db'
-                    },
-                    fontFamily: {
-                        sans: ['Vazirmatn', 'Tahoma', 'sans-serif'],
-                    }
-                }
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                // تبدیل کدهای رنگی داشبورد به پالت زینک و طلاییِ بقیه صفحات (بدون تغییر در ساختار اسم‌ها)
+                dark: {
+                    900: '#09090b', // پس‌زمینه اصلی صفحه (جایگزین سورمه‌ای تیره قبلی)
+                    800: '#121212', // پس‌زمینه پنل‌ها، کارت‌ها و ویجت‌ها
+                    700: '#27272a', // رنگ بوردرها، خطوط جداکننده و هاورها
+                },
+                gold: {
+                    500: '#f59e0b', // طلایی اصلی و پخته پلتفرم (همان goldPrimary سرچ)
+                    400: '#fbbf24', // طلایی کمی روشن‌تر برای هاورها یا متون خاص
+                    100: '#fef3c7', // رنگ کرم/طلایی بسیار ملایم برای بک‌گراند بدج‌ها و آیکون‌ها
+                },
+                success: '#2ecc71',
+                danger: '#e74c3c',
+                info: '#3498db'
+            },
+            fontFamily: {
+                sans: ['Vazirmatn', 'Tahoma', 'sans-serif'],
             }
         }
+    }
+}
     </script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
         
         body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #1a1d24;
+            font-family: "Zain",'Vazirmatn';
             color: #e2e8f0;
         }
 
@@ -90,7 +95,7 @@
         }
     </style>
 </head>
-<body class="antialiased min-h-screen relative overflow-x-hidden">
+<body class="antialiased min-h-screen relative overflow-x-hidden bg-dark-900">
     <div id="app" class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto relative">
         
         <!-- نوتیفیکیشن زنده (Live Notification) -->
@@ -130,7 +135,7 @@
             <div class="lg:col-span-4 space-y-6">
                 
                 <!-- مأموریت‌های روزانه -->
-                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden border border-blue-900/30">
+                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden border border-blue-900/30 bg-dark-800" >
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
 
                     <div class="flex justify-between items-center mb-6 relative z-10">
@@ -143,7 +148,7 @@
                         </span>
                     </div>
 
-                    <div class="space-y-4 relative z-10">
+                    <div class="space-y-4 relative z-10 ">
                         <div v-for="quest in dailyQuests" :key="quest.id" class="p-3 rounded-xl border transition-all duration-300" :class="quest.completed ? 'bg-success/5 border-success/20' : 'bg-dark-800/50 border-dark-700 hover:border-blue-400/30'">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex items-center gap-3">
@@ -191,7 +196,7 @@
                 </div>
 
                 <!-- تاریخچه فعالیت‌ها -->
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-6 rounded-2xl bg-dark-800">
                     <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-clock-rotate-left text-gray-400"></i> تاریخچه فعالیت‌ها
                     </h2>
@@ -220,10 +225,10 @@
             <div class="lg:col-span-8 space-y-6">
                 
                 <!-- کارت‌های آماری بالا -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ">
                     
                     <!-- موجودی کیف پول -->
-                    <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-gold-400/50 transition duration-300">
+                    <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-gold-400/50 transition duration-300 bg-dark-800">
                         <h3 class="text-gray-400 text-xs mb-2 flex justify-between">
                             موجودی سکه <i class="fa-solid fa-wallet text-gray-500"></i>
                         </h3>
@@ -234,7 +239,7 @@
                     </div>
 
                     <!-- چالش‌های فعال -->
-                    <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-gold-400/50 transition duration-300 flex justify-between items-center">
+                    <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-gold-400/50 transition bg-dark-800 duration-300 flex justify-between items-center">
                         <div>
                             <h3 class="text-gray-400 text-xs mb-2">چالش‌های فعال</h3>
                             <div class="flex items-end gap-2 mt-3">
@@ -263,7 +268,7 @@
                     </div>
 
                     <!-- رتبه کل -->
-                    <div class="glass-panel p-4 rounded-2xl hover:border-gold-400/50 transition duration-300">
+                    <div class="glass-panel p-4 rounded-2xl hover:border-gold-400/50 transition duration-300 bg-dark-800">
                         <h3 class="text-gray-400 text-xs mb-2 flex justify-between">
                             رتبه کل <i class="fa-solid fa-trophy text-gray-500"></i>
                         </h3>
@@ -280,7 +285,7 @@
                 </div>
 
                 <!-- نمودار پیشرفت چالش‌ها -->
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-6 rounded-2xl bg-dark-800">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-lg font-bold text-white">نمودار پیشرفت چالش‌ها (مراحل)</h2>
                         <div class="flex gap-2 bg-dark-900 p-1 rounded-lg border border-dark-700">
@@ -295,7 +300,7 @@
                 </div>
 
                 <!-- مسیرهای در حال اجرا -->
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-6 rounded-2xl bg-dark-800">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-lg font-bold text-white">مسیرهای در حال اجرا</h2>
                         <a href="#" class="text-sm text-gold-400 hover:text-gold-100 transition">مشاهده همه</a>

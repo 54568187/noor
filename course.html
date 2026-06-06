@@ -14,34 +14,38 @@
     <!-- FontAwesome (برای آیکون‌های زیبا و عمومی سایت) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Vazirmatn Font -->
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            dark: '#09090b',       
-                            card: '#121212',       
-                            cardHover: '#18181b',  
-                            gold: '#f59e0b',       
-                            goldHover: '#d97706',
-                            gray: '#a1a1aa'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Shabnam', 'Vazirmatn', 'sans-serif'],
-                    }
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ["Zain", "Vazirmatn", "sans-serif"],
+            },
+            colors: {
+                brand: {
+                    dark: '#09090b',       // بک‌گراند اصلی سایت
+                    card: '#121212',       // رنگ کارت‌ها و فرم‌ها
+                    cardHover: '#18181b',  // هاور کارت‌ها
+                    gold: '#f59e0b',       // طلایی اصلی (دکمه‌ها، آیکون‌ها، مدال‌ها)
+                    goldHover: '#d97706',  // طلایی تیره‌تر برای هاور دکمه‌ها
                 }
+            },
+            boxShadow: {
+                'gold-glow': '0 0 15px rgba(245, 158, 11, 0.15)',
+                'gold-glow-strong': '0 0 25px rgba(245, 158, 11, 0.3)',
             }
         }
+    }
+}
     </script>
 
     <style>
-        body { 
-            font-family: Shabnam, Vazirmatn, sans-serif; 
+        body {  
             background-color: #09090b; 
             color: #ffffff; 
         }

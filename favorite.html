@@ -6,7 +6,10 @@
     <title>چالش‌های نور | انتخاب علاقه‌مندی‌ها</title>
     
     <!-- فونت وزیرمتن -->
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Vue.js 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -16,36 +19,38 @@
     
     <!-- تنظیمات سفارشی Tailwind -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ["Shabnam",'Vazirmatn', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            black: '#000000', // مشکی خالص
-                            dark: '#0a0a0a',  // خاکستری بسیار تیره برای کارت‌ها
-                            gold: '#facc15',  // طلایی زنده
-                            'gold-dark': '#ca8a04',
-                        }
-                    },
-                    boxShadow: {
-                        'gold-glow': '0 0 15px rgba(250, 204, 21, 0.15)',
-                        'gold-glow-strong': '0 0 25px rgba(250, 204, 21, 0.3)',
-                    },
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(15px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ["Zain", 'Vazirmatn', 'sans-serif'],
+            },
+            colors: {
+                brand: {
+                    // یکپارچه‌سازی با پالت زینک و طلایی لوکس کل پروژه (بدون تغییر در اسم کلیدها)
+                    black: '#09090b',        // پس‌زمینه اصلی مشکی زینک عمیق (جایگزین #000000)
+                    dark: '#121212',         // پس‌زمینه خاکستری تیره کارت‌ها (جایگزین #0a0a0a)
+                    gold: '#f59e0b',         // طلایی اصلی و پخته پلتفرم (جایگزین #facc15)
+                    'gold-dark': '#d97706',   // طلایی تیره برای حالت انتخاب‌شده یا هاور (جایگزین #ca8a04)
+                }
+            },
+            boxShadow: {
+                // هماهنگ کردن هاله نور (Glow) با رنگ طلایی لوکس جدید پلتفرم
+                'gold-glow': '0 0 15px rgba(245, 158, 11, 0.15)',
+                'gold-glow-strong': '0 0 25px rgba(245, 158, 11, 0.3)',
+            },
+            animation: {
+                'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+            },
+            keyframes: {
+                fadeInUp: {
+                    '0%': { opacity: '0', transform: 'translateY(15px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
                 }
             }
         }
+    }
+}
     </script>
 
     <style>

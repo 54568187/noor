@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کیف پول چالش‌ها</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Zain Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind Configuration -->
+    <script>
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Zain', 'sans-serif'],
+            },
+            colors: {
+                brand: {
+                    // تغییر کدهای رنگی به پالت زینک و طلایی یکپارچه (بدون تغییر در اسم کلیدها)
+                    gold: '#f59e0b',       // طلایی اصلی و پخته پلتفرم (جایگزین #D4AF37)
+                    goldLight: '#fbbf24',  // طلایی روشن‌تر برای بخش‌های فرعی یا هاور
+                    goldDark: '#d97706',   // طلایی تیره برای حالت‌های فعال و خطوط نوری
+                    black: '#09090b',      // پس‌زمینه اصلی مشکی زینک عمیق (جایگزین #18181b)
+                    card: '#121212',       // پس‌زمینه پنل‌ها و کارت‌های کیف پول (جایگزین #27272a)
+                    border: '#27272a',     // رنگ بوردرها و خطوط جداکننده ظریف (جایگزین #3f3f46)
+                    red: '#e74c3c',        // رنگ تراکنش‌های منفی/خروجی (هماهنگ با danger داشبورد)
+                    green: '#2ecc71'       // رنگ تراکنش‌های مثبت/ورودی (هماهنگ با success داشبورد)
+                }
+            }
+        }
+    }
+}
+    </script>
+
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- استایل‌های مربوط به اسکرول‌بار و پس‌زمینه -->
+    <style>
+        /* اعمال قطعی و اجباری فونت اعداد فارسی به کل صفحه */
+        * {
+            font-family: "Zain" , 'Vazirmatn FD', sans-serif !important;
+        }
+
+        body {
+            overflow-x: hidden;
+            background-color: #18181b; /* رنگ غیر مشکی خالص */
+        }
+        
+        /* مخفی کردن اسکرول بار برای زیبایی و هماهنگی با تم */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181b; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37; 
+        }
+
+        /* انیمیشن باز شدن مدال */
+        @keyframes fadeInUpModal {
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-modal {
+            animation: fadeInUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-brand-black font-sans antialiased text-gray-200 selection:bg-brand-gold selection:text-brand-black min-h-screen pb-10">
+
+    <!-- افکت نور پس‌زمینه (Glow) اضافه شده -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-3/4 h-56 bg-brand-gold/10 blur-[100px] rounded-full pointer-events-none z-0"></div>
+
+    <!-- Vue App Container -->
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-8 lg:p-12 relative z-10">
+        
+        <!-- Main Content (Grid Layout) -->
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Right Column (Balance & Cards) -->
+            <section class="lg:col-span-4 flex flex-col gap-8">
+                
+                <!-- Balance Card -->
+                <div class="bg-brand-card rounded-[32px] p-8 border border-brand-border shadow-lg relative overflow-hidden">
+                    <!-- Decorative background element -->
+                    <div class="absolute -top-20 -right-20 w-48 h-48 bg-brand-gold rounded-full mix-blend-screen filter blur-[100px] opacity-10 pointer-events-none"></div>
+
+                    <!-- Visibility Toggle -->
+                    <div 
+                        class="flex items-center justify-center gap-2 text-gray-400 mb-8 cursor-pointer hover:text-brand-gold transition-colors inline-flex mx-auto w-full" 
+                        @click="toggleVisibility"
+                    >
+                        <span class="text-sm font-medium">موجوبی فعلی شما</span>
+                        <svg v-if="isVisible" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-gold">
+                            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                            <line x1="2" y1="2" x2="22" y2="22"/>
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-gold">
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </div>
+
+                    <!-- Balance Amount -->
+                    <div class="text-center mb-8 flex items-center justify-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]">
+                          <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12 4.5a.75.75 0 0 0 0 1.5c3.314 0 6 2.686 6 6s-2.686 6-6 6-6-2.686-6-6 2.686-6 6-6a.75.75 0 0 0 0-1.5 7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-4xl font-extrabold text-brand-gold tracking-tight drop-shadow-[0_0_10px_rgba(212,175,55,0.4)]">
+                            {{ isVisible ? balanceCoins : '***' }}
+                        </span>
+                    </div>
+
+                    <!-- Monthly Stats -->
+                    <div class="grid grid-cols-2 gap-4 border-t border-brand-border pt-6">
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500 mb-1">کسب شده این ماه</p>
+                            <p class="text-sm font-bold text-brand-green">
+                                {{ isVisible ? formatWithCommas(earnedThisMonth.toString()) : '***' }} 
+                                <span class="text-xs text-gray-400">سکه</span>
+                            </p>
+                        </div>
+                        <div class="text-center border-r border-brand-border">
+                            <p class="text-xs text-gray-500 mb-1">مصرف شده این ماه</p>
+                            <p class="text-sm font-bold text-brand-red">
+                                {{ isVisible ? formatWithCommas(spentThisMonth.toString()) : '***' }} 
+                                <span class="text-xs text-gray-400">سکه</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank Card Section -->
+                <div class="bg-brand-card rounded-[32px] p-6 border border-brand-border shadow-lg">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-bold text-white">کارت‌های بانکی متصل</h3>
+                        <!-- Add Card Button triggers modal -->
+                        <button @click="openCardModal" class="text-brand-gold hover:bg-brand-gold/10 p-1.5 rounded-lg transition-colors" title="افزودن کارت جدید">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- لیست کارت‌های متصل -->
+                    <div class="flex flex-col gap-4">
+                        <div v-if="bankCards.length === 0" class="text-center py-10 px-4 text-gray-500 border-2 border-dashed border-gray-700/50 rounded-[24px]">
+                            شما هنوز کارت بانکی متصل نکرده‌اید.
+                        </div>
+                        
+                        <div v-for="card in bankCards" :key="card.id" class="relative w-full h-48 rounded-[24px] p-6 flex flex-col justify-between overflow-hidden group border border-gray-700/50 shadow-2xl cursor-pointer">
+                            <!-- Card BG Gradients -->
+                            <div class="absolute inset-0 bg-gradient-to-br z-0" :class="card.bgGradient"></div>
+                            <div class="absolute -right-12 -top-12 w-40 h-40 bg-brand-gold rounded-full mix-blend-overlay filter blur-[50px] opacity-10 group-hover:opacity-30 transition-opacity duration-500"></div>
+                            <div class="absolute -left-12 -bottom-12 w-32 h-32 bg-gray-500 rounded-full mix-blend-overlay filter blur-[40px] opacity-10"></div>
+                            
+                            <!-- Top Section (Chip & Bank Name) -->
+                            <div class="relative z-10 flex justify-between items-center">
+                                <!-- EMV Chip Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-brand-gold/80" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M21 4H3C1.89543 4 1 4.89543 1 6V18C1 19.1046 1.89543 20 3 20H21C22.1046 20 23 19.1046 23 18V6C23 4.89543 22.1046 4 21 4ZM3 6H21V10H3V6ZM3 18V12H21V18H3Z" />
+                                </svg>
+                                <!-- Bank Logo/Name -->
+                                <div class="flex items-center gap-3">
+                                    <span class="text-[15px] font-bold text-gray-300 italic">{{ card.bankName }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Bottom Section (Number, Name, Expiry) -->
+                            <div class="relative z-10 mt-auto">
+                                <!-- Card Number -->
+                                <p class="text-[15px] xs:text-[17px] sm:text-[20px] md:text-[22px] tracking-[0.08em] xs:tracking-[0.12em] sm:tracking-[0.18em] text-gray-100 mb-4 text-left font-bold drop-shadow-md whitespace-nowrap overflow-visible" dir="ltr">
+                                    {{ card.cardNumber }}
+                                </p>
+                                
+                                <div class="flex justify-between items-end">
+                                    <!-- Cardholder Name -->
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-gray-500 uppercase mb-0.5" dir="ltr">Cardholder</span>
+                                        <span class="text-sm text-gray-200 font-bold tracking-wide">{{ card.cardholder }}</span>
+                                    </div>
+                                    
+                                    <div class="flex gap-5">
+                                        <!-- CVV2 -->
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[9px] text-gray-500 uppercase mb-0.5" dir="ltr">CVV2</span>
+                                            <span class="text-xs font-bold text-gray-300" dir="ltr">{{ card.cvv2 }}</span>
+                                        </div>
+                                        <!-- Expiry Date -->
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[9px] text-gray-500 uppercase mb-0.5" dir="ltr">Exp Date</span>
+                                            <span class="text-sm font-bold text-brand-gold" dir="ltr">{{ card.expiry }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Left Column (Actions & History) -->
+            <section class="lg:col-span-8 flex flex-col gap-8">
+                
+                <!-- Quick Actions Grid for Challenges -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <button v-for="action in quickActions" :key="action.id" 
+                        @click="handleAction(action)"
+                        :class="[
+                        'relative flex flex-col items-center justify-center gap-3 p-5 rounded-[24px] transition-all group border',
+                        action.disabled ? 'bg-brand-card/50 border-brand-border/50 cursor-not-allowed opacity-60' : 'bg-brand-card border-brand-border hover:border-brand-gold/50 hover:bg-[#202023] hover:-translate-y-1 shadow-lg'
+                    ]">
+                        <!-- Badge for disabled -->
+                        <div v-if="action.disabled" class="absolute -top-2 -left-2 bg-brand-gold text-brand-black text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-lg whitespace-nowrap">
+                            به‌زودی
+                        </div>
+
+                        <!-- Icon Container -->
+                        <div :class="[
+                            'w-14 h-14 rounded-[18px] flex items-center justify-center transition-colors',
+                            action.primary ? 'bg-brand-gold text-brand-black shadow-[0_0_20px_rgba(212,175,55,0.2)]' : 'bg-[#27272a] border border-brand-border text-brand-gold group-hover:bg-brand-gold/10'
+                        ]">
+                            <div v-html="action.icon"></div>
+                        </div>
+                        <span class="text-[13px] font-bold text-gray-300 group-hover:text-white transition-colors text-center">{{ action.title }}</span>
+                    </button>
+                </div>
+
+                <!-- Quick Transfer / Invite Rivals -->
+                <div class="bg-brand-card rounded-[32px] p-6 border border-brand-border shadow-lg">
+                    <h2 class="text-lg font-bold text-white mb-6">ارسال سریع سکه به دوستان (جهت باز کردن تراکنش کلیک کنید)</h2>
+                    <div class="flex items-center gap-6 overflow-x-auto pb-2 scrollbar-hide">
+                        
+                        <!-- Add New Button -->
+                        <button @click="openNewFriendModal" class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                            <div class="w-14 h-14 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center text-gray-400 group-hover:border-brand-gold group-hover:text-brand-gold transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium">دوست جدید</span>
+                        </button>
+
+                        <!-- Contacts list -->
+                        <button v-for="contact in recentContacts" :key="contact.id" @click="openSendModal(contact)" class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                            <div :class="['w-14 h-14 rounded-full flex items-center justify-center text-brand-black font-bold text-lg border-2 border-transparent group-hover:border-brand-gold transition-all shadow-sm', contact.color]">
+                                {{ contact.initials }}
+                            </div>
+                            <span class="text-xs text-gray-400 font-medium group-hover:text-gray-200">{{ contact.name }}</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Transactions History with Pagination -->
+                <div class="bg-brand-card rounded-[32px] p-8 border border-brand-border shadow-lg flex-grow flex flex-col">
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-brand-border">
+                        <h2 class="text-xl font-bold text-white">تاریخچه تراکنش‌های بازی</h2>
+                    </div>
+
+                    <!-- Transactions List -->
+                    <div class="space-y-3 flex-grow">
+                        <!-- Transaction Item (Paginated) -->
+                        <div v-for="tx in paginatedTransactions" :key="tx.id" class="flex items-center justify-between p-4 rounded-2xl hover:bg-[#202023] transition-colors border border-transparent hover:border-brand-border">
+                            
+                            <div class="flex items-center gap-5">
+                                <!-- Status Icon -->
+                                <div :class="[
+                                        'w-14 h-14 rounded-[18px] flex items-center justify-center relative flex-shrink-0',
+                                        tx.status === 'ناموفق' ? 'bg-red-950/30 text-brand-red' : 
+                                        tx.status === 'موفق' ? 'bg-green-950/30 text-brand-green' : 'bg-brand-gold/10 text-brand-gold'
+                                    ]">
+                                    
+                                    <!-- Dynamic Icon based on type -->
+                                    <svg v-if="tx.type === 'withdraw'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+                                    
+                                    <!-- Tiny Status Badge -->
+                                    <div class="absolute -bottom-1 -right-1 bg-brand-black rounded-full p-[2px]">
+                                        <svg v-if="tx.status === 'ناموفق'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-brand-red"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.536-10.036a.75.75 0 1 0-1.061-1.061L10 8.939 8.525 7.464a.75.75 0 1 0-1.061 1.061L8.939 10l-1.475 1.475a.75.75 0 0 0 1.061 1.061L10 11.061l1.475 1.475a.75.75 0 0 0 1.061-1.061L11.061 10l1.475-1.475Z" clip-rule="evenodd" /></svg>
+                                        <svg v-else-if="tx.status === 'موفق'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-brand-green"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                </div>
+
+                                <!-- Details -->
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-[15px] font-bold text-gray-100">{{ tx.title }}</span>
+                                    <span class="text-[12px] text-gray-500 font-medium flex items-center gap-1.5">
+                                        <span :class="tx.status === 'ناموفق' ? 'text-brand-red' : 'text-brand-green'">{{ tx.status }}</span>
+                                        <span class="w-1 h-1 rounded-full bg-gray-700"></span>
+                                        {{ tx.date }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Amount -->
+                            <div class="text-lg font-bold whitespace-nowrap text-white">
+                                <span v-if="tx.type === 'deposit'">+</span>
+                                <span v-if="tx.type === 'withdraw'">-</span>
+                                {{ tx.amount }} <span class="text-xs text-gray-500 font-medium ml-1">سکه</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div v-if="totalPages > 1" class="flex items-center justify-between mt-6 pt-4 border-t border-brand-border">
+                        <!-- دکمه قبلی (راست) -->
+                        <button @click="prevPage" :disabled="currentPage === 1"
+                                class="px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5"
+                                :class="currentPage === 1 ? 'border-brand-border/30 text-gray-600 cursor-not-allowed' : 'border-brand-border text-gray-300 hover:border-brand-gold hover:text-brand-gold bg-[#202023] hover:bg-[#27272a]'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            <span class="text-sm font-bold">قبلی</span>
+                        </button>
+
+                        <!-- شماره صفحات -->
+                        <div class="flex items-center gap-1.5">
+                            <button v-for="page in totalPages" :key="page"
+                                    @click="goToPage(page)"
+                                    class="w-8 h-8 rounded-lg text-sm font-bold flex items-center justify-center transition-all"
+                                    :class="currentPage === page ? 'bg-brand-gold text-brand-black shadow-[0_0_10px_rgba(212,175,55,0.4)]' : 'border border-brand-border text-gray-400 hover:text-brand-gold hover:border-brand-gold/50 hover:bg-[#202023]'">
+                                {{ page }}
+                            </button>
+                        </div>
+
+                        <!-- دکمه بعدی (چپ) -->
+                        <button @click="nextPage" :disabled="currentPage === totalPages"
+                                class="px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5"
+                                :class="currentPage === totalPages ? 'border-brand-border/30 text-gray-600 cursor-not-allowed' : 'border-brand-border text-gray-300 hover:border-brand-gold hover:text-brand-gold bg-[#202023] hover:bg-[#27272a]'">
+                            <span class="text-sm font-bold">بعدی</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- مدال افزودن کارت بانکی جدید -->
+        <div v-if="isCardModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity" @click.self="closeCardModal">
+            <div class="bg-[#1e1e21] border border-brand-border rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <!-- دکمه بستن -->
+                <button @click="closeCardModal" class="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <!-- عنوان مدال -->
+                <h2 class="text-2xl font-extrabold text-white mb-8 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>
+                    افزودن کارت بانکی
+                </h2>
+                
+                <!-- فرم دریافت اطلاعات -->
+                <form @submit.prevent="submitNewCard" class="space-y-6">
+                    <!-- شماره کارت -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">شماره کارت (۱۶ رقم)</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="newCardNumber" 
+                                type="text" 
+                                dir="ltr" 
+                                maxlength="19"
+                                placeholder="**** **** **** ****" 
+                                class="w-full bg-[#121212] border border-brand-border rounded-xl px-4 py-3.5 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left tracking-[0.15em] sm:tracking-[0.25em] font-mono text-lg placeholder-gray-600"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-5">
+                        <!-- تاریخ انقضا -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">تاریخ انقضا</label>
+                            <input 
+                                v-model="newCardExpiry" 
+                                type="text" 
+                                dir="ltr" 
+                                maxlength="5"
+                                placeholder="MM/YY" 
+                                class="w-full bg-[#121212] border border-brand-border rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-brand-gold transition-colors text-center font-mono text-lg placeholder-gray-600"
+                            >
+                        </div>
+                        
+                        <!-- CVV2 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">CVV2</label>
+                            <input 
+                                v-model="newCardCVV2" 
+                                type="password" 
+                                dir="ltr" 
+                                maxlength="4"
+                                placeholder="***" 
+                                class="w-full bg-[#121212] border border-brand-border rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-brand-gold transition-colors text-center font-mono text-lg tracking-[0.2em] placeholder-gray-600"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- دکمه تایید -->
+                    <div class="pt-4">
+                        <button type="submit" :disabled="!isFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2"
+                                :class="isFormValid ? 'bg-brand-gold text-brand-black hover:bg-brand-goldLight' : 'bg-gray-700/50 text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>ثبت و اتصال کارت</span>
+                            <svg v-if="isFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال شارژ کیف پول چالش‌ها -->
+        <div v-if="isChargeModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity" @click.self="closeChargeModal">
+            <div class="bg-[#1e1e21] border border-brand-border rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <!-- دکمه بستن -->
+                <button @click="closeChargeModal" class="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <!-- عنوان مدال -->
+                <h2 class="text-2xl font-extrabold text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    شارژ کیف پول (افزایش سکه)
+                </h2>
+
+                <p class="text-xs text-gray-400 mb-6 leading-relaxed">یکی از مبالغ پیش‌فرض را انتخاب کنید یا مبلغ دلخواه خود را در کادر زیر وارد کنید (حداقل مقدار شارژ ۱۰۰ سکه است).</p>
+                
+                <!-- مبالغ دیفالت -->
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <button 
+                        v-for="amt in defaultAmounts" 
+                        :key="amt" 
+                        type="button"
+                        @click="selectDefaultAmount(amt)"
+                        :class="[
+                            'py-3.5 rounded-xl font-bold transition-all border text-xs text-center flex flex-col items-center justify-center gap-1',
+                            customAmount == amt
+                                ? 'bg-brand-gold text-brand-black border-brand-gold shadow-[0_0_12px_rgba(212,175,55,0.4)]' 
+                                : 'bg-[#27272a] border-brand-border text-gray-300 hover:border-brand-gold/50 hover:text-white'
+                        ]"
+                    >
+                        <span class="text-sm font-extrabold">{{ amt.toLocaleString('fa-IR') }}</span>
+                        <span class="text-[10px] opacity-80">سکه</span>
+                    </button>
+                </div>
+                
+                <!-- فرم دریافت اطلاعات -->
+                <form @submit.prevent="submitCharge" class="space-y-6">
+                    <!-- مبلغ دلخواه -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">مبلغ دلخواه خود را وارد کنید</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="customAmount" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: ۵۰۰۰" 
+                                class="w-full bg-[#121212] border border-brand-border rounded-xl px-4 py-3.5 pl-14 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left font-mono text-lg placeholder-gray-600"
+                            >
+                            <span class="absolute left-4 text-xs font-bold text-gray-500">سکه</span>
+                        </div>
+                    </div>
+
+                    <!-- نمایش مبلغ نهایی تأییدی -->
+                    <div v-if="customAmount" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs text-gray-400 font-bold">مبلغ نهایی برای شارژ:</span>
+                        <span class="text-lg font-black text-brand-gold">
+                            {{ formatWithCommas(customAmount) }} <span class="text-xs font-normal text-gray-300">سکه</span>
+                        </span>
+                    </div>
+
+                    <!-- دکمه تایید -->
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!isChargeFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2"
+                                :class="isChargeFormValid ? 'bg-brand-gold text-brand-black hover:bg-brand-goldLight' : 'bg-gray-700/50 text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>تایید و پرداخت آنلاین</span>
+                            <svg v-if="isChargeFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال ارسال سریع سکه به دوست (انتخاب شده از مخاطبین) -->
+        <div v-if="isSendModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity" @click.self="closeSendModal">
+            <div class="bg-[#1e1e21] border border-brand-border rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <!-- دکمه بستن -->
+                <button @click="closeSendModal" class="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <!-- عنوان مدال -->
+                <h2 class="text-2xl font-extrabold text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    ارسال سریع سکه به دوست
+                </h2>
+
+                <!-- مشخصات دوست -->
+                <div v-if="selectedContact" class="flex items-center gap-4 p-4 bg-[#27272a] border border-brand-border rounded-2xl mb-6">
+                    <div :class="['w-12 h-12 rounded-full flex items-center justify-center text-brand-black font-bold text-lg', selectedContact.color]">
+                        {{ selectedContact.initials }}
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-400 block mb-0.5">در حال ارسال سکه به:</span>
+                        <span class="text-sm font-bold text-white">{{ selectedContact.name }} (@{{ selectedContact.username }})</span>
+                    </div>
+                </div>
+                
+                <!-- فرم دریافت اطلاعات ارسال -->
+                <form @submit.prevent="submitSendCoins" class="space-y-6">
+                    <!-- مقدار ارسالی -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">تعداد سکه ارسالی</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="sendAmount" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: ۵۰۰" 
+                                class="w-full bg-[#121212] border border-brand-border rounded-xl px-4 py-3.5 pl-14 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left font-mono text-lg placeholder-gray-600"
+                            >
+                            <span class="absolute left-4 text-xs font-bold text-gray-500">سکه</span>
+                        </div>
+                    </div>
+
+                    <div v-if="sendAmount" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs text-gray-400 font-bold">مقدار نهایی کسر از حساب:</span>
+                        <span class="text-lg font-black text-brand-gold">
+                            {{ formatWithCommas(sendAmount) }} <span class="text-xs font-normal text-gray-300">سکه</span>
+                        </span>
+                    </div>
+
+                    <!-- دکمه تایید -->
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!isSendFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2"
+                                :class="isSendFormValid ? 'bg-brand-gold text-brand-black hover:bg-brand-goldLight' : 'bg-gray-700/50 text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>تایید و ارسال سریع</span>
+                            <svg v-if="isSendFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                        <p class="text-[11px] text-gray-500 mt-2.5 text-center">موجودی مجاز شما: {{ balanceCoins }} سکه</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال هوشمند ارسال سکه به دوست با انتخاب از لیست دوست‌ها -->
+        <div v-if="isSendByUsernameModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity" @click.self="closeSendByUsernameModal">
+            <div class="bg-[#1e1e21] border border-brand-border rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <!-- دکمه بستن -->
+                <button @click="closeSendByUsernameModal" class="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <!-- عنوان مدال -->
+                <h2 class="text-2xl font-extrabold text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                    </svg>
+                    ارسال سکه به دوستان
+                </h2>
+
+                <!-- فرم دریافت اطلاعات ارسال -->
+                <form @submit.prevent="submitSendCoinsByUsername" class="space-y-6">
+                    
+                    <!-- بخش انتخاب دوست از لیست با فیلتر جستجو -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-3">یک دوست را برای انتقال انتخاب کنید</label>
+                        
+                        <!-- کادر فیلتر و جستجوی سریع -->
+                        <div class="relative mb-3 flex items-center">
+                            <input 
+                                v-model="friendSearchQuery" 
+                                type="text" 
+                                placeholder="جستجو در بین دوستان..." 
+                                class="w-full bg-[#121212] border border-brand-border rounded-xl px-4 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-brand-gold transition-colors text-right placeholder-gray-600"
+                            >
+                        </div>
+
+                        <!-- لیست دوستان شما -->
+                        <div class="max-h-48 overflow-y-auto space-y-2 pr-1 border border-brand-border/40 rounded-2xl p-2 bg-[#121212]">
+                            <button 
+                                v-for="friend in filteredFriendsForSelect" 
+                                :key="friend.id"
+                                type="button"
+                                @click="selectTargetFriend(friend)"
+                                :class="[
+                                    'w-full flex items-center justify-between p-3 rounded-xl border transition-all text-right',
+                                    selectedTargetContact?.id === friend.id 
+                                        ? 'bg-brand-gold/10 border-brand-gold text-white' 
+                                        : 'bg-[#18181b] border-transparent text-gray-300 hover:border-brand-gold/30'
+                                ]"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <div :class="['w-9 h-9 rounded-full flex items-center justify-center text-brand-black font-bold text-sm', friend.color]">
+                                        {{ friend.initials }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold">{{ friend.name }}</span>
+                                        <span class="text-[10px] text-gray-500 font-mono text-left" dir="ltr">@{{ friend.username }}</span>
+                                    </div>
+                                </div>
+                                <!-- آیکون وضعیت انتخاب -->
+                                <div v-if="selectedTargetContact?.id === friend.id" class="text-brand-gold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <div v-if="filteredFriendsForSelect.length === 0" class="text-center py-6 text-xs text-gray-500">
+                                دوستی با این نام یافت نشد!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- مقدار ارسالی -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">تعداد سکه ارسالی</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="sendAmountByUsername" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: ۵۰۰" 
+                                class="w-full bg-[#121212] border border-brand-border rounded-xl px-4 py-3.5 pl-14 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left font-mono text-lg placeholder-gray-600"
+                            >
+                            <span class="absolute left-4 text-xs font-bold text-gray-500">سکه</span>
+                        </div>
+                    </div>
+
+                    <!-- پیش‌نمایش کسر هزینه -->
+                    <div v-if="sendAmountByUsername && selectedTargetContact" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs text-gray-400 font-bold">مقدار نهایی کسر از حساب:</span>
+                        <span class="text-lg font-black text-brand-gold">
+                            {{ formatWithCommas(sendAmountByUsername) }} <span class="text-xs font-normal text-gray-300">سکه</span>
+                        </span>
+                    </div>
+
+                    <!-- دکمه تایید نهایی -->
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!isSendByUsernameFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2"
+                                :class="isSendByUsernameFormValid ? 'bg-brand-gold text-brand-black hover:bg-brand-goldLight' : 'bg-gray-700/50 text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>ارسال سکه</span>
+                            <svg v-if="isSendByUsernameFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                        <p class="text-[11px] text-gray-500 mt-2.5 text-center">موجودی مجاز شما: {{ balanceCoins }} سکه</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال هوشمند افزودن دوست جدید با یوزرنیم و لیست پیشنهادی -->
+        <div v-if="isNewFriendModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity" @click.self="closeNewFriendModal">
+            <div class="bg-[#1e1e21] border border-brand-border rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <!-- دکمه بستن -->
+                <button @click="closeNewFriendModal" class="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <!-- عنوان مدال -->
+                <h2 class="text-2xl font-extrabold text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                    </svg>
+                    ارسال درخواست دوستی
+                </h2>
+
+                <p class="text-xs text-gray-400 mb-6 leading-relaxed">نام کاربری دوست خود را وارد کنید تا درخواست دوستی برای او ارسال شود.</p>
+
+                <!-- فرم دریافت اطلاعات ارسال -->
+                <form @submit.prevent="submitFriendRequest" class="space-y-6">
+                    <!-- فیلد نام کاربری -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">نام کاربری (یوزرنیم)</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="newFriendUsernameInput" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: poya یا maryam" 
+                                class="w-full bg-[#121212] border rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none transition-all text-left font-sans text-base placeholder-gray-600"
+                                :class="[
+                                    newFriendUsernameInput.trim() === '' ? 'border-brand-border focus:border-brand-gold' :
+                                    matchedSystemUser ? 'border-brand-green/80 focus:border-brand-green' : 'border-brand-red/80 focus:border-brand-red'
+                                ]"
+                            >
+                        </div>
+                        
+                        <!-- لیست پیشنهادی هوشمند بر اساس تایپ کاربر -->
+                        <div v-if="newFriendUsernameInput.trim() !== '' && suggestedSystemUsers.length > 0" class="mt-2.5 max-h-36 overflow-y-auto border border-brand-border/40 rounded-xl p-1 bg-[#121212] space-y-1">
+                            <p class="text-[10px] text-brand-gold px-2 py-1 font-bold">کاربران یافت شده در پلتفرم (برای انتخاب کلیک کنید):</p>
+                            <button 
+                                v-for="user in suggestedSystemUsers" 
+                                :key="user.id" 
+                                type="button" 
+                                @click="selectSuggestedUser(user)"
+                                class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-brand-gold/10 text-right transition-all group"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <div :class="['w-7 h-7 rounded-full flex items-center justify-center text-brand-black font-bold text-xs', user.color]">
+                                        {{ user.initials }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-gray-200 group-hover:text-white transition-colors">{{ user.name }}</span>
+                                        <span class="text-[10px] text-gray-500 font-mono" dir="ltr">@{{ user.username }}</span>
+                                    </div>
+                                </div>
+                                <span class="text-[9px] text-brand-gold/70 group-hover:text-brand-gold font-bold">انتخاب کاربر ←</span>
+                            </button>
+                        </div>
+                        
+                        <!-- نمایش وضعیت نهایی کاربر انتخاب شده -->
+                        <div class="mt-2.5 text-xs">
+                            <p v-if="newFriendUsernameInput.trim() === ''" class="text-gray-500">
+                                برای مثال کلمه <span class="text-gray-400 font-mono">am</span> را تایپ کنید تا لیست پیشنهادات با نام امیر و امین فیلتر شود.
+                            </p>
+                            <p v-else-if="matchedSystemUser" class="text-brand-green flex items-center gap-1.5 font-bold bg-brand-green/5 p-2 rounded-lg border border-brand-green/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg>
+                                کاربر یافت شد: {{ matchedSystemUser.name }} (@{{ matchedSystemUser.username }})
+                            </p>
+                            <p v-else-if="suggestedSystemUsers.length === 0" class="text-brand-red flex items-center gap-1.5 font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" /></svg>
+                                کاربر در سیستم یافت نشد!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- دکمه ارسال درخواست -->
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!matchedSystemUser" class="w-full font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2"
+                                :class="matchedSystemUser ? 'bg-brand-gold text-brand-black hover:bg-brand-goldLight' : 'bg-gray-700/50 text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>ارسال درخواست دوستی</span>
+                            <svg v-if="matchedSystemUser" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- سیستم اعلان کاستوم (Toast Notification) -->
+        <div v-if="toast.show" class="fixed bottom-6 right-6 z-50 flex items-center gap-4 bg-brand-card border border-brand-border px-5 py-4 rounded-2xl shadow-2xl animate-modal max-w-sm">
+            <div :class="[
+                'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
+                toast.type === 'success' ? 'bg-green-950/40 text-brand-green' : 'bg-brand-gold/20 text-brand-gold'
+            ]">
+                <svg v-if="toast.type === 'success'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" /></svg>
+            </div>
+            <span class="text-sm font-bold text-gray-200">{{ toast.message }}</span>
+        </div>
+
+    </div>
+
+    <!-- Add scrollbar-hide utility -->
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+    <!-- Vue Application Logic -->
+    <script>
+        const { createApp, ref, computed, watch } = Vue;
+
+        createApp({
+            setup() {
+                const isVisible = ref(true);
+                const balanceCoins = ref('12,500');
+
+                // ساخت دقیق گرافیک داخلی بانک‌ها بر اساس آخرین متد طراحی وکتور
+                const svgSaman = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0066B3"/><path d="M50 50 C50 30, 35 20, 25 35 C35 42, 45 45, 50 50 Z" fill="white"/><path d="M50 50 C68 38, 78 22, 70 12 C60 20, 55 35, 50 50 Z" fill="white"/><path d="M50 50 C65 65, 78 78, 65 85 C58 75, 52 62, 50 50 Z" fill="white"/><path d="M50 50 C32 62, 18 68, 22 80 C32 75, 42 62, 50 50 Z" fill="white"/></svg>`;
+                const svgMelli = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#003168"/><circle cx="50" cy="50" r="40" fill="none" stroke="#D4AF37" stroke-width="2"/><path d="M50 25 C55 35, 62 40, 68 45 C58 45, 52 42, 50 55 C48 42, 42 45, 32 45 C38 40, 45 35, 50 25 Z" fill="#D4AF37"/><path d="M50 55 C53 62, 58 65, 62 72 C52 68, 48 62, 50 55 Z" fill="#D4AF37"/><path d="M50 55 C47 62, 42 65, 38 72 C48 68, 52 62, 50 55 Z" fill="#D4AF37"/><circle cx="50" cy="50" r="4" fill="#003168"/></svg>`;
+                const svgMellat = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="white"/><path d="M50 15 C65 15, 75 25, 75 40 C65 40, 60 30, 50 30 Z" fill="#E30613"/><path d="M85 50 C85 65, 75 75, 60 75 C60 65, 70 60, 70 50 Z" fill="#D4AF37"/><path d="M50 85 C35 85, 25 75, 25 60 C35 60, 40 70, 50 70 Z" fill="#E30613"/><path d="M15 50 C15 35, 25 25, 40 25 C40 35, 30 40, 30 50 Z" fill="#D4AF37"/><circle cx="50" cy="50" r="14" fill="white"/></svg>`;
+                const svgPasargad = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#1e1e1e"/><circle cx="50" cy="50" r="44" fill="none" stroke="#D4AF37" stroke-width="2"/><path d="M45 25 C45 25, 42 22, 38 25 C34 28, 35 34, 38 38 C40 40, 45 42, 45 48 C45 54, 40 58, 35 60 L35 70 C45 70, 55 68, 62 60 C68 52, 68 40, 65 32 C62 25, 52 25, 45 25 Z" fill="#D4AF37"/><path d="M38 38 C35 45, 32 50, 38 56 C44 62, 52 58, 48 48 Z" fill="#1e1e1e"/><path d="M48 24 C52 20, 58 20, 62 24 C56 26, 52 26, 48 24 Z" fill="#D4AF37"/><path d="M42 28 C40 32, 42 35, 45 35" stroke="#1e1e1e" stroke-width="1.5" fill="none"/></svg>`;
+                const svgSepah = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0c2340"/><circle cx="50" cy="50" r="42" fill="none" stroke="#D4AF37" stroke-width="2"/><path d="M30 65 C25 55, 25 45, 35 30 C32 40, 32 50, 35 55" stroke="#D4AF37" stroke-width="2" fill="none"/><path d="M70 65 C75 55, 75 45, 65 30 C68 40, 68 50, 65 55" stroke="#D4AF37" stroke-width="2" fill="none"/><circle cx="28" cy="45" r="2.5" fill="#D4AF37"/><circle cx="31" cy="38" r="2.5" fill="#D4AF37"/><circle cx="35" cy="32" r="2.5" fill="#D4AF37"/><circle cx="72" cy="45" r="2.5" fill="#D4AF37"/><circle cx="69" cy="38" r="2.5" fill="#D4AF37"/><circle cx="65" cy="32" r="2.5" fill="#D4AF37"/><rect x="48" y="20" width="4" height="45" rx="1" fill="#D4AF37"/><path d="M43 65 L57 65" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/><rect x="47" y="66" width="6" height="12" rx="1" fill="#D4AF37"/><polygon points="50,10 53,16 59,16 54,20 56,26 50,22 44,26 46,20 41,16 47,16" fill="#D4AF37"/></svg>`;
+                const svgTejarat = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#004B87"/><path d="M50 15 C69 15, 85 31, 85 50 C85 62, 78 72, 68 79 C65 74, 62 66, 62 58 C62 42, 50 28, 50 15 Z" fill="#00A3E0"/><path d="M50 85 C31 85, 15 69, 15 50 C15 38, 22 28, 32 21 C35 26, 38 34, 38 42 C38 58, 50 72, 50 85 Z" fill="white"/><circle cx="50" cy="50" r="10" fill="#004B87"/></svg>`;
+                const svgShetab = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#10B981"/><path d="M25 65 L60 30 C64 26, 70 26, 74 30 L75 31 C79 35, 79 41, 75 45 L40 80 Z" fill="white"/><path d="M38 48 L58 28 C62 24, 68 24, 72 28 L73 29 C77 33, 77 39, 73 43 L53 63 Z" fill="white" opacity="0.8"/><path d="M15 75 C12 70, 15 60, 25 50 L35 60 L25 80 Z" fill="white" opacity="0.6"/></svg>`;
+
+                // آمارهای واکنش‌گرا ماهانه
+                const earnedThisMonth = ref(4500);
+                const spentThisMonth = ref(1240);
+
+                // لیست کارت‌های متصل 
+                const bankCards = ref([]);
+
+                // Quick Actions Data
+                const quickActions = ref([
+                    { id: 1, title: 'شارژ کیف پول', primary: true, disabled: false, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>` },
+                    { id: 2, title: 'ارسال سکه به دوست', primary: false, disabled: false, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>` },
+                    { id: 3, title: 'جدول امتیازات (لیدربرد)', primary: false, disabled: false, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>` },
+                    { id: 4, title: 'فروشگاه آیتم‌های بازی', primary: false, disabled: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75v-3.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.5c0 .414.336.75.75.75Z" /></svg>` }
+                ]);
+
+                // Toast state
+                const toast = ref({ show: false, message: '', type: 'success' });
+                const showNotification = (message, type = 'success') => {
+                    toast.value = { show: true, message, type };
+                    setTimeout(() => {
+                        toast.value.show = false;
+                    }, 4000);
+                };
+
+                // Recent Contacts Data
+                const recentContacts = ref([
+                    { id: 1, name: 'علی ر.', username: 'ali', initials: 'ع', color: 'bg-yellow-400' },
+                    { id: 2, name: 'زهرا م.', username: 'zahra', initials: 'ز', color: 'bg-emerald-400' },
+                    { id: 3, name: 'رضا ک.', username: 'reza', initials: 'ر', color: 'bg-blue-400' },
+                    { id: 4, name: 'سارا ت.', username: 'sara', initials: 'س', color: 'bg-purple-400' },
+                    { id: 5, name: 'امید ح.', username: 'omid', initials: 'ا', color: 'bg-pink-400' },
+                ]);
+
+                // System Users Data
+                const systemUsers = ref([
+                    { id: 101, name: 'پویا ر.', username: 'poya', initials: 'پ', color: 'bg-indigo-400' },
+                    { id: 102, name: 'مریم ا.', username: 'maryam', initials: 'م', color: 'bg-teal-400' },
+                    { id: 103, name: 'امیر س.', username: 'amir', initials: 'ا', color: 'bg-orange-400' },
+                    { id: 104, name: 'مهسا ن.', username: 'mahsa', initials: 'م', color: 'bg-violet-400' },
+                    { id: 105, name: 'امین ت.', username: 'amin', initials: 'ا', color: 'bg-blue-400' },
+                    { id: 106, name: 'آرمیتا ک.', username: 'armita', initials: 'آ', color: 'bg-emerald-400' }
+                ]);
+
+                // Transactions Data
+                const transactions = ref([
+                    { id: 1, title: 'پاداش پیروزی در چالش سحرخیزی', status: 'موفق', date: 'امروز - ۱۰:۴۵ صبح', amount: '2,500', type: 'deposit' },
+                    { id: 2, title: 'هزینه ورود به مسابقه کدنویسی', status: 'موفق', date: 'دیروز - ۰۲:۵۶ بعدازظهر', amount: '500', type: 'withdraw' },
+                    { id: 3, title: 'خرید فریم آواتار طلایی از فروشگاه', status: 'موفق', date: '۲۲ اردیبهشت - ۱۸:۳۰', amount: '1,000', type: 'withdraw' },
+                    { id: 4, title: 'ارسال سکه برای امید', status: 'ناموفق', date: '۲۲ اردیبهشت - ۱۱:۰۰ صبح', amount: '5,000', type: 'withdraw' },
+                    { id: 5, title: 'پاداش لاگین روزانه', status: 'موفق', date: '۲۱ اردیبهشت - ۰۸:۰۰ صبح', amount: '150', type: 'deposit' },
+                    { id: 6, title: 'دعوت موفق از دوست (رضا)', status: 'موفق', date: '۲۰ اردیبهشت - ۱۶:۲۰', amount: '1,000', type: 'deposit' },
+                    { id: 7, title: 'خرید نشان ویژه افتخار', status: 'موفق', date: '۱۹ اردیبهشت - ۲۱:۱۰', amount: '800', type: 'withdraw' },
+                    { id: 8, title: 'جریمه انصراف از چالش تغذیه', status: 'موفق', date: '۱۸ اردیبهشت - ۱۴:۰۰', amount: '200', type: 'withdraw' },
+                    { id: 9, title: 'پاداش ارتقای سطح به 45', status: 'موفق', date: '۱۶ اردیبهشت - ۱۹:۴۵', amount: '3,000', type: 'deposit' },
+                    { id: 10, title: 'ارسال سکه برای سارا', status: 'موفق', date: '۱۵ اردیبهشت - IO:۱۵', amount: '1,500', type: 'withdraw' },
+                ]);
+
+                // Pagination Logic
+                const currentPage = ref(1);
+                const itemsPerPage = 4;
+
+                const totalPages = computed(() => {
+                    return Math.ceil(transactions.value.length / itemsPerPage);
+                });
+
+                const paginatedTransactions = computed(() => {
+                    const start = (currentPage.value - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    return transactions.value.slice(start, end);
+                });
+
+                const nextPage = () => {
+                    if (currentPage.value < totalPages.value) currentPage.value++;
+                };
+
+                const prevPage = () => {
+                    if (currentPage.value > 1) currentPage.value--;
+                };
+
+                const goToPage = (page) => {
+                    currentPage.value = page;
+                };
+
+                const toggleVisibility = () => {
+                    isVisible.value = !isVisible.value;
+                };
+
+                // Add Card Modal Logic
+                const isCardModalOpen = ref(false);
+                const newCardNumber = ref('');
+                const newCardExpiry = ref('');
+                const newCardCVV2 = ref('');
+
+                // سیستم هوشمند شناسایی بانک و اختصاص گرافیک SVG فوق‌العاده باکیفیت و دقیق بانک‌های ایران
+                const detectedBank = computed(() => {
+                    const rawNum = newCardNumber.value.replace(/\s+/g, '');
+                    if (rawNum.startsWith('6219')) {
+                        return { name: 'بانک سامان', logo: svgSaman, color: 'text-sky-400', bg: 'from-sky-950 via-zinc-900 to-[#121212]' };
+                    }
+                    if (rawNum.startsWith('6037')) {
+                        return { name: 'بانک ملی', logo: svgMelli, color: 'text-emerald-400', bg: 'from-emerald-950 via-zinc-900 to-black' };
+                    }
+                    if (rawNum.startsWith('6104')) {
+                        return { name: 'بانک ملت', logo: svgMellat, color: 'text-red-400', bg: 'from-red-950 via-neutral-900 to-black' };
+                    }
+                    if (rawNum.startsWith('5022')) {
+                        return { name: 'بانک پاسارگاد', logo: svgPasargad, color: 'text-amber-500', bg: 'from-amber-950 via-stone-900 to-[#121212]' };
+                    }
+                    if (rawNum.startsWith('5892')) {
+                        return { name: 'بانک سپه', logo: svgSepah, color: 'text-yellow-600', bg: 'from-yellow-950 via-neutral-900 to-black' };
+                    }
+                    if (rawNum.startsWith('6273')) {
+                        return { name: 'بانک تجارت', logo: svgTejarat, color: 'text-cyan-400', bg: 'from-cyan-950 via-zinc-900 to-black' };
+                    }
+                    if (rawNum.length >= 4) {
+                        return { name: 'عضو شتاب', logo: svgShetab, color: 'text-brand-gold', bg: 'from-[#1c1c1c] via-[#0f0f0f] to-black' };
+                    }
+                    return null;
+                });
+
+                // فرمت خودکار شماره کارت
+                watch(newCardNumber, (val) => {
+                    let formatted = val.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                    let matches = formatted.match(/\d{4,16}/g);
+                    let match = matches && matches[0] || '';
+                    let parts = [];
+                    for (let i = 0, len = match.length; i < len; i += 4) {
+                        parts.push(match.substring(i, i + 4));
+                    }
+                    if (parts.length) {
+                        newCardNumber.value = parts.join(' ');
+                    } else {
+                        newCardNumber.value = formatted;
+                    }
+                });
+
+                // فرمت خودکار تاریخ انقضا
+                watch(newCardExpiry, (val) => {
+                    let formatted = val.replace(/\//g, '').replace(/[^0-9]/gi, '');
+                    if (formatted.length > 2) {
+                        newCardExpiry.value = formatted.substring(0, 2) + '/' + formatted.substring(2, 4);
+                    } else {
+                        newCardExpiry.value = formatted;
+                    }
+                });
+
+                watch(newCardCVV2, (val) => {
+                    newCardCVV2.value = val.replace(/[^0-9]/gi, '');
+                });
+
+                const isFormValid = computed(() => {
+                    return newCardNumber.value.length === 19 && // 16 digits + 3 spaces
+                           newCardExpiry.value.length === 5 &&  // MM/YY
+                           newCardCVV2.value.length >= 3;
+                });
+
+                const openCardModal = () => {
+                    isCardModalOpen.value = true;
+                };
+
+                const closeCardModal = () => {
+                    isCardModalOpen.value = false;
+                    newCardNumber.value = '';
+                    newCardExpiry.value = '';
+                    newCardCVV2.value = '';
+                };
+
+                const submitNewCard = () => {
+                    if(!isFormValid.value) return;
+                    
+                    const bankInfo = detectedBank.value || { name: 'عضو شتاب', logo: svgShetab, bg: 'from-[#1c1c1c] via-[#0f0f0f] to-black' };
+                    
+                    bankCards.value.push({
+                        id: Date.now(),
+                        bankName: bankInfo.name,
+                        logo: bankInfo.logo,
+                        cardNumber: newCardNumber.value,
+                        cardholder: 'محمد احمدی',
+                        cvv2: newCardCVV2.value,
+                        expiry: newCardExpiry.value,
+                        bgGradient: bankInfo.bg
+                    });
+
+                    showNotification('کارت بانکی جدید شما با موفقیت متصل گردید.', 'success');
+                    setTimeout(() => {
+                        closeCardModal();
+                    }, 300);
+                };
+
+                // ---- منطق مدال جدید شارژ کیف پول ----
+                const isChargeModalOpen = ref(false);
+                const defaultAmounts = [5000, 10000, 25000];
+                const customAmount = ref('');
+
+                watch(customAmount, (val) => {
+                    customAmount.value = val.replace(/[^0-9]/gi, '');
+                });
+
+                const selectDefaultAmount = (amt) => {
+                    customAmount.value = amt.toString();
+                };
+
+                const openChargeModal = () => {
+                    isChargeModalOpen.value = true;
+                    customAmount.value = '';
+                };
+
+                const closeChargeModal = () => {
+                    isChargeModalOpen.value = false;
+                    customAmount.value = '';
+                };
+
+                const isChargeFormValid = computed(() => {
+                    const amt = Number(customAmount.value);
+                    return amt >= 100;
+                });
+
+                const formatWithCommas = (val) => {
+                    if (!val) return '۰';
+                    let cleaned = val.toString().replace(/[^0-9]/g, '');
+                    return Number(cleaned).toLocaleString('en-US');
+                };
+
+                const submitCharge = () => {
+                    if (!isChargeFormValid.value) return;
+
+                    const chargeVal = parseInt(customAmount.value);
+                    let currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    let newBalance = currentBalance + chargeVal;
+                    balanceCoins.value = newBalance.toLocaleString('en-US');
+                    earnedThisMonth.value += chargeVal;
+
+                    transactions.value.unshift({
+                        id: Date.now(),
+                        title: 'شارژ کیف پول (مستقیم)',
+                        status: 'موفق',
+                        date: 'هم‌اکنون',
+                        amount: chargeVal.toLocaleString('en-US'),
+                        type: 'deposit'
+                    });
+
+                    showNotification(`کیف پول شما با موفقیت به میزان ${chargeVal.toLocaleString('fa-IR')} سکه شارژ شد.`, 'success');
+                    closeChargeModal();
+                };
+
+                // ---- منطق ارسال سریع سکه ----
+                const isSendModalOpen = ref(false);
+                const selectedContact = ref(null);
+                const sendAmount = ref('');
+
+                watch(sendAmount, (val) => {
+                    sendAmount.value = val.replace(/[^0-9]/gi, '');
+                });
+
+                const openSendModal = (contact) => {
+                    selectedContact.value = contact;
+                    sendAmount.value = '';
+                    isSendModalOpen.value = true;
+                };
+
+                const closeSendModal = () => {
+                    isSendModalOpen.value = false;
+                    selectedContact.value = null;
+                    sendAmount.value = '';
+                };
+
+                const isSendFormValid = computed(() => {
+                    const amt = Number(sendAmount.value);
+                    const currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    return amt > 0 && amt <= currentBalance;
+                });
+
+                const submitSendCoins = () => {
+                    if (!isSendFormValid.value) return;
+
+                    const sendVal = parseInt(sendAmount.value);
+                    let currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    let newBalance = currentBalance - sendVal;
+                    balanceCoins.value = newBalance.toLocaleString('en-US');
+                    spentThisMonth.value += sendVal;
+
+                    transactions.value.unshift({
+                        id: Date.now(),
+                        title: `ارسال سکه برای ${selectedContact.value.name}`,
+                        status: 'موفق',
+                        date: 'هم‌اکنون',
+                        amount: sendVal.toLocaleString('en-US'),
+                        type: 'withdraw'
+                    });
+
+                    showNotification(`تعداد ${sendVal.toLocaleString('fa-IR')} سکه با موفقیت به حساب ${selectedContact.value.name} منتقل شد.`, 'success');
+                    closeSendModal();
+                };
+
+                // ---- منطق مدال هوشمند ارسال سکه با انتخاب از بین دوستان ----
+                const isSendByUsernameModalOpen = ref(false);
+                const friendSearchQuery = ref('');
+                const selectedTargetContact = ref(null);
+                const sendAmountByUsername = ref('');
+
+                const filteredFriendsForSelect = computed(() => {
+                    const query = friendSearchQuery.value.trim().toLowerCase();
+                    if (!query) return recentContacts.value;
+                    return recentContacts.value.filter(c => 
+                        c.name.toLowerCase().includes(query) || 
+                        c.username.toLowerCase().includes(query)
+                    );
+                });
+
+                const selectTargetFriend = (friend) => {
+                    selectedTargetContact.value = friend;
+                };
+
+                watch(sendAmountByUsername, (val) => {
+                    sendAmountByUsername.value = val.replace(/[^0-9]/gi, '');
+                });
+
+                const openSendByUsernameModal = () => {
+                    friendSearchQuery.value = '';
+                    selectedTargetContact.value = null;
+                    sendAmountByUsername.value = '';
+                    isSendByUsernameModalOpen.value = true;
+                };
+
+                const closeSendByUsernameModal = () => {
+                    isSendByUsernameModalOpen.value = false;
+                    friendSearchQuery.value = '';
+                    selectedTargetContact.value = null;
+                    sendAmountByUsername.value = '';
+                };
+
+                const isSendByUsernameFormValid = computed(() => {
+                    const amt = Number(sendAmountByUsername.value);
+                    const currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    return selectedTargetContact.value !== null && amt > 0 && amt <= currentBalance;
+                });
+
+                const submitSendCoinsByUsername = () => {
+                    if (!isSendByUsernameFormValid.value) return;
+
+                    const sendVal = parseInt(sendAmountByUsername.value);
+                    const friend = selectedTargetContact.value;
+
+                    let currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    let newBalance = currentBalance - sendVal;
+                    balanceCoins.value = newBalance.toLocaleString('en-US');
+                    spentThisMonth.value += sendVal;
+
+                    transactions.value.unshift({
+                        id: Date.now(),
+                        title: `ارسال سکه برای ${friend.name}`,
+                        status: 'موفق',
+                        date: 'هم‌اکنون',
+                        amount: sendVal.toLocaleString('en-US'),
+                        type: 'withdraw'
+                    });
+
+                    showNotification(`تعداد ${sendVal.toLocaleString('fa-IR')} سکه با موفقیت به کاربر ${friend.name} منتقل شد.`, 'success');
+                    closeSendByUsernameModal();
+                };
+
+                // ---- منطق مدال هوشمند دریافت دوست جدید ----
+                const isNewFriendModalOpen = ref(false);
+                const newFriendUsernameInput = ref('');
+
+                const suggestedSystemUsers = computed(() => {
+                    const query = newFriendUsernameInput.value.trim().toLowerCase();
+                    if (!query) return [];
+                    return systemUsers.value.filter(u => 
+                        u.username.toLowerCase().includes(query) || 
+                        u.name.toLowerCase().includes(query)
+                    );
+                });
+
+                const selectSuggestedUser = (user) => {
+                    newFriendUsernameInput.value = user.username;
+                };
+
+                const matchedSystemUser = computed(() => {
+                    const query = newFriendUsernameInput.value.trim().toLowerCase();
+                    if (!query) return null;
+                    return systemUsers.value.find(u => u.username.toLowerCase() === query);
+                });
+
+                const openNewFriendModal = () => {
+                    newFriendUsernameInput.value = '';
+                    isNewFriendModalOpen.value = true;
+                };
+
+                const closeNewFriendModal = () => {
+                    isNewFriendModalOpen.value = false;
+                    newFriendUsernameInput.value = '';
+                };
+
+                const submitFriendRequest = () => {
+                    if (!matchedSystemUser.value) return;
+                    const friend = matchedSystemUser.value;
+
+                    showNotification(`درخواست ارسال شد! درخواست دوستی برای ${friend.name} با موفقیت ثبت شد.`, 'success');
+
+                    if (!recentContacts.value.some(c => c.username === friend.username)) {
+                        recentContacts.value.unshift(friend);
+                    }
+
+                    closeNewFriendModal();
+                };
+
+                const handleAction = (action) => {
+                    if (action.disabled) return;
+                    
+                    if (action.id === 1) {
+                        openChargeModal();
+                    } else if (action.id === 2) {
+                        openSendByUsernameModal();
+                    } else if (action.id === 3) {
+                        showNotification('بخش جدول امتیازات چالش‌ها به‌زودی در آپدیت‌های آینده در دسترس خواهد بود.', 'info');
+                    }
+                };
+
+                return {
+                    isVisible,
+                    balanceCoins,
+                    earnedThisMonth,
+                    spentThisMonth,
+                    bankCards,
+                    quickActions,
+                    recentContacts,
+                    transactions,
+                    paginatedTransactions,
+                    currentPage,
+                    totalPages,
+                    nextPage,
+                    prevPage,
+                    goToPage,
+                    toggleVisibility,
+                    // Modal variables & functions
+                    isCardModalOpen,
+                    newCardNumber,
+                    newCardExpiry,
+                    newCardCVV2,
+                    detectedBank,
+                    openCardModal,
+                    closeCardModal,
+                    submitNewCard,
+                    isFormValid,
+                    // Charge Modal
+                    isChargeModalOpen,
+                    defaultAmounts,
+                    customAmount,
+                    selectDefaultAmount,
+                    openChargeModal,
+                    closeChargeModal,
+                    isChargeFormValid,
+                    formatWithCommas,
+                    submitCharge,
+                    // Send Coins Modal
+                    isSendModalOpen,
+                    selectedContact,
+                    sendAmount,
+                    openSendModal,
+                    closeSendModal,
+                    isSendFormValid,
+                    submitSendCoins,
+                    // Send By Username Modal
+                    isSendByUsernameModalOpen,
+                    friendSearchQuery,
+                    selectedTargetContact,
+                    filteredFriendsForSelect,
+                    selectTargetFriend,
+                    sendAmountByUsername,
+                    openSendByUsernameModal,
+                    closeSendByUsernameModal,
+                    isSendByUsernameFormValid,
+                    submitSendCoinsByUsername,
+                    // New Friend Modal
+                    isNewFriendModalOpen,
+                    newFriendUsernameInput,
+                    matchedSystemUser,
+                    suggestedSystemUsers,
+                    selectSuggestedUser,
+                    openNewFriendModal,
+                    closeNewFriendModal,
+                    submitFriendRequest,
+                    // Toast & Actions
+                    toast,
+                    showNotification,
+                    handleAction
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
