@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد کاربری - چالش‌های نور</title>
+    
+    <!-- فونت فارسی وزیرمتن -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- فونت وزیرمتن (نسخه اعداد فارسی برای کیف پول) -->
+    <link href="https://unpkg.com/vazirmatn@33.0.0/Vazirmatn-FD-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- تنظیمات سفارشی Tailwind ترکیب شده -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', '"Vazirmatn FD"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#111315',
+                            card: '#1C1F22',
+                            cardLight: '#24282D',
+                            border: '#2C3035',
+                            gold: '#E5B869',        // Base profile gold
+                            goldHover: '#CFA356',
+                            goldLight: '#F3E5AB',   // From Wallet
+                            red: '#ef4444',         // From Wallet
+                            green: '#22c55e'        // From Wallet
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* تنظیمات اسکرول‌بار اصلی */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2C3035;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E5B869;
+        }
+        [v-cloak] { display: none; }
+
+        /* مخفی کردن اسکرول بار افقی کیف پول */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* افکت نوری پس‌زمینه هماهنگ با صفحه اصلی */
+        .glow-bg {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(229,184,105,0.08) 0%, rgba(17,19,21,0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* استایل اختصاصی برای افکت براق بودن مدال */
+        .medal-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: shine 4s infinite;
+        }
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        /* انیمیشن باز شدن مدال‌های کیف پول */
+        @keyframes fadeInUpModal {
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-modal {
+            animation: fadeInUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* انیمیشن جابجایی و سوییچ نرم کارت‌ها و تب‌ها */
+        .tab-fade-enter-active {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .tab-fade-leave-active {
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .tab-fade-enter-from {
+            opacity: 0;
+            transform: translateY(16px) scale(0.98);
+        }
+        .tab-fade-leave-to {
+            opacity: 0;
+            transform: translateY(-16px) scale(0.98);
+        }
+
+        /* انیمیشن جابجایی اسلاید بین کارت‌های بانکی متصل */
+        .card-slide-enter-active, .card-slide-leave-active {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-slide-enter-from {
+            opacity: 0;
+            transform: translateX(40px) scale(0.96);
+        }
+        .card-slide-leave-to {
+            opacity: 0;
+            transform: translateX(-40px) scale(0.96);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-brand-dark text-gray-900 dark:text-gray-100 transition-colors duration-300 relative min-h-screen overflow-hidden">
+    
+    <!-- Ambient Glow Backgrounds -->
+    <div class="glow-bg top-[-100px] right-[-200px]"></div>
+    <div class="glow-bg bottom-[-200px] left-[-200px]"></div>
+
+    <div id="app" v-cloak class="relative z-10">
+        <div class="min-h-screen flex overflow-hidden font-sans">
+            
+            <!-- ================= سایدبار ================= -->
+            <aside :class="['bg-white dark:bg-brand-card border-l border-gray-200 dark:border-brand-border/60 flex flex-col py-6 hidden md:flex z-20 transition-all duration-300 shrink-0', isSidebarOpen ? 'w-64 px-4 items-start' : 'w-20 items-center px-0']">
+                
+                <!-- دکمه همبرگری سایدبار -->
+                <button @click="toggleSidebar" :class="['text-gray-500 dark:text-gray-400 hover:text-brand-gold focus:outline-none transition-colors mb-6 text-xl', isSidebarOpen ? 'pr-4' : '']">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <nav class="flex-1 flex flex-col gap-3 w-full">
+                    <div v-for="(item, index) in navItems" :key="index" class="w-full flex flex-col">
+                        <!-- دکمه منوی اصلی -->
+                        <a href="#" 
+                           @click.prevent="handleNavItemClick(item)"
+                           :class="[
+                               'flex items-center rounded-xl transition-all h-12',
+                               isSidebarOpen ? 'px-4 gap-4 w-full' : 'justify-center w-12 mx-auto',
+                               item.active ? 'bg-gray-100 dark:bg-brand-cardLight text-brand-gold shadow-md shadow-black/10 border border-brand-gold/20' : 'text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-brand-cardLight/50'
+                           ]">
+                            <i :class="['text-lg shrink-0', item.icon, isSidebarOpen ? 'w-6 text-center' : '']"></i>
+                            <span v-show="isSidebarOpen" class="font-medium whitespace-nowrap text-sm">{{ item.label }}</span>
+                            
+                            <!-- آیکون وضعیت کشو برای منوهای تاشو -->
+                            <i v-if="item.hasSubmenu && isSidebarOpen" :class="['mr-auto text-[10px] transition-transform duration-300', item.isOpen ? 'rotate-180 fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down']"></i>
+                        </a>
+                        
+                        <!-- زیر منوی باز شونده (Submenu) برای پروفایل من -->
+                        <div v-if="item.hasSubmenu && item.isOpen && isSidebarOpen" class="flex flex-col gap-1.5 mt-2 pr-6 mr-4 border-r border-gray-200 dark:border-brand-border/40 animate-modal">
+                            <button @click.stop="activeTab = 'profile'" 
+                                    :class="['flex items-center gap-2 py-2 px-3 text-xs rounded-lg transition-all text-right w-full', activeTab === 'profile' ? 'text-brand-gold font-bold bg-gray-100 dark:bg-brand-cardLight shadow-inner' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-brand-cardLight/30']">
+                                <i class="fa-regular fa-address-card w-4 text-center"></i>
+                                <span>مشخصات کاربری</span>
+                            </button>
+                            <button @click.stop="activeTab = 'awards'" 
+                                    :class="['flex items-center gap-2 py-2 px-3 text-xs rounded-lg transition-all text-right w-full', activeTab === 'awards' ? 'text-brand-gold font-bold bg-gray-100 dark:bg-brand-cardLight shadow-inner' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-brand-cardLight/30']">
+                                <i class="fa-solid fa-medal w-4 text-center"></i>
+                                <span>ویترین افتخارات</span>
+                            </button>
+                            <button @click.stop="activeTab = 'wallet'" 
+                                    :class="['flex items-center gap-2 py-2 px-3 text-xs rounded-lg transition-all text-right w-full', activeTab === 'wallet' ? 'text-brand-gold font-bold bg-gray-100 dark:bg-brand-cardLight shadow-inner' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-brand-cardLight/30']">
+                                <i class="fa-solid fa-wallet w-4 text-center"></i>
+                                <span>کیف پول من</span>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+
+                <a href="#" :class="['flex items-center rounded-xl text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-brand-cardLight transition-colors mt-auto h-12', isSidebarOpen ? 'px-4 gap-4 w-full' : 'justify-center w-12 mx-auto']">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-lg shrink-0" :class="isSidebarOpen ? 'w-6 text-center' : ''"></i>
+                    <span v-show="isSidebarOpen" class="font-medium whitespace-nowrap text-sm">خروج از حساب</span>
+                </a>
+            </aside>
+
+            <!-- ================= محتوای اصلی ================= -->
+            <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+                
+                <!-- ================= هدر ================= -->
+                <header class="h-20 bg-white dark:bg-brand-card/90 border-b border-gray-200 dark:border-brand-border/60 flex items-center justify-between px-6 z-30 shrink-0 shadow-sm backdrop-blur-md transition-colors duration-300 relative">
+                    <div class="flex items-center gap-6">
+                        <!-- لوگو پلتفرم در هدر -->
+                        <div class="flex items-center gap-3 shrink-0">
+                            <div class="bg-brand-gold text-brand-dark p-2 rounded-xl shadow-[0_0_15px_rgba(229,184,105,0.4)]">
+                                <i class="fa-solid fa-kaaba text-md"></i>
+                            </div>
+                            <span class="text-md lg:text-lg font-black tracking-tight text-gray-900 dark:text-white">چالش‌های<span class="text-brand-gold"> نور</span></span>
+                        </div>
+
+                        <!-- کادر جستجو فقط در دسکتاپ -->
+                        <div class="relative hidden lg:block">
+                            <input v-model="searchQuery" type="text" placeholder="جستجو در چالش‌ها..." class="bg-gray-100 dark:bg-brand-dark/80 border border-transparent dark:focus:border-brand-gold/30 text-sm text-gray-700 dark:text-gray-200 rounded-full py-2.5 pr-10 pl-4 w-64 xl:w-80 focus:w-80 xl:focus:w-96 focus:outline-none focus:ring-1 focus:ring-brand-gold transition-all duration-300 placeholder-gray-400 dark:placeholder-gray-600 shadow-inner">
+                            <i class="fa-solid fa-search absolute right-3.5 top-3 text-gray-400 dark:text-gray-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 sm:gap-4">
+                        <button class="lg:hidden w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-brand-gold transition-colors">
+                            <i class="fa-solid fa-search text-md"></i>
+                        </button>
+                        <button @click="toggleTheme" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-brand-gold transition-colors">
+                            <i :class="['text-md', isDarkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon']"></i>
+                        </button>
+                        <button class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-brand-gold transition-colors relative">
+                            <i class="fa-regular fa-bell text-md"></i>
+                            <span v-if="hasNotifications" class="absolute top-2 right-2.5 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-brand-card rounded-full shadow-[0_0_5px_rgba(239,68,68,0.6)]"></span>
+                        </button>
+
+                        <div class="h-8 w-px bg-gray-200 dark:bg-brand-border/60 mx-1 hidden sm:block"></div>
+
+                        <!-- پروفایل کاربر در هدر -->
+                        <div class="relative ml-2 sm:ml-0">
+                            <button @click="isProfileMenuOpen = !isProfileMenuOpen" class="flex items-center gap-3 group focus:outline-none">
+                                <div class="hidden sm:block text-right">
+                                    <p class="text-xs font-bold text-gray-700 dark:text-gray-200 group-hover:text-brand-gold transition-colors">{{ user.name }}</p>
+                                    <p class="text-[10px] text-brand-gold/80">سطح {{ user.level }}</p>
+                                </div>
+                                <img :src="user.avatar" alt="پروفایل" class="w-9 h-9 rounded-full border border-transparent group-hover:border-brand-gold transition-colors object-cover">
+                            </button>
+
+                            <div v-if="isProfileMenuOpen" @click="isProfileMenuOpen = false" class="fixed inset-0 z-40"></div>
+
+                            <div v-if="isProfileMenuOpen" class="absolute left-0 mt-3 w-48 bg-white dark:bg-brand-card border border-gray-100 dark:border-brand-border rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-50 overflow-hidden transform transition-all">
+                                <div class="py-2">
+                                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-brand-cardLight hover:text-brand-gold dark:hover:text-brand-gold transition-colors">
+                                        <i class="fa-solid fa-gauge w-5 text-center"></i> داشبورد چالش‌ها
+                                    </a>
+                                    <a href="#" @click.prevent="activeTab = 'wallet'; isProfileMenuOpen = false" class="flex items-center gap-3 px-4 py-2.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-brand-cardLight hover:text-brand-gold dark:hover:text-brand-gold transition-colors">
+                                        <i class="fa-solid fa-wallet w-5 text-center"></i> کیف پول نور
+                                    </a>
+                                    <a href="#" @click.prevent="activeTab = 'profile'; isProfileMenuOpen = false" class="flex items-center gap-3 px-4 py-2.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-brand-cardLight hover:text-brand-gold dark:hover:text-brand-gold transition-colors">
+                                        <i class="fa-solid fa-user w-5 text-center"></i> ویرایش اطلاعات
+                                    </a>
+                                    <div class="border-t border-gray-100 dark:border-brand-border/60 my-1"></div>
+                                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                                        <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> خروج
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- ================= محتوای اسکرول‌شونده ================= -->
+                <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+                    
+                    <div class="max-w-6xl mx-auto space-y-6 relative z-0">
+                        
+                        <!-- بخش اول: کارت مشخصات بالای صفحه -->
+                        <section class="bg-white dark:bg-brand-card rounded-3xl shadow-sm border border-gray-100 dark:border-brand-border/60 p-6 md:p-8 relative transition-colors duration-300">
+                            
+                            <!-- بخش بالایی شامل اطلاعات کاربری و ویجت گرافیکی میزان امتیاز تا مدال بعدی -->
+                            <div class="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 w-full">
+                                
+                                <!-- بخش راست: اطلاعات کاربری و آواتار -->
+                                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                                    <div class="relative shrink-0">
+                                        <div class="absolute inset-0 bg-brand-gold rounded-full blur-md opacity-25"></div>
+                                        <img :src="user.avatar" alt="آواتار" class="relative w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-white dark:border-brand-dark object-cover shadow-lg">
+                                    </div>
+                                    
+                                    <div class="text-center sm:text-right mt-2 sm:mt-4">
+                                        <h1 class="text-2xl md:text-3xl font-black mb-1 bg-gradient-to-l from-gray-800 to-gray-500 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">{{ user.name }}</h1>
+                                        <p class="text-gray-500 dark:text-gray-400 mb-3 text-xs md:text-sm">شناسه کاربری چالش‌های نور: {{ user.id }}</p>
+                                        <div class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-goldHover to-brand-gold text-brand-dark px-4 py-1 rounded-full font-bold text-xs shadow-lg shadow-brand-gold/15">
+                                            {{ user.date }}
+                                            <span class="text-brand-dark/70 mr-2 text-[10px] font-normal">تاریخ شروع مسیر</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- بخش چپ: دایره بزرگ پیشرفت گیمفای شده (توضیحات پاک شده و به صورت تولتیپ در سمت راست دایره ظاهر می‌شود) -->
+                                <div class="relative group/progress shrink-0 cursor-help self-center lg:self-start" title="برای جزئیات بیشتر نگه دارید">
+                                    
+                                    <!-- دایره بزرگ پیشرفت قرآنی (رینگ پویا و پرمیوم) - سایز افزایش یافت -->
+                                    <div class="relative w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center bg-gray-100/50 dark:bg-brand-cardLight/30 border border-gray-200/40 dark:border-brand-border/40 rounded-full p-2.5 shadow-inner">
+                                        <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                                            <!-- ریل خاکستری پشت پروگرس با سایه ظریف -->
+                                            <circle cx="18" cy="18" r="16" stroke-width="2.5" class="text-gray-200 dark:text-brand-border/40" fill="none" />
+                                            <!-- خط پروگرس طلایی درخشان متحرک که به صورت درصدی دقیقاً پر می‌شود -->
+                                            <circle cx="18" cy="18" r="16" stroke-width="2.8" stroke-linecap="round" class="text-brand-gold transition-all duration-1000 ease-out" 
+                                                    stroke-dasharray="0, 100" :stroke-dasharray="progressPercent + ', 100'" fill="none" />
+                                        </svg>
+                                        <!-- اطلاعات داخل دایره بزرگ -->
+                                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                            <i class="fa-solid fa-medal text-brand-gold text-2xl sm:text-3xl mb-1 animate-pulse"></i>
+                                            <span class="text-lg sm:text-2xl font-black text-gray-900 dark:text-white font-sans mt-0.5">{{ progressPercent.toFixed(0) }}٪</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- تولتیپ هوشمند شکیل با افکت انیمیشن روی هاور - در موبایل بالا و در دسکتاپ در سمت راست دایره قرار می‌گیرد -->
+                                    <div class="absolute bottom-[110%] left-1/2 -translate-x-1/2 lg:bottom-auto lg:left-full lg:top-1/2 lg:-translate-y-1/2 lg:ms-4 lg:translate-x-0 w-64 bg-white/95 dark:bg-brand-cardLight/95 backdrop-blur-md border border-brand-gold/40 p-4 rounded-2xl opacity-0 invisible group-hover/progress:opacity-100 group-hover/progress:visible transition-all duration-300 z-[999] text-right shadow-xl dark:shadow-2xl pointer-events-none">
+                                        
+                                        <!-- فلش راهنما به سمت پایین (مخصوص موبایل) -->
+                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-[8px] border-transparent border-t-white/95 dark:border-t-brand-cardLight/95 lg:hidden"></div>
+                                        
+                                        <!-- فلش راهنما به سمت چپ (مخصوص دسکتاپ - اشاره به دایره سمت چپ خود) -->
+                                        <div class="absolute left-[-8px] top-1/2 -translate-y-1/2 border-[8px] border-transparent border-r-white/95 dark:border-r-brand-cardLight/95 hidden lg:block"></div>
+
+                                        <span class="text-[9px] font-bold text-brand-gold block mb-1 uppercase tracking-wider">چالش‌های پیش رو</span>
+                                        <h4 class="text-xs font-black text-gray-900 dark:text-white mb-1.5">{{ nextMedalName }}</h4>
+                                        <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-sans mb-1">
+                                            امتیاز فعلی: <span class="text-brand-gold font-bold font-['Vazirmatn_FD']">{{ currentPoints }}</span> از <span class="font-bold font-['Vazirmatn_FD']">{{ nextMedalThreshold }}</span>
+                                        </p>
+                                        <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-sans">
+                                            فقط <span class="text-brand-gold font-black font-['Vazirmatn_FD']">{{ remainingPoints }} امتیاز</span> دیگر تا کسب این نشان قرآنی فاصله دارید! با شرکت در چالش‌های فعال و تایید صحت قرائت می‌توانید این امتیاز را سریعاً به دست آورید.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <!-- تب‌ها -->
+                            <div class="flex items-center gap-6 mt-8 border-b border-gray-100 dark:border-brand-border/60 overflow-x-auto scrollbar-hide">
+                                <button 
+                                    @click="activeTab = 'profile'"
+                                    :class="['pb-3 text-sm font-bold transition-colors border-b-2 px-2 whitespace-nowrap', activeTab === 'profile' ? 'text-gray-900 dark:text-brand-gold border-brand-gold' : 'text-gray-400 border-transparent hover:text-gray-600 dark:hover:text-gray-200']">
+                                    مشخصات کاربری
+                                </button>
+                                <button 
+                                    @click="activeTab = 'awards'"
+                                    :class="['pb-3 text-sm font-bold transition-colors border-b-2 px-2 whitespace-nowrap', activeTab === 'awards' ? 'text-gray-900 dark:text-brand-gold border-brand-gold' : 'text-gray-400 border-transparent hover:text-gray-600 dark:hover:text-gray-200']">
+                                    ویترین مدال‌ها و افتخارات
+                                </button>
+                                <button 
+                                    @click="activeTab = 'wallet'"
+                                    :class="['pb-3 text-sm font-bold transition-colors border-b-2 px-2 whitespace-nowrap flex items-center gap-2', activeTab === 'wallet' ? 'text-gray-900 dark:text-brand-gold border-brand-gold' : 'text-gray-400 border-transparent hover:text-gray-600 dark:hover:text-gray-200']">
+                                    <i class="fa-solid fa-wallet"></i> کیف پول من
+                                </button>
+                            </div>
+                        </section>
+
+                        <!-- گرید ۲ ستونه کل داشبورد: کارت موجودی و اطلاعات کارت در سمت راست / محتوای تب در سمت چپ -->
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            
+                            <!-- ستون اول (سمت راست در RTL): کارت موجودی و اطلاعات کارت‌های بانکی متصل (به پهنای ۴ ستون) -->
+                            <div class="lg:col-span-4 flex flex-col gap-8 font-['Vazirmatn_FD']">
+                                
+                                <!-- Balance Card (موجودی فعلی) -->
+                                <div class="bg-white dark:bg-brand-card rounded-[32px] p-8 border border-gray-100 dark:border-brand-border/60 shadow-lg relative overflow-hidden transition-all duration-300">
+                                    <div class="absolute -top-20 -right-20 w-48 h-48 bg-brand-gold rounded-full mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-10 pointer-events-none"></div>
+
+                                    <div class="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400 mb-8 cursor-pointer hover:text-brand-gold dark:hover:text-brand-gold transition-colors inline-flex mx-auto w-full" 
+                                         @click="toggleVisibility">
+                                        <span class="text-sm font-medium font-sans">موجودی فعلی کیف پول شما</span>
+                                        <svg v-if="isVisible" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-gold">
+                                            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                            <line x1="2" y1="22" x2="22" y2="2"/>
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-gold">
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </div>
+
+                                    <div class="text-center mb-8 flex items-center justify-center gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]">
+                                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12 4.5a.75.75 0 0 0 0 1.5c3.314 0 6 2.686 6 6s-2.686 6-6 6-6-2.686-6-6 2.686-6 6-6a.75.75 0 0 0 0-1.5 7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-4xl font-extrabold text-brand-gold tracking-tight drop-shadow-[0_0_10px_rgba(212,175,55,0.4)]">
+                                            {{ isVisible ? balanceCoins : '***' }}
+                                        </span>
+                                    </div>
+
+                                    <!-- آمار ماهانه -->
+                                    <div class="grid grid-cols-2 gap-4 border-t border-gray-100 dark:border-brand-border/60 pt-6 font-sans">
+                                        <div class="text-center">
+                                            <p class="text-xs text-gray-400 mb-1">کسب شده این ماه</p>
+                                            <p class="text-sm font-bold text-brand-green font-['Vazirmatn_FD']">
+                                                {{ isVisible ? formatWithCommas(earnedThisMonth.toString()) : '***' }} 
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 font-sans">سکه</span>
+                                            </p>
+                                        </div>
+                                        <div class="text-center border-r border-gray-100 dark:border-brand-border/60">
+                                            <p class="text-xs text-gray-400 mb-1">مصرف شده این ماه</p>
+                                            <p class="text-sm font-bold text-brand-red font-['Vazirmatn_FD']">
+                                                {{ isVisible ? formatWithCommas(spentThisMonth.toString()) : '***' }} 
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 font-sans">سکه</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bank Cards Section (اسلایدر کارت‌های بانکی متصل با انیمیشن جابجایی نرم) -->
+                                <div class="bg-white dark:bg-brand-card rounded-[32px] p-6 border border-gray-100 dark:border-brand-border/60 shadow-lg transition-all duration-300">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h3 class="text-md font-bold text-gray-900 dark:text-white font-sans">کارت‌های بانکی متصل</h3>
+                                        <button @click="openCardModal" class="text-brand-gold hover:bg-brand-gold/10 p-1.5 rounded-lg transition-colors" title="افزودن کارت جدید">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <!-- نمایش اسلایدر کارت‌ها با استفاده از انیمیشن انتقال Vue -->
+                                    <div class="relative w-full h-44 overflow-hidden rounded-[24px]">
+                                        <transition name="card-slide" mode="out-in">
+                                            <div v-if="bankCards.length === 0" key="empty" class="absolute inset-0 flex items-center justify-center p-4 text-center text-xs text-gray-400 font-sans border-2 border-dashed border-gray-200 dark:border-gray-700/50 rounded-[24px]">
+                                                شما هنوز کارت بانکی متصل نکرده‌اید.
+                                            </div>
+                                            
+                                            <div v-else :key="activeCardIndex" class="absolute inset-0 p-5 flex flex-col justify-between overflow-hidden group shadow-2xl rounded-[24px]">
+                                                <!-- گرادیانت رنگی کارت فعال -->
+                                                <div class="absolute inset-0 bg-gradient-to-br z-0" :class="bankCards[activeCardIndex].bgGradient"></div>
+                                                <div class="absolute -right-12 -top-12 w-40 h-40 bg-brand-gold rounded-full mix-blend-overlay filter blur-[50px] opacity-10 group-hover:opacity-30 transition-opacity duration-500"></div>
+                                                <div class="absolute -left-12 -bottom-12 w-32 h-32 bg-gray-500 rounded-full mix-blend-overlay filter blur-[40px] opacity-10"></div>
+                                                
+                                                <!-- بخش بالای کارت -->
+                                                <div class="relative z-10 flex justify-between items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-brand-gold/80" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M21 4H3C1.89543 4 1 4.89543 1 6V18C1 19.1046 1.89543 20 3 20H21C22.1046 20 23 19.1046 23 18V6C23 4.89543 22.1046 4 21 4ZM3 6H21V10H3V6ZM3 18V12H21V18H3Z" />
+                                                    </svg>
+                                                    <span class="text-xs font-bold text-gray-200 italic font-sans">{{ bankCards[activeCardIndex].bankName }}</span>
+                                                </div>
+                                                
+                                                <!-- بخش وسط و پایین کارت -->
+                                                <div class="relative z-10 mt-auto">
+                                                    <p class="text-[14px] sm:text-[16px] tracking-[0.1em] text-gray-100 mb-3 text-left font-bold drop-shadow-md" dir="ltr">
+                                                        {{ bankCards[activeCardIndex].cardNumber }}
+                                                    </p>
+                                                    
+                                                    <div class="flex justify-between items-end">
+                                                        <div class="flex flex-col">
+                                                            <span class="text-[8px] text-gray-400 uppercase font-sans" dir="ltr">Cardholder</span>
+                                                            <span class="text-xs text-gray-200 font-bold font-sans">{{ bankCards[activeCardIndex].cardholder }}</span>
+                                                        </div>
+                                                        <div class="flex gap-4">
+                                                            <div class="flex flex-col items-center">
+                                                                <span class="text-[8px] text-gray-400 uppercase font-sans" dir="ltr">CVV2</span>
+                                                                <span class="text-xs font-bold text-gray-300" dir="ltr">{{ bankCards[activeCardIndex].cvv2 }}</span>
+                                                            </div>
+                                                            <div class="flex flex-col items-center">
+                                                                <span class="text-[8px] text-gray-400 uppercase font-sans" dir="ltr">Exp Date</span>
+                                                                <span class="text-xs font-bold text-brand-gold" dir="ltr">{{ bankCards[activeCardIndex].expiry }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </transition>
+                                    </div>
+
+                                    <!-- کنترلرهای ناوبری کارت بانکی فعال -->
+                                    <div v-if="bankCards.length > 1" class="flex items-center justify-between mt-4 px-1">
+                                        <!-- دکمه قبلی (راست) -->
+                                        <button @click="prevCard" class="w-8 h-8 rounded-full bg-gray-50 dark:bg-[#202023] border border-gray-100 dark:border-brand-border/60 hover:border-brand-gold/40 text-gray-500 hover:text-brand-gold flex items-center justify-center transition-colors">
+                                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                                        </button>
+                                        
+                                        <!-- نقطه‌های وضعیت اسلایدر -->
+                                        <div class="flex items-center gap-1.5">
+                                            <span v-for="(card, idx) in bankCards" :key="card.id"
+                                                  @click="goToCard(idx)"
+                                                  :class="['w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer', activeCardIndex === idx ? 'bg-brand-gold w-3.5' : 'bg-gray-300 dark:bg-brand-border']">
+                                            </span>
+                                        </div>
+
+                                        <!-- دکمه بعدی (چپ) -->
+                                        <button @click="nextCard" class="w-8 h-8 rounded-full bg-gray-50 dark:bg-[#202023] border border-gray-100 dark:border-brand-border/60 hover:border-brand-gold/40 text-gray-500 hover:text-brand-gold flex items-center justify-center transition-colors">
+                                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                                        </button>
+                                    </div>
+                                    
+                                </div>
+
+                            </div>
+
+                            <!-- ستون دوم (سمت چپ در RTL): بخش محتوای متغیر تب‌ها (به پهنای ۸ ستون در دسکتاپ) -->
+                            <div class="lg:col-span-8 flex flex-col gap-6">
+                                
+                                <transition name="tab-fade" mode="out-in">
+                                    <div :key="activeTab">
+
+                                        <!-- ================= محتوای تب: مشخصات ================= -->
+                                        <div v-if="activeTab === 'profile'" class="space-y-6">
+                                            <section class="bg-white dark:bg-brand-card rounded-3xl shadow-sm border border-gray-100 dark:border-brand-border/60 p-6 md:p-8 transition-colors duration-300">
+                                                <h2 class="text-lg font-black mb-6 border-b border-gray-100 dark:border-brand-border/40 pb-4 text-brand-gold flex items-center gap-2">
+                                                    <i class="fa-regular fa-address-card text-md"></i>اطلاعات ثبت شده کاربری و تحصیلی
+                                                </h2>
+                                                
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <!-- نام -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-user text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">نام و نام خانوادگی</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ user.name }}</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- تلفن -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-phone text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">شماره تماس همراه</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ user.phone }}</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- ایمیل -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-envelope text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">نشانی رایانامه (ایمیل)</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ user.email }}</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- مدرسه / موسسه -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-school text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">مدرسه / موسسه قرآنی فعال</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ user.school }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- کد ملی -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-id-card text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">کد ملی</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold font-mono">{{ user.nationalId }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- تاریخ تولد -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-cake-candles text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">تاریخ تولد</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold font-mono">{{ user.birthDate }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- استان و شهر -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-map-location-dot text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">محل سکونت (استان و شهر)</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ user.location }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- مربی مستقیم -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-chalkboard-user text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">استاد و مربی مستقیم راهنما</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold text-brand-gold">{{ user.mentor }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- طرح تربیتی فعال -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-book-open-reader text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">طرح تربیتی فعال قرآن‌آموز</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ user.plan }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- امتیاز کلی کسب شده -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-star text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">امتیاز کلی کل مسابقات</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold font-mono text-brand-gold">{{ currentPoints }} امتیاز</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- جزءهای حفظ شده -->
+                                                    <div class="bg-gray-50 dark:bg-brand-dark/40 p-4 rounded-2xl border border-gray-100 dark:border-brand-border/40 flex items-center gap-4 md:col-span-2">
+                                                        <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                                                            <i class="fa-solid fa-book-quran text-md"></i>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-0.5">جزءهای حفظ شده از کلام وحی</label>
+                                                            <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ user.juza }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </div>
+
+                                        <!-- ================= محتوای تب: ویترین افتخارات ================= -->
+                                        <div v-if="activeTab === 'awards'" class="space-y-6">
+                                            <div class="flex flex-col sm:flex-row items-center justify-between mb-2 gap-4">
+                                                <h2 class="text-lg md:text-xl font-black flex items-center gap-3 text-gray-900 dark:text-white">
+                                                    <i class="fa-solid fa-gem text-brand-gold drop-shadow-md"></i>
+                                                    کلکسیون افتخارات قرآنی
+                                                </h2>
+                                                <span class="text-xs font-bold bg-white dark:bg-brand-card text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-brand-border/60 px-5 py-2 rounded-xl shadow-sm">
+                                                    مجموع مدال‌های فعال: <span class="text-brand-gold pr-1 text-sm font-black">{{ totalMedals }} عدد</span>
+                                                </span>
+                                            </div>
+
+                                            <!-- ویترین مدال‌ها -->
+                                            <div class="bg-gradient-to-b from-gray-100 to-gray-200 dark:from-brand-card dark:to-brand-dark border-4 border-brand-gold/50 rounded-3xl p-4 md:p-8 shadow-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col items-center">
+                                                
+                                                <!-- تاج اسلیمی تزیینی -->
+                                                <div class="absolute -top-6 left-1/2 -translate-x-1/2 z-30 bg-white dark:bg-brand-dark px-6 py-1.5 border border-brand-gold/30 rounded-full flex items-center justify-center shadow-lg">
+                                                    <svg class="w-24 h-6 text-brand-gold filter drop-shadow-[0_0_8px_rgba(229,184,105,0.6)]" viewBox="0 0 100 30" fill="currentColor">
+                                                        <path d="M50,2 C53,8 65,5 70,12 C60,15 55,8 50,15 C45,8 40,15 30,12 C35,5 47,8 50,2 Z M10,15 C20,12 30,18 45,16 C35,22 20,20 10,15 Z M90,15 C80,12 70,18 55,16 C65,22 80,20 90,15 Z" />
+                                                        <circle cx="50" cy="4" r="2" class="fill-brand-gold animate-pulse"/>
+                                                    </svg>
+                                                </div>
+                                                
+                                                <!-- بورد داخلی شلف -->
+                                                <div class="w-full rounded-2xl p-4 md:p-6 shadow-[inset_0_5px_15px_rgba(0,0,0,0.1)] dark:shadow-[inset_0_10px_35px_rgba(0,0,0,0.95)] relative bg-gray-50 dark:bg-[#130d11] min-h-[550px] dark:border-[1.5px] border-brand-gold/15"
+                                                     style="background: repeating-linear-gradient(90deg, var(--bg-shelf-1), var(--bg-shelf-1) 24px, var(--bg-shelf-2) 24px, var(--bg-shelf-2) 48px);">
+                                                    <div class="absolute inset-0 bg-gradient-to-t from-gray-300/50 dark:from-black/85 via-transparent to-transparent dark:to-black/50 pointer-events-none rounded-2xl"></div>
+                                                    
+                                                    <!-- گرید اصلی کلکسیون -->
+                                                    <div class="relative z-10 grid grid-cols-12 gap-5 h-full">
+                                                        
+                                                        <!-- بخش چپ -->
+                                                        <div class="col-span-12 md:col-span-7 flex flex-col gap-5">
+                                                            
+                                                            <div class="h-[280px] rounded-2xl p-4 bg-black/5 dark:bg-black/35 border border-brand-gold/15 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_15px_rgba(0,0,0,0.8)] border-b-[6px] border-b-brand-gold/40 flex items-center justify-center relative transition-all duration-300 hover:border-brand-gold/30">
+                                                                <div class="flex justify-around items-end w-full pb-2 gap-2">
+                                                                    <div v-for="(medal, mIndex) in getCompartmentMedals('gold')" :key="mIndex" 
+                                                                         class="relative flex flex-col items-center justify-end transform transition-all duration-300 hover:-translate-y-3 cursor-pointer group/medal hover:z-[100]">
+                                                                        
+                                                                        <div :class="['w-4.5 h-8 -mb-2 z-0 relative shadow-sm rounded-t-sm', getRibbonClass(medal.ribbon)]" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);"></div>
+                                                                        <div :class="['w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center z-10 border-2 shadow-[0_4px_10px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_15px_rgba(0,0,0,0.4)] relative overflow-hidden', getMedalClass(medal.type)]">
+                                                                            <div class="absolute inset-0.5 rounded-full border border-white/20 pointer-events-none"></div>
+                                                                            <div class="medal-shine pointer-events-none"></div>
+                                                                            <i :class="['text-lg sm:text-xl drop-shadow-md z-20', medal.icon, getIconColor(medal.type)]"></i>
+                                                                        </div>
+
+                                                                        <div class="absolute bottom-[130%] left-1/2 transform -translate-x-1/2 w-52 sm:w-60 bg-white/95 dark:bg-brand-cardLight/95 backdrop-blur-md border border-brand-gold/40 p-3.5 rounded-xl opacity-0 invisible group-hover/medal:opacity-100 group-hover/medal:visible transition-all duration-300 z-[999] text-center shadow-xl dark:shadow-2xl pointer-events-none">
+                                                                            <span class="text-[8px] font-bold text-brand-gold block mb-1 uppercase tracking-wider">{{ medal.date }}</span>
+                                                                            <h4 class="text-xs font-black text-gray-900 dark:text-white mb-1">{{ medal.title }}</h4>
+                                                                            <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed">{{ medal.desc }}</p>
+                                                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-[8px] border-transparent border-t-white/95 dark:border-t-brand-cardLight/95"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="h-[180px] rounded-2xl p-4 bg-black/5 dark:bg-black/35 border border-brand-gold/15 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_15px_rgba(0,0,0,0.8)] border-b-[6px] border-b-brand-gold/40 flex items-center justify-center relative transition-all duration-300 hover:border-brand-gold/30">
+                                                                <div class="flex justify-around items-end w-full pb-2 gap-2">
+                                                                    <div v-for="(medal, mIndex) in getCompartmentMedals('group')" :key="mIndex" 
+                                                                         class="relative flex flex-col items-center justify-end transform transition-all duration-300 hover:-translate-y-3 cursor-pointer group/medal hover:z-[100]">
+                                                                        
+                                                                        <div :class="['w-4.5 h-8 -mb-2 z-0 relative shadow-sm rounded-t-sm', getRibbonClass(medal.ribbon)]" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);"></div>
+                                                                        <div :class="['w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center z-10 border-2 shadow-[0_4px_10px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_15px_rgba(0,0,0,0.4)] relative overflow-hidden', getMedalClass(medal.type)]">
+                                                                            <div class="absolute inset-0.5 rounded-full border border-white/20 pointer-events-none"></div>
+                                                                            <div class="medal-shine pointer-events-none"></div>
+                                                                            <i :class="['text-lg sm:text-xl drop-shadow-md z-20', medal.icon, getIconColor(medal.type)]"></i>
+                                                                        </div>
+
+                                                                        <div class="absolute bottom-[130%] left-1/2 transform -translate-x-1/2 w-52 sm:w-60 bg-white/95 dark:bg-brand-cardLight/95 backdrop-blur-md border border-brand-gold/40 p-3.5 rounded-xl opacity-0 invisible group-hover/medal:opacity-100 group-hover/medal:visible transition-all duration-300 z-[999] text-center shadow-xl dark:shadow-2xl pointer-events-none">
+                                                                            <span class="text-[8px] font-bold text-brand-gold block mb-1 uppercase tracking-wider">{{ medal.date }}</span>
+                                                                            <h4 class="text-xs font-black text-gray-900 dark:text-white mb-1">{{ medal.title }}</h4>
+                                                                            <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed">{{ medal.desc }}</p>
+                                                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-[8px] border-transparent border-t-white/95 dark:border-t-brand-cardLight/95"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <!-- بخش راست -->
+                                                        <div class="col-span-12 md:col-span-5 grid grid-cols-5 gap-4">
+                                                            
+                                                            <!-- ستون وسطِ سمت راست -->
+                                                            <div class="col-span-3 flex flex-col gap-4">
+                                                                
+                                                                <div class="h-[148px] rounded-xl p-2 bg-black/5 dark:bg-black/35 border border-brand-gold/15 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_12px_rgba(0,0,0,0.8)] border-b-4 border-b-brand-gold/40 flex items-center justify-center relative transition-all duration-300 hover:border-brand-gold/30">
+                                                                    <div v-for="(medal, mIndex) in getCompartmentMedals('speed')" :key="mIndex" 
+                                                                         class="relative flex flex-col items-center justify-end transform transition-all duration-300 hover:-translate-y-2 cursor-pointer group/medal hover:z-[100]">
+                                                                        
+                                                                        <div :class="['w-4 h-6 -mb-2 z-0 relative shadow-sm rounded-t-sm', getRibbonClass(medal.ribbon)]" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);"></div>
+                                                                        <div :class="['w-12 h-12 rounded-full flex items-center justify-center z-10 border-2 shadow-md relative overflow-hidden', getMedalClass(medal.type)]">
+                                                                            <i :class="['text-md drop-shadow-md z-20', medal.icon, getIconColor(medal.type)]"></i>
+                                                                        </div>
+                                                                        
+                                                                        <div class="absolute bottom-[130%] left-1/2 transform -translate-x-1/2 w-52 sm:w-60 bg-white/95 dark:bg-brand-cardLight/95 backdrop-blur-md border border-brand-gold/40 p-3.5 rounded-xl opacity-0 invisible group-hover/medal:opacity-100 group-hover/medal:visible transition-all duration-300 z-[999] text-center shadow-xl dark:shadow-2xl pointer-events-none">
+                                                                            <span class="text-[8px] font-bold text-brand-gold block mb-1 uppercase tracking-wider">{{ medal.date }}</span>
+                                                                            <h4 class="text-xs font-black text-gray-900 dark:text-white mb-1">{{ medal.title }}</h4>
+                                                                            <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed">{{ medal.desc }}</p>
+                                                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-[8px] border-transparent border-t-white/95 dark:border-t-brand-cardLight/95"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="h-[148px] rounded-xl p-2 bg-black/5 dark:bg-black/50 border border-gray-300/40 dark:border-brand-border/40 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_12px_rgba(0,0,0,0.9)] border-b-4 border-b-gray-400/40 dark:border-b-brand-border/60 flex items-center justify-center relative opacity-50">
+                                                                    <div class="w-10 h-10 rounded-full border border-dashed border-gray-400 dark:border-gray-600 flex items-center justify-center bg-gray-200/40 dark:bg-brand-dark/40 shadow-inner">
+                                                                        <i class="fa-solid fa-lock text-xs text-gray-500"></i>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="h-[148px] rounded-xl p-2 bg-black/5 dark:bg-black/50 border border-gray-300/40 dark:border-brand-border/40 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_12px_rgba(0,0,0,0.9)] border-b-4 border-b-gray-400/40 dark:border-b-brand-border/60 flex items-center justify-center relative opacity-50">
+                                                                    <div class="w-10 h-10 rounded-full border border-dashed border-gray-400 dark:border-gray-600 flex items-center justify-center bg-gray-200/40 dark:bg-brand-dark/40 shadow-inner">
+                                                                        <i class="fa-solid fa-lock text-xs text-gray-500"></i>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <!-- ستون سمت راستِ انتهایی -->
+                                                            <div class="col-span-2 flex flex-col gap-4">
+                                                                <div class="h-[205px] rounded-xl p-2 bg-black/5 dark:bg-black/50 border border-gray-300/40 dark:border-brand-border/40 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_12px_rgba(0,0,0,0.9)] border-b-4 border-b-gray-400/40 dark:border-b-brand-border/60 flex items-center justify-center relative opacity-50">
+                                                                    <div class="w-10 h-10 rounded-full border border-dashed border-gray-400 dark:border-gray-600 flex items-center justify-center bg-gray-200/40 dark:bg-brand-dark/40 shadow-inner">
+                                                                        <i class="fa-solid fa-lock text-xs text-gray-500"></i>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="h-[257px] rounded-xl p-2 bg-black/5 dark:bg-black/50 border border-gray-300/40 dark:border-brand-border/40 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_12px_rgba(0,0,0,0.9)] border-b-4 border-b-gray-400/40 dark:border-b-brand-border/60 flex items-center justify-center relative opacity-50">
+                                                                    <div class="w-10 h-10 rounded-full border border-dashed border-gray-400 dark:border-gray-600 flex items-center justify-center bg-gray-200/40 dark:bg-brand-dark/40 shadow-inner">
+                                                                        <i class="fa-solid fa-lock text-xs text-gray-500"></i>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <!-- قفسه افقی پایینی -->
+                                                        <div class="col-span-12 rounded-2xl p-4 min-h-[90px] bg-black/5 dark:bg-black/45 border border-brand-gold/15 shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_4px_15px_rgba(0,0,0,0.9)] border-b-[6px] border-b-brand-gold/40 flex items-center justify-around relative transition-all duration-300 hover:border-brand-gold/30">
+                                                            <div v-for="(locked, lIndex) in lockedMedals" :key="lIndex" class="flex items-center justify-center opacity-40 hover:opacity-75 transition-opacity duration-300 cursor-help group/locked relative">
+                                                                <div class="w-10 h-10 rounded-full bg-gray-200/40 dark:bg-brand-dark/80 border border-dashed border-gray-400 dark:border-gray-600 flex items-center justify-center shadow-inner">
+                                                                    <i :class="['text-xs text-gray-500', locked.icon]"></i>
+                                                                </div>
+
+                                                                <div class="absolute bottom-[130%] left-1/2 transform -translate-x-1/2 w-48 bg-white/95 dark:bg-brand-card/95 border border-gray-200 dark:border-gray-700 p-3 rounded-xl opacity-0 invisible group-hover/locked:opacity-100 group-hover/locked:visible transition-all duration-300 z-[999] text-center shadow-xl dark:shadow-2xl pointer-events-none">
+                                                                    <h5 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">{{ locked.title }}</h5>
+                                                                    <p class="text-[9px] text-gray-500 leading-relaxed">{{ locked.desc }}</p>
+                                                                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-[8px] border-transparent border-t-white/95 dark:border-t-brand-card/95"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ================= محتوای تب: کیف پول من ================= -->
+                                        <div v-if="activeTab === 'wallet'" class="space-y-6">
+                                            <div class="flex flex-col gap-6">
+                                                
+                                                <!-- Quick Actions Grid for Challenges -->
+                                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                                    <button v-for="action in quickActions" :key="action.id" 
+                                                        @click="handleAction(action)"
+                                                        :class="[
+                                                        'relative flex flex-col items-center justify-center gap-3 p-5 rounded-[24px] transition-all group border',
+                                                        action.disabled ? 'bg-gray-50 dark:bg-brand-card/50 border-gray-100 dark:border-brand-border/50 cursor-not-allowed opacity-60' : 'bg-white dark:bg-brand-card border-gray-200 dark:border-brand-border/60 hover:border-brand-gold/50 dark:hover:bg-[#202023] hover:-translate-y-1 shadow-sm dark:shadow-lg'
+                                                    ]">
+                                                        <!-- Badge for disabled -->
+                                                        <div v-if="action.disabled" class="absolute -top-2 -left-2 bg-brand-gold text-brand-dark text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-lg whitespace-nowrap">
+                                                            به‌زودی
+                                                        </div>
+
+                                                        <!-- Icon Container -->
+                                                        <div :class="[
+                                                    'w-14 h-14 rounded-[18px] flex items-center justify-center transition-colors',
+                                                    action.primary ? 'bg-brand-gold text-brand-dark shadow-[0_0_20px_rgba(229,184,105,0.4)]' : 'bg-gray-100 dark:bg-[#27272a] border border-gray-200 dark:border-brand-border/60 text-brand-gold group-hover:bg-brand-gold/10'
+                                                ]">
+                                                            <div v-html="action.icon"></div>
+                                                        </div>
+                                                        <span class="text-[13px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-brand-gold dark:group-hover:text-white transition-colors text-center">{{ action.title }}</span>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Quick Transfer / Invite Rivals -->
+                                                <div class="bg-white dark:bg-brand-card rounded-[32px] p-6 border border-gray-100 dark:border-brand-border/60 shadow-lg">
+                                                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">ارسال سریع سکه به دوستان <span class="text-xs text-gray-500 font-normal">(جهت باز کردن تراکنش کلیک کنید)</span></h2>
+                                                    <div class="flex items-center gap-6 overflow-x-auto pb-2 scrollbar-hide">
+                                                        
+                                                        <!-- Add New Button -->
+                                                        <button @click="openNewFriendModal" class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                                                            <div class="w-14 h-14 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400 group-hover:border-brand-gold group-hover:text-brand-gold transition-colors">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                                </svg>
+                                                            </div>
+                                                            <span class="text-xs text-gray-500 font-medium">دوست جدید</span>
+                                                        </button>
+
+                                                        <!-- Contacts list -->
+                                                        <button v-for="contact in recentContacts" :key="contact.id" @click="openSendModal(contact)" class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                                                            <div :class="['w-14 h-14 rounded-full flex items-center justify-center text-gray-900 dark:text-brand-dark font-bold text-lg border-2 border-transparent group-hover:border-brand-gold transition-all shadow-sm', contact.color]">
+                                                                {{ contact.initials }}
+                                                            </div>
+                                                            <span class="text-xs text-gray-600 dark:text-gray-400 font-medium group-hover:text-gray-900 dark:group-hover:text-gray-200">{{ contact.name }}</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Transactions History with Pagination -->
+                                                <div class="bg-white dark:bg-brand-card rounded-[32px] p-8 border border-gray-100 dark:border-brand-border/60 shadow-lg flex-grow flex flex-col">
+                                                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-brand-border/60">
+                                                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">تاریخچه تراکنش‌های بازی</h2>
+                                                    </div>
+
+                                                    <!-- Transactions List -->
+                                                    <div class="space-y-3 flex-grow">
+                                                        <div v-for="tx in paginatedTransactions" :key="tx.id" class="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-[#202023] transition-colors border border-transparent dark:hover:border-brand-border/60">
+                                                            
+                                                            <div class="flex items-center gap-5">
+                                                                <!-- Status Icon -->
+                                                                <div :class="[
+                                                                        'w-14 h-14 rounded-[18px] flex items-center justify-center relative flex-shrink-0',
+                                                                        tx.status === 'ناموفق' ? 'bg-red-100 dark:bg-red-950/30 text-brand-red' : 
+                                                                        tx.status === 'موفق' ? 'bg-green-100 dark:bg-green-950/30 text-brand-green' : 'bg-brand-gold/10 text-brand-gold'
+                                                                    ]">
+                                                                    
+                                                                    <svg v-if="tx.type === 'withdraw'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                                                    <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+                                                                    
+                                                                    <!-- Tiny Status Badge -->
+                                                                    <div class="absolute -bottom-1 -right-1 bg-white dark:bg-brand-dark rounded-full p-[2px]">
+                                                                        <svg v-if="tx.status === 'ناموفق'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-brand-red"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.536-10.036a.75.75 0 1 0-1.061-1.061L10 8.939 8.525 7.464a.75.75 0 1 0-1.061 1.061L8.939 10l-1.475 1.475a.75.75 0 0 0 1.061 1.061L10 11.061l1.475 1.475a.75.75 0 0 0 1.061-1.061L11.061 10l1.475-1.475Z" clip-rule="evenodd" /></svg>
+                                                                        <svg v-else-if="tx.status === 'موفق'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-brand-green"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Details -->
+                                                                <div class="flex flex-col gap-1.5">
+                                                                    <span class="text-[15px] font-bold text-gray-900 dark:text-gray-100 font-sans">{{ tx.title }}</span>
+                                                                    <span class="text-[12px] text-gray-500 font-medium flex items-center gap-1.5 font-['Vazirmatn_FD']">
+                                                                        <span :class="tx.status === 'ناموفق' ? 'text-brand-red font-sans' : 'text-brand-green font-sans'">{{ tx.status }}</span>
+                                                                        <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
+                                                                        {{ tx.date }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Amount -->
+                                                            <div class="text-lg font-bold whitespace-nowrap text-gray-900 dark:text-white font-['Vazirmatn_FD']">
+                                                                <span v-if="tx.type === 'deposit'">+</span>
+                                                                <span v-if="tx.type === 'withdraw'">-</span>
+                                                                {{ tx.amount }} <span class="text-xs text-gray-500 font-medium ml-1 font-sans">سکه</span>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Pagination Controls -->
+                                                    <div v-if="totalPages > 1" class="flex items-center justify-between mt-6 pt-4 border-t border-gray-100 dark:border-brand-border/60">
+                                                        <button @click="prevPage" :disabled="currentPage === 1"
+                                                                class="px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 font-sans"
+                                                                :class="currentPage === 1 ? 'border-gray-200 dark:border-brand-border/30 text-gray-400 dark:text-gray-600 cursor-not-allowed' : 'border-gray-200 dark:border-brand-border/60 text-gray-600 dark:text-gray-300 hover:border-brand-gold dark:hover:border-brand-gold hover:text-brand-gold bg-white dark:bg-[#202023] hover:bg-gray-50 dark:hover:bg-[#27272a]'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                                            <span class="text-sm font-bold">قبلی</span>
+                                                        </button>
+
+                                                        <div class="flex items-center gap-1.5 font-['Vazirmatn_FD']">
+                                                            <button v-for="page in totalPages" :key="page"
+                                                                    @click="goToPage(page)"
+                                                                    class="w-8 h-8 rounded-lg text-sm font-bold flex items-center justify-center transition-all"
+                                                                    :class="currentPage === page ? 'bg-brand-gold text-brand-dark shadow-[0_0_10px_rgba(229,184,105,0.4)]' : 'border border-gray-200 dark:border-brand-border/60 text-gray-500 dark:text-gray-400 hover:text-brand-gold dark:hover:text-brand-gold hover:border-brand-gold/50 bg-white dark:bg-[#202023]'">
+                                                                {{ page }}
+                                                            </button>
+                                                        </div>
+
+                                                        <button @click="nextPage" :disabled="currentPage === totalPages"
+                                                                class="px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 font-sans"
+                                                                :class="currentPage === totalPages ? 'border-gray-200 dark:border-brand-border/30 text-gray-400 dark:text-gray-600 cursor-not-allowed' : 'border-gray-200 dark:border-brand-border/60 text-gray-600 dark:text-gray-300 hover:border-brand-gold dark:hover:border-brand-gold hover:text-brand-gold bg-white dark:bg-[#202023] hover:bg-gray-50 dark:hover:bg-[#27272a]'">
+                                                            <span class="text-sm font-bold">بعدی</span>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </transition>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- ================= Modals from Wallet ================= -->
+        <!-- مدال افزودن کارت بانکی جدید -->
+        <div v-if="isCardModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans" @click.self="closeCardModal">
+            <div class="bg-white dark:bg-[#1e1e21] border border-gray-200 dark:border-brand-border/60 rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <button @click="closeCardModal" class="absolute top-6 left-6 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-100 dark:bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>
+                    افزودن کارت بانکی
+                </h2>
+                
+                <form @submit.prevent="submitNewCard" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">شماره کارت (۱۶ رقم)</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="newCardNumber" 
+                                type="text" 
+                                dir="ltr" 
+                                maxlength="19"
+                                placeholder="**** **** **** ****" 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-brand-border/60 rounded-xl px-4 py-3.5 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left tracking-[0.15em] sm:tracking-[0.25em] font-mono text-lg placeholder-gray-400 dark:placeholder-gray-600"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">تاریخ انقضا</label>
+                            <input 
+                                v-model="newCardExpiry" 
+                                type="text" 
+                                dir="ltr" 
+                                maxlength="5"
+                                placeholder="MM/YY" 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-brand-border/60 rounded-xl px-4 py-3.5 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand-gold transition-colors text-center font-mono text-lg placeholder-gray-400 dark:placeholder-gray-600"
+                            >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">CVV2</label>
+                            <input 
+                                v-model="newCardCVV2" 
+                                type="password" 
+                                dir="ltr" 
+                                maxlength="4"
+                                placeholder="***" 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-brand-border/60 rounded-xl px-4 py-3.5 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand-gold transition-colors text-center font-mono text-lg tracking-[0.2em] placeholder-gray-400 dark:placeholder-gray-600"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" :disabled="!isFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                                :class="isFormValid ? 'bg-brand-gold text-brand-dark hover:bg-brand-goldHover shadow-[0_0_15px_rgba(229,184,105,0.3)]' : 'bg-gray-200 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>ثبت و اتصال کارت</span>
+                            <svg v-if="isFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال شارژ کیف پول چالش‌ها -->
+        <div v-if="isChargeModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans" @click.self="closeChargeModal">
+            <div class="bg-white dark:bg-[#1e1e21] border border-gray-200 dark:border-brand-border/60 rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <button @click="closeChargeModal" class="absolute top-6 left-6 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-100 dark:bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    شارژ کیف پول (افزایش سکه)
+                </h2>
+
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">یکی از مبالغ پیش‌فرض را انتخاب کنید یا مبلغ دلخواه خود را در کادر زیر وارد کنید (حداقل مقدار شارژ ۱۰۰ سکه است).</p>
+                
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <button 
+                        v-for="amt in defaultAmounts" 
+                        :key="amt" 
+                        type="button"
+                        @click="selectDefaultAmount(amt)"
+                        :class="[
+                            'py-3.5 rounded-xl font-bold transition-all border text-xs text-center flex flex-col items-center justify-center gap-1 font-[\'Vazirmatn_FD\']',
+                            customAmount == amt
+                                ? 'bg-brand-gold text-brand-dark border-brand-gold shadow-[0_0_12px_rgba(229,184,105,0.4)]' 
+                                : 'bg-gray-50 dark:bg-[#27272a] border-gray-200 dark:border-brand-border/60 text-gray-600 dark:text-gray-300 hover:border-brand-gold/50 dark:hover:text-white'
+                        ]"
+                    >
+                        <span class="text-sm font-extrabold">{{ amt.toLocaleString('fa-IR') }}</span>
+                        <span class="text-[10px] opacity-80 font-sans">سکه</span>
+                    </button>
+                </div>
+                
+                <form @submit.prevent="submitCharge" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">مبلغ دلخواه خود را وارد کنید</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="customAmount" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: 5000" 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-brand-border/60 rounded-xl px-4 py-3.5 pl-14 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left font-mono text-lg placeholder-gray-400 dark:placeholder-gray-600"
+                            >
+                            <span class="absolute left-4 text-xs font-bold text-gray-400 dark:text-gray-500 font-sans">سکه</span>
+                        </div>
+                    </div>
+
+                    <div v-if="customAmount" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs text-gray-600 dark:text-gray-400 font-bold">مبلغ نهایی برای شارژ:</span>
+                        <span class="text-lg font-black text-brand-gold font-['Vazirmatn_FD']">
+                            {{ formatWithCommas(customAmount) }} <span class="text-xs font-normal text-gray-500 dark:text-gray-300 font-sans">سکه</span>
+                        </span>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!isChargeFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                                :class="isChargeFormValid ? 'bg-brand-gold text-brand-dark hover:bg-brand-goldHover shadow-[0_0_15px_rgba(229,184,105,0.3)]' : 'bg-gray-200 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>تایید و پرداخت آنلاین</span>
+                            <svg v-if="isChargeFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال ارسال سریع سکه به دوست -->
+        <div v-if="isSendModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans" @click.self="closeSendModal">
+            <div class="bg-white dark:bg-[#1e1e21] border border-gray-200 dark:border-brand-border/60 rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <button @click="closeSendModal" class="absolute top-6 left-6 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-100 dark:bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    ارسال سریع سکه به دوست
+                </h2>
+
+                <div v-if="selectedContact" class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-[#27272a] border border-gray-200 dark:border-brand-border/60 rounded-2xl mb-6">
+                    <div :class="['w-12 h-12 rounded-full flex items-center justify-center text-brand-dark font-bold text-lg', selectedContact.color]">
+                        {{ selectedContact.initials }}
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 block mb-0.5">در حال ارسال سکه به:</span>
+                        <span class="text-sm font-bold text-gray-900 dark:text-white">{{ selectedContact.name }} (@{{ selectedContact.username }})</span>
+                    </div>
+                </div>
+                
+                <form @submit.prevent="submitSendCoins" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">تعداد سکه ارسالی</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="sendAmount" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: 500" 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-brand-border/60 rounded-xl px-4 py-3.5 pl-14 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left font-mono text-lg placeholder-gray-400 dark:placeholder-gray-600"
+                            >
+                            <span class="absolute left-4 text-xs font-bold text-gray-400 dark:text-gray-500 font-sans">سکه</span>
+                        </div>
+                    </div>
+
+                    <div v-if="sendAmount" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs text-gray-600 dark:text-gray-400 font-bold">مقدار نهایی کسر از حساب:</span>
+                        <span class="text-lg font-black text-brand-gold font-['Vazirmatn_FD']">
+                            {{ formatWithCommas(sendAmount) }} <span class="text-xs font-normal text-gray-500 dark:text-gray-300 font-sans">سکه</span>
+                        </span>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!isSendFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                                :class="isSendFormValid ? 'bg-brand-gold text-brand-dark hover:bg-brand-goldHover shadow-[0_0_15px_rgba(229,184,105,0.3)]' : 'bg-gray-200 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>تایید و ارسال سریع</span>
+                            <svg v-if="isSendFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                        <p class="text-[11px] text-gray-500 mt-2.5 text-center font-['Vazirmatn_FD']">موجودی مجاز شما: {{ balanceCoins }} <span class="font-sans">سکه</span></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال هوشمند ارسال سکه به دوست با انتخاب از لیست -->
+        <div v-if="isSendByUsernameModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans" @click.self="closeSendByUsernameModal">
+            <div class="bg-white dark:bg-[#1e1e21] border border-gray-200 dark:border-brand-border/60 rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <button @click="closeSendByUsernameModal" class="absolute top-6 left-6 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-100 dark:bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                    </svg>
+                    ارسال سکه به دوستان
+                </h2>
+
+                <form @submit.prevent="submitSendCoinsByUsername" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">یک دوست را برای انتقال انتخاب کنید</label>
+                        
+                        <div class="relative mb-3 flex items-center">
+                            <input 
+                                v-model="friendSearchQuery" 
+                                type="text" 
+                                placeholder="جستجو در بین دوستان..." 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-brand-border/60 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand-gold transition-colors text-right placeholder-gray-400 dark:placeholder-gray-600"
+                            >
+                        </div>
+
+                        <div class="max-h-48 overflow-y-auto space-y-2 pr-1 border border-gray-200 dark:border-brand-border/40 rounded-2xl p-2 bg-gray-50 dark:bg-[#121212]">
+                            <button 
+                                v-for="friend in filteredFriendsForSelect" 
+                                :key="friend.id"
+                                type="button"
+                                @click="selectTargetFriend(friend)"
+                                :class="[
+                                    'w-full flex items-center justify-between p-3 rounded-xl border transition-all text-right',
+                                    selectedTargetContact?.id === friend.id 
+                                        ? 'bg-brand-gold/10 border-brand-gold text-gray-900 dark:text-white font-bold' 
+                                        : 'bg-white dark:bg-brand-dark border-transparent text-gray-600 dark:text-gray-300 hover:border-brand-gold/30'
+                                ]"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <div :class="['w-9 h-9 rounded-full flex items-center justify-center text-brand-dark font-bold text-sm', friend.color]">
+                                        {{ friend.initials }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold">{{ friend.name }}</span>
+                                        <span class="text-[10px] text-gray-500 font-mono text-left" dir="ltr">@{{ friend.username }}</span>
+                                    </div>
+                                </div>
+                                <div v-if="selectedTargetContact?.id === friend.id" class="text-brand-gold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <div v-if="filteredFriendsForSelect.length === 0" class="text-center py-6 text-xs text-gray-500">
+                                دوستی با این نام یافت نشد!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">تعداد سکه ارسالی</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="sendAmountByUsername" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: 500" 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-brand-border/60 rounded-xl px-4 py-3.5 pl-14 text-brand-gold focus:outline-none focus:border-brand-gold transition-colors text-left font-mono text-lg placeholder-gray-400 dark:placeholder-gray-600"
+                            >
+                            <span class="absolute left-4 text-xs font-bold text-gray-400 dark:text-gray-500 font-sans">سکه</span>
+                        </div>
+                    </div>
+
+                    <div v-if="sendAmountByUsername && selectedTargetContact" class="p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs text-gray-600 dark:text-gray-400 font-bold">مقدار نهایی کسر از حساب:</span>
+                        <span class="text-lg font-black text-brand-gold font-['Vazirmatn_FD']">
+                            {{ formatWithCommas(sendAmountByUsername) }} <span class="text-xs font-normal text-gray-500 dark:text-gray-300 font-sans">سکه</span>
+                        </span>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!isSendByUsernameFormValid" class="w-full font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                                :class="isSendByUsernameFormValid ? 'bg-brand-gold text-brand-dark hover:bg-brand-goldHover shadow-[0_0_15px_rgba(229,184,105,0.3)]' : 'bg-gray-200 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>ارسال سکه</span>
+                            <svg v-if="isSendByUsernameFormValid" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                        <p class="text-[11px] text-gray-500 mt-2.5 text-center font-['Vazirmatn_FD']">موجودی مجاز شما: {{ balanceCoins }} <span class="font-sans">سکه</span></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- مدال هوشمند افزودن دوست جدید با یوزرنیم -->
+        <div v-if="isNewFriendModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans" @click.self="closeNewFriendModal">
+            <div class="bg-white dark:bg-[#1e1e21] border border-gray-200 dark:border-brand-border/60 rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-modal">
+                
+                <button @click="closeNewFriendModal" class="absolute top-6 left-6 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-100 dark:bg-[#27272a] p-2 rounded-full hover:bg-brand-red/20 hover:text-brand-red">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-brand-gold">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                    </svg>
+                    ارسال درخواست دوستی
+                </h2>
+
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">نام کاربری دوست خود را وارد کنید تا درخواست دوستی برای او ارسال شود.</p>
+
+                <form @submit.prevent="submitFriendRequest" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">نام کاربری (یوزرنیم)</label>
+                        <div class="relative flex items-center">
+                            <input 
+                                v-model="newFriendUsernameInput" 
+                                type="text" 
+                                dir="ltr" 
+                                placeholder="مثال: poya یا maryam" 
+                                class="w-full bg-gray-50 dark:bg-[#121212] border rounded-xl px-4 py-3.5 text-gray-800 dark:text-gray-200 focus:outline-none transition-all text-left font-sans text-base placeholder-gray-400 dark:placeholder-gray-600"
+                                :class="[
+                                    newFriendUsernameInput.trim() === '' ? 'border-gray-200 dark:border-brand-border/60 focus:border-brand-gold' :
+                                    matchedSystemUser ? 'border-brand-green/80 focus:border-brand-green' : 'border-brand-red/80 focus:border-brand-red'
+                                ]"
+                            >
+                        </div>
+                        
+                        <div v-if="newFriendUsernameInput.trim() !== '' && suggestedSystemUsers.length > 0" class="mt-2.5 max-h-36 overflow-y-auto border border-gray-200 dark:border-brand-border/40 rounded-xl p-1 bg-gray-50 dark:bg-[#121212] space-y-1">
+                            <p class="text-[10px] text-brand-gold px-2 py-1 font-bold">کاربران یافت شده در پلتفرم (برای انتخاب کلیک کنید):</p>
+                            <button 
+                                v-for="user in suggestedSystemUsers" 
+                                :key="user.id" 
+                                type="button" 
+                                @click="selectSuggestedUser(user)"
+                                class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-brand-gold/10 text-right transition-all group"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <div :class="['w-7 h-7 rounded-full flex items-center justify-center text-brand-dark font-bold text-xs', user.color]">
+                                        {{ user.initials }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{{ user.name }}</span>
+                                        <span class="text-[10px] text-gray-500 font-mono" dir="ltr">@{{ user.username }}</span>
+                                    </div>
+                                </div>
+                                <span class="text-[9px] text-brand-gold/70 group-hover:text-brand-gold font-bold">انتخاب کاربر ←</span>
+                            </button>
+                        </div>
+                        
+                        <div class="mt-2.5 text-xs">
+                            <p v-if="newFriendUsernameInput.trim() === ''" class="text-gray-500">
+                                برای مثال کلمه <span class="text-gray-400 font-mono">am</span> را تایپ کنید تا لیست پیشنهادات با نام امیر و امین فیلتر شود.
+                            </p>
+                            <p v-else-if="matchedSystemUser" class="text-brand-green flex items-center gap-1.5 font-bold bg-brand-green/5 p-2 rounded-lg border border-brand-green/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg>
+                                کاربر یافت شد: {{ matchedSystemUser.name }} (@{{ matchedSystemUser.username }})
+                            </p>
+                            <p v-else-if="suggestedSystemUsers.length === 0" class="text-brand-red flex items-center gap-1.5 font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" /></svg>
+                                کاربر در سیستم یافت نشد!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" :disabled="!matchedSystemUser" class="w-full font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                                :class="matchedSystemUser ? 'bg-brand-gold text-brand-dark hover:bg-brand-goldHover shadow-[0_0_15px_rgba(229,184,105,0.3)]' : 'bg-gray-200 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed shadow-none'">
+                            <span>ارسال درخواست دوستی</span>
+                            <svg v-if="matchedSystemUser" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- سیستم اعلان کاستوم (Toast Notification) -->
+        <div v-if="toast.show" class="fixed bottom-6 right-6 z-50 flex items-center gap-4 bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border px-5 py-4 rounded-2xl shadow-2xl animate-modal max-w-sm font-sans">
+            <div :class="[
+                'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
+                toast.type === 'success' ? 'bg-green-100 dark:bg-green-950/40 text-brand-green' : 'bg-brand-gold/20 text-brand-gold'
+            ]">
+                <svg v-if="toast.type === 'success'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" /></svg>
+            </div>
+            <span class="text-sm font-bold text-gray-800 dark:text-gray-200">{{ toast.message }}</span>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp, ref, watch, computed } = Vue;
+
+        createApp({
+            setup() {
+                // ================== Base Profile State ==================
+                const isSidebarOpen = ref(true);
+                const isDarkMode = ref(true); 
+                const searchQuery = ref('');
+                const hasNotifications = ref(true);
+                const isProfileMenuOpen = ref(false);
+                const activeTab = ref('profile'); // تب پیش‌فرض روی مشخصات قرار گرفت
+
+                // امتیازها و اهداف گیمفای شده
+                const currentPoints = ref(4850);
+                const nextMedalThreshold = ref(5000);
+                const nextMedalName = ref('یاور محراب (مدال نقره‌ای)');
+                const remainingPoints = computed(() => nextMedalThreshold.value - currentPoints.value);
+                const progressPercent = computed(() => Math.min((currentPoints.value / nextMedalThreshold.value) * 100, 100));
+
+                // فیلدهای اطلاعاتی نوجوان برای چالش‌های نور
+                const user = ref({
+                    name: 'محمد مهدوی',
+                    id: '۱۰۲۴۵',
+                    level: 7,
+                    date: '۱۴۰۳/۰۴/۱۵',
+                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80', 
+                    phone: '۰۹۱۲۳۴۵۶۷۸۹',
+                    email: 'mohammad@noorchallenges.ir', 
+                    school: 'دبیرستان متوسطه اول نور دانش',
+                    nationalId: '۰۰۱۲۳۴۵۶۷۸',
+                    birthDate: '۱۳۸۹/۱۲/۰۴', 
+                    location: 'تهران، تهران',
+                    mentor: 'استاد علی علوی',
+                    plan: 'طرح قرآنی تسنیم (حفظ تخصصی)',
+                    juza: 'جزء ۱، ۲ و جزء ۳۰ کلام وحی'
+                });
+
+                // منوی ناوبری سایدبار با زیرمنوی تاشو برای «پروفایل من»
+                const navItems = ref([
+                    { label: 'داشبورد کاربری', icon: 'fa-solid fa-house', active: false },
+                    { label: 'چالش‌های فعال', icon: 'fa-solid fa-kaaba', active: false },
+                    { label: 'پروفایل من', icon: 'fa-solid fa-user', active: true, hasSubmenu: true, isOpen: true },
+                    { label: 'پیام‌ها و اعلان‌ها', icon: 'fa-solid fa-envelope', active: false },
+                    { label: 'تنظیمات حساب کاربری', icon: 'fa-solid fa-gear', active: false }
+                ]);
+
+                // کلیک ناوبری منوی اصلی سایدبار
+                const handleNavItemClick = (item) => {
+                    navItems.value.forEach(i => {
+                        if (i !== item) i.active = false;
+                    });
+                    item.active = true;
+                    if (item.hasSubmenu) {
+                        item.isOpen = !item.isOpen;
+                        if (!['profile', 'awards', 'wallet'].includes(activeTab.value)) {
+                            activeTab.value = 'profile';
+                        }
+                    }
+                };
+
+                // هماهنگ نگه داشتن تب فعال با زیرمنوهای سایدبار روی کلیک کارت‌ها
+                watch(activeTab, (newTab) => {
+                    if (['profile', 'awards', 'wallet'].includes(newTab)) {
+                        const profileNavItem = navItems.value.find(i => i.hasSubmenu);
+                        if (profileNavItem) {
+                            navItems.value.forEach(i => i.active = false);
+                            profileNavItem.active = true;
+                            profileNavItem.isOpen = true; // اطمینان از باز ماندن زیرمنو
+                        }
+                    }
+                });
+
+                // ================== Awards State ==================
+                const medalCategories = ref([
+                    { 
+                        title: 'دستاوردهای ویژه طلایی',
+                        medals: [
+                            { title: 'حافظ برتر سال', date: 'تیر ۱۴۰۳', desc: 'کسب بالاترین امتیاز در مسابقات حفظ کل پلتفرم چالش‌های نور', icon: 'fa-crown', type: 'gold', ribbon: 'red', shelfGroup: 'gold' },
+                            { title: 'قهرمان تلاوت پیوسته', date: 'بهمن ۱۴۰۲', desc: 'نفر اول مسابقات ترتیل در ماه مبارک رمضان و دریافت تاییدیه اساتید', icon: 'fa-microphone-lines', type: 'silver', ribbon: 'blue', shelfGroup: 'gold' },
+                            { title: 'مربی برتر', date: 'مهر ۱۴۰۲', desc: 'هدایت موفق بیش از ۵۰ قرآن‌آموز تا رسیدن به مرحله تثبیت حفظ', icon: 'fa-star', type: 'gold', ribbon: 'green', shelfGroup: 'gold' }
+                        ]
+                    },
+                    { 
+                        title: 'مسابقات و چالش‌های سرعتی',
+                        medals: [
+                            { title: 'سرعت نور', date: 'اردیبهشت ۱۴۰۳', desc: 'تکمیل مرور و حفظ جزء ۳۰ در رکورد زمانی بی‌نظیر (کمتر از حد نصاب)', icon: 'fa-bolt', type: 'bronze', ribbon: 'purple', shelfGroup: 'speed' }
+                        ]
+                    },
+                    { 
+                        title: 'تداوم و پیوستگی',
+                        medals: [
+                            { title: '۱۰۰ روز پیوسته با نور', date: 'فروردین ۱۴۰۳', desc: 'حضور و تمرین پیوسته بدون حتی یک روز قطعی در پلتفرم چالش‌های نور', icon: 'fa-fire', type: 'silver', ribbon: 'orange', shelfGroup: 'group' }
+                        ]
+                    },
+                    { 
+                        title: 'فعالیت‌های گروهی',
+                        medals: [
+                            { title: 'هم‌خوانی بزرگ', date: 'اسفند ۱۴۰۲', desc: 'مشارکت موثر در بزرگترین طرح ختم قرآن گروهی سالانه', icon: 'fa-users', type: 'gold', ribbon: 'blue', shelfGroup: 'group' }
+                        ]
+                    }
+                ]);
+
+                const lockedMedals = ref([
+                    { title: 'مخارج حروف', desc: 'تاییدیه صوتی در ادای صحیح مخارج حروف تجویدی', icon: 'fa-spell-check', date: 'قفل شده' },
+                    { title: 'یاور محراب', desc: 'شرکت مستمر در حلقه‌های ترتیل‌خوانی مساجد پلتفرم', icon: 'fa-mosque', date: 'قفل شده' },
+                    { title: 'سفیر قرآنی', desc: 'معرفی پلتفرم به ۱۰ دوست جدید قرآنی خود', icon: 'fa-bullhorn', date: 'قفل شده' },
+                    { title: 'حافظ کل نور', desc: 'تثبیت کامل تمام سی جزء قرآن و ثبت نمره ۱۰۰ در شبیه‌ساز', icon: 'fa-kaaba', date: 'قفل شده' }
+                ]);
+
+                const getCompartmentMedals = (groupName) => {
+                    const allMedals = [];
+                    medalCategories.value.forEach(cat => {
+                        cat.medals.forEach(m => {
+                            if (m.shelfGroup === groupName) {
+                                allMedals.push(m);
+                            }
+                        });
+                    });
+                    return allMedals;
+                };
+
+                const totalMedals = computed(() => {
+                    return medalCategories.value.reduce((acc, cat) => acc + cat.medals.length, 0);
+                });
+
+                const getMedalClass = (type) => {
+                    switch(type) {
+                        case 'gold': return 'bg-gradient-to-br from-[#FFE4A0] via-[#E5B869] to-[#8C641B] border-[#FFEBBF]';
+                        case 'silver': return 'bg-gradient-to-br from-[#FFFFFF] via-[#E2E8F0] to-[#94A3B8] border-white';
+                        case 'bronze': return 'bg-gradient-to-br from-[#FCA5A5] via-[#D97706] to-[#92400E] border-[#FDBA74]';
+                        default: return 'bg-gray-200';
+                    }
+                };
+
+                const getIconColor = (type) => {
+                    switch(type) {
+                        case 'gold': return 'text-[#543D0A]';
+                        case 'silver': return 'text-[#475569]';
+                        case 'bronze': return 'text-[#451A03]';
+                        default: return 'text-gray-800';
+                    }
+                };
+
+                const getRibbonClass = (color) => {
+                    switch(color) {
+                        case 'red': return 'bg-gradient-to-b from-red-500 to-red-800';
+                        case 'blue': return 'bg-gradient-to-b from-blue-500 to-blue-800';
+                        case 'green': return 'bg-gradient-to-b from-emerald-500 to-emerald-800';
+                        case 'purple': return 'bg-gradient-to-b from-purple-500 to-purple-800';
+                        case 'orange': return 'bg-gradient-to-b from-orange-500 to-orange-800';
+                        default: return 'bg-gradient-to-b from-gray-500 to-gray-800';
+                    }
+                };
+
+                watch(isDarkMode, (newVal) => {
+                    if (newVal) document.documentElement.classList.add('dark');
+                    else document.documentElement.classList.remove('dark');
+                }, { immediate: true });
+
+                const toggleSidebar = () => isSidebarOpen.value = !isSidebarOpen.value;
+                const toggleTheme = () => isDarkMode.value = !isDarkMode.value;
+
+                // ================== Wallet State & Logic ==================
+                const isVisible = ref(true);
+                const balanceCoins = ref('12,500');
+
+                // بانک‌های شبیه‌سازی شده
+                const svgSaman = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0066B3"/><path d="M50 50 C50 30, 35 20, 25 35 C35 42, 45 45, 50 50 Z" fill="white"/><path d="M50 50 C68 38, 78 22, 70 12 C60 20, 55 35, 50 50 Z" fill="white"/><path d="M50 50 C65 65, 78 78, 65 85 C58 75, 52 62, 50 50 Z" fill="white"/><path d="M50 50 C32 62, 18 68, 22 80 C32 75, 42 62, 50 50 Z" fill="white"/></svg>`;
+                const svgMelli = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#003168"/><circle cx="50" cy="50" r="40" fill="none" stroke="#D4AF37" stroke-width="2"/><path d="M50 25 C55 35, 62 40, 68 45 C58 45, 52 42, 50 55 C48 42, 42 45, 32 45 C38 40, 45 35, 50 25 Z" fill="#D4AF37"/><path d="M50 55 C53 62, 58 65, 62 72 C52 68, 48 62, 50 55 Z" fill="#D4AF37"/><path d="M50 55 C47 62, 42 65, 38 72 C48 68, 52 62, 50 55 Z" fill="#D4AF37"/><circle cx="50" cy="50" r="4" fill="#003168"/></svg>`;
+                const svgMellat = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="white"/><path d="M50 15 C65 15, 75 25, 75 40 C65 40, 60 30, 50 30 Z" fill="#E30613"/><path d="M85 50 C85 65, 75 75, 60 75 C60 65, 70 60, 70 50 Z" fill="#D4AF37"/><path d="M50 85 C35 85, 25 75, 25 60 C35 60, 40 70, 50 70 Z" fill="#E30613"/><path d="M15 50 C15 35, 25 25, 40 25 C40 35, 30 40, 30 50 Z" fill="#D4AF37"/><circle cx="50" cy="50" r="14" fill="white"/></svg>`;
+                const svgPasargad = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#1e1e1e"/><circle cx="50" cy="50" r="44" fill="none" stroke="#D4AF37" stroke-width="2"/><path d="M45 25 C45 25, 42 22, 38 25 C34 28, 35 34, 38 38 C40 40, 45 42, 45 48 C45 54, 40 58, 35 60 L35 70 C45 70, 55 68, 62 60 C68 52, 68 40, 65 32 C62 25, 52 25, 45 25 Z" fill="#D4AF37"/><path d="M38 38 C35 45, 32 50, 38 56 C44 62, 52 58, 48 48 Z" fill="#1e1e1e"/><path d="M48 24 C52 20, 58 20, 62 24 C56 26, 52 26, 48 24 Z" fill="#D4AF37"/><path d="M42 28 C40 32, 42 35, 45 35" stroke="#1e1e1e" stroke-width="1.5" fill="none"/></svg>`;
+                const svgSepah = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0c2340"/><circle cx="50" cy="50" r="42" fill="none" stroke="#D4AF37" stroke-width="2"/><path d="M30 65 C25 55, 25 45, 35 30 C32 40, 32 50, 35 55" stroke="#D4AF37" stroke-width="2" fill="none"/><path d="M70 65 C75 55, 75 45, 65 30 C68 40, 68 50, 65 55" stroke="#D4AF37" stroke-width="2" fill="none"/><circle cx="28" cy="45" r="2.5" fill="#D4AF37"/><circle cx="31" cy="38" r="2.5" fill="#D4AF37"/><circle cx="35" cy="32" r="2.5" fill="#D4AF37"/><circle cx="72" cy="45" r="2.5" fill="#D4AF37"/><circle cx="69" cy="38" r="2.5" fill="#D4AF37"/><circle cx="65" cy="32" r="2.5" fill="#D4AF37"/><rect x="48" y="20" width="4" height="45" rx="1" fill="#D4AF37"/><path d="M43 65 L57 65" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/><rect x="47" y="66" width="6" height="12" rx="1" fill="#D4AF37"/><polygon points="50,10 53,16 59,16 54,20 56,26 50,22 44,26 46,20 41,16 47,16" fill="#D4AF37"/></svg>`;
+                const svgTejarat = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#004B87"/><path d="M50 15 C69 15, 85 31, 85 50 C85 62, 78 72, 68 79 C65 74, 62 66, 62 58 C62 42, 50 28, 50 15 Z" fill="#00A3E0"/><path d="M50 85 C31 85, 15 69, 15 50 C15 38, 22 28, 32 21 C35 26, 38 34, 38 42 C38 58, 50 72, 50 85 Z" fill="white"/><circle cx="50" cy="50" r="10" fill="#004B87"/></svg>`;
+                const svgShetab = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#10B981"/><path d="M25 65 L60 30 C64 26, 70 26, 74 30 L75 31 C79 35, 79 41, 75 45 L40 80 Z" fill="white"/><path d="M38 48 L58 28 C62 24, 68 24, 72 28 L73 29 C77 33, 77 39, 73 43 L53 63 Z" fill="white" opacity="0.8"/><path d="M15 75 C12 70, 15 60, 25 50 L35 60 L25 80 Z" fill="white" opacity="0.6"/></svg>`;
+
+                const earnedThisMonth = ref(4500);
+                const spentThisMonth = ref(1240);
+
+                // مقداردهی اولیه کارت‌های بانکی
+                const bankCards = ref([
+                    {
+                        id: 1,
+                        bankName: 'بانک پاسارگاد',
+                        cardNumber: '5022 2910 1234 5678',
+                        cardholder: 'محمد مهدوی',
+                        cvv2: '2938',
+                        expiry: '۰۷/۰۸',
+                        bgGradient: 'from-amber-950 via-stone-900 to-[#121212]'
+                    },
+                    {
+                        id: 2,
+                        bankName: 'بانک سامان',
+                        cardNumber: '6219 8610 8765 4321',
+                        cardholder: 'محمد مهدوی',
+                        cvv2: '1109',
+                        expiry: '۰۹/۰۹',
+                        bgGradient: 'from-sky-950 via-neutral-900 to-black'
+                    }
+                ]);
+
+                // بخش ناوبری اسلایدر کارت‌ها
+                const activeCardIndex = ref(0);
+                const nextCard = () => {
+                    if (bankCards.value.length === 0) return;
+                    activeCardIndex.value = (activeCardIndex.value + 1) % bankCards.value.length;
+                };
+                const prevCard = () => {
+                    if (bankCards.value.length === 0) return;
+                    activeCardIndex.value = (activeCardIndex.value - 1 + bankCards.value.length) % bankCards.value.length;
+                };
+                const goToCard = (index) => {
+                    activeCardIndex.value = index;
+                };
+
+                const quickActions = ref([
+                    { id: 1, title: 'شارژ کیف پول', primary: true, disabled: false, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>` },
+                    { id: 2, title: 'ارسال سکه به دوست', primary: false, disabled: false, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>` },
+                    { id: 3, title: 'جدول امتیازات (لیدربرد)', primary: false, disabled: false, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>` },
+                    { id: 4, title: 'فروشگاه آیتم‌های بازی', primary: false, disabled: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75v-3.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.5c0 .414.336.75.75.75Z" /></svg>` }
+                ]);
+
+                const toast = ref({ show: false, message: '', type: 'success' });
+                const showNotification = (message, type = 'success') => {
+                    toast.value = { show: true, message, type };
+                    setTimeout(() => {
+                        toast.value.show = false;
+                    }, 4000);
+                };
+
+                const recentContacts = ref([
+                    { id: 1, name: 'علی ر.', username: 'ali', initials: 'ع', color: 'bg-yellow-400' },
+                    { id: 2, name: 'زهرا م.', username: 'zahra', initials: 'ز', color: 'bg-emerald-400' },
+                    { id: 3, name: 'رضا ک.', username: 'reza', initials: 'ر', color: 'bg-blue-400' },
+                    { id: 4, name: 'سارا ت.', username: 'sara', initials: 'س', color: 'bg-purple-400' },
+                    { id: 5, name: 'امید ح.', username: 'omid', initials: 'ا', color: 'bg-pink-400' },
+                ]);
+
+                const systemUsers = ref([
+                    { id: 101, name: 'پویا ر.', username: 'poya', initials: 'پ', color: 'bg-indigo-400' },
+                    { id: 102, name: 'مریم ا.', username: 'maryam', initials: 'م', color: 'bg-teal-400' },
+                    { id: 103, name: 'امیر س.', username: 'amir', initials: 'ا', color: 'bg-orange-400' },
+                    { id: 104, name: 'مهسا ن.', username: 'mahsa', initials: 'م', color: 'bg-violet-400' },
+                    { id: 105, name: 'امینی ت.', username: 'amin', initials: 'ا', color: 'bg-blue-400' },
+                    { id: 106, name: 'آرمیتا ک.', username: 'armita', initials: 'آ', color: 'bg-emerald-400' }
+                ]);
+
+                const transactions = ref([
+                    { id: 1, title: 'پاداش پیروزی در چالش سحرخیزی', status: 'موفق', date: 'امروز - ۱۰:۴۵ صبح', amount: '2,500', type: 'deposit' },
+                    { id: 2, title: 'هزینه ورود به مسابقه کدنویسی', status: 'موفق', date: 'دیروز - ۰۲:۵۶ بعدازظهر', amount: '500', type: 'withdraw' },
+                    { id: 3, title: 'خرید فریم آواتار طلایی از فروشگاه', status: 'موفق', date: '۲۲ اردیبهشت - ۱۸:۳۰', amount: '1,000', type: 'withdraw' },
+                    { id: 4, title: 'ارسال سکه برای امید', status: 'ناموفق', date: '۲۲ اردیبهشت - ۱۱:۰۰ صبح', amount: '5,000', type: 'withdraw' },
+                    { id: 5, title: 'پاداش لاگین روزانه', status: 'موفق', date: '۲۱ اردیبهشت - ۰۸:۰۰ صبح', amount: '150', type: 'deposit' },
+                    { id: 6, title: 'دعوت موفق از دوست (رضا)', status: 'موفق', date: '۲۰ اردیبهشت - ۱۶:۲۰', amount: '1,000', type: 'deposit' },
+                    { id: 7, title: 'خرید نشان ویژه افتخار', status: 'موفق', date: '۱۹ اردیبهشت - ۲۱:۱۰', amount: '800', type: 'withdraw' },
+                    { id: 8, title: 'جریمه انصراف از چالش تغذیه', status: 'موفق', date: '۱۸ اردیبهشت - ۱۴:۰۰', amount: '200', type: 'withdraw' },
+                    { id: 9, title: 'پاداش ارتقای سطح به 45', status: 'موفق', date: '۱۶ اردیبهشت - ۱۹:۴۵', amount: '3,000', type: 'deposit' },
+                    { id: 10, title: 'ارسال سکه برای سارا', status: 'موفق', date: '۱۵ اردیبهشت - IO:۱۵', amount: '1,500', type: 'withdraw' },
+                ]);
+
+                const currentPage = ref(1);
+                const itemsPerPage = 4;
+
+                const totalPages = computed(() => {
+                    return Math.ceil(transactions.value.length / itemsPerPage);
+                });
+
+                const paginatedTransactions = computed(() => {
+                    const start = (currentPage.value - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    return transactions.value.slice(start, end);
+                });
+
+                const nextPage = () => {
+                    if (currentPage.value < totalPages.value) currentPage.value++;
+                };
+
+                const prevPage = () => {
+                    if (currentPage.value > 1) currentPage.value--;
+                };
+
+                const goToPage = (page) => {
+                    currentPage.value = page;
+                };
+
+                const toggleVisibility = () => {
+                    isVisible.value = !isVisible.value;
+                };
+
+                const isCardModalOpen = ref(false);
+                const newCardNumber = ref('');
+                const newCardExpiry = ref('');
+                const newCardCVV2 = ref('');
+
+                const detectedBank = computed(() => {
+                    const rawNum = newCardNumber.value.replace(/\s+/g, '');
+                    if (rawNum.startsWith('6219')) {
+                        return { name: 'بانک سامان', logo: svgSaman, color: 'text-sky-400', bg: 'from-sky-950 via-[#181a1b] to-black' };
+                    }
+                    if (rawNum.startsWith('6037')) {
+                        return { name: 'بانک ملی', logo: svgMelli, color: 'text-emerald-400', bg: 'from-emerald-950 via-[#181a1b] to-black' };
+                    }
+                    if (rawNum.startsWith('6104')) {
+                        return { name: 'بانک ملت', logo: svgMellat, color: 'text-red-400', bg: 'from-red-950 via-[#181a1b] to-black' };
+                    }
+                    if (rawNum.startsWith('5022')) {
+                        return { name: 'بانک پاسارگاد', logo: svgPasargad, color: 'text-amber-500', bg: 'from-amber-950 via-stone-900 to-[#121212]' };
+                    }
+                    if (rawNum.startsWith('5892')) {
+                        return { name: 'بانک سپه', logo: svgSepah, color: 'text-yellow-600', bg: 'from-yellow-950 via-[#181a1b] to-black' };
+                    }
+                    if (rawNum.startsWith('6273')) {
+                        return { name: 'بانک تجارت', logo: svgTejarat, color: 'text-cyan-400', bg: 'from-cyan-950 via-[#181a1b] to-black' };
+                    }
+                    if (rawNum.length >= 4) {
+                        return { name: 'عضو شتاب', logo: svgShetab, color: 'text-brand-gold', bg: 'from-gray-800 via-gray-900 to-black dark:from-[#1c1c1c] dark:via-[#0f0f0f] dark:to-black' };
+                    }
+                    return null;
+                });
+
+                watch(newCardNumber, (val) => {
+                    let formatted = val.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                    let matches = formatted.match(/\d{4,16}/g);
+                    let match = matches && matches[0] || '';
+                    let parts = [];
+                    for (let i = 0, len = match.length; i < len; i += 4) {
+                        parts.push(match.substring(i, i + 4));
+                    }
+                    if (parts.length) {
+                        newCardNumber.value = parts.join(' ');
+                    } else {
+                        newCardNumber.value = formatted;
+                    }
+                });
+
+                watch(newCardExpiry, (val) => {
+                    let formatted = val.replace(/\//g, '').replace(/[^0-9]/gi, '');
+                    if (formatted.length > 2) {
+                        newCardExpiry.value = formatted.substring(0, 2) + '/' + formatted.substring(2, 4);
+                    } else {
+                        newCardExpiry.value = formatted;
+                    }
+                });
+
+                watch(newCardCVV2, (val) => {
+                    newCardCVV2.value = val.replace(/[^0-9]/gi, '');
+                });
+
+                const isFormValid = computed(() => {
+                    return newCardNumber.value.length === 19 && 
+                           newCardExpiry.value.length === 5 &&  
+                           newCardCVV2.value.length >= 3;
+                });
+
+                const openCardModal = () => isCardModalOpen.value = true;
+                
+                const closeCardModal = () => {
+                    isCardModalOpen.value = false;
+                    newCardNumber.value = '';
+                    newCardExpiry.value = '';
+                    newCardCVV2.value = '';
+                };
+
+                const submitNewCard = () => {
+                    if(!isFormValid.value) return;
+                    
+                    const bankInfo = detectedBank.value || { name: 'عضو شتاب', logo: svgShetab, bg: 'from-gray-800 via-gray-900 to-black dark:from-[#1c1c1c] dark:via-[#0f0f0f] dark:to-black' };
+                    
+                    bankCards.value.push({
+                        id: Date.now(),
+                        bankName: bankInfo.name,
+                        logo: bankInfo.logo,
+                        cardNumber: newCardNumber.value,
+                        cardholder: user.value.name,
+                        cvv2: newCardCVV2.value,
+                        expiry: newCardExpiry.value,
+                        bgGradient: bankInfo.bg
+                    });
+
+                    // فعال کردن کارت جدید به صورت خودکار با اسلاید متحرک
+                    activeCardIndex.value = bankCards.value.length - 1;
+
+                    showNotification('کارت بانکی جدید شما با موفقیت متصل گردید.', 'success');
+                    setTimeout(() => closeCardModal(), 300);
+                };
+
+                const isChargeModalOpen = ref(false);
+                const defaultAmounts = [5000, 10000, 25000];
+                const customAmount = ref('');
+
+                watch(customAmount, (val) => customAmount.value = val.replace(/[^0-9]/gi, ''));
+                const selectDefaultAmount = (amt) => customAmount.value = amt.toString();
+                const openChargeModal = () => { isChargeModalOpen.value = true; customAmount.value = ''; };
+                const closeChargeModal = () => { isChargeModalOpen.value = false; customAmount.value = ''; };
+
+                const isChargeFormValid = computed(() => Number(customAmount.value) >= 100);
+
+                const formatWithCommas = (val) => {
+                    if (!val) return '۰';
+                    let cleaned = val.toString().replace(/[^0-9]/g, '');
+                    return Number(cleaned).toLocaleString('en-US');
+                };
+
+                const submitCharge = () => {
+                    if (!isChargeFormValid.value) return;
+
+                    const chargeVal = parseInt(customAmount.value);
+                    let currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    let newBalance = currentBalance + chargeVal;
+                    balanceCoins.value = newBalance.toLocaleString('en-US');
+                    earnedThisMonth.value += chargeVal;
+
+                    transactions.value.unshift({
+                        id: Date.now(),
+                        title: 'شارژ کیف پول (مستقیم)',
+                        status: 'موفق',
+                        date: 'هم‌اکنون',
+                        amount: chargeVal.toLocaleString('en-US'),
+                        type: 'deposit'
+                    });
+
+                    showNotification(`کیف پول شما با موفقیت به میزان ${chargeVal.toLocaleString('fa-IR')} سکه شارژ شد.`, 'success');
+                    closeChargeModal();
+                };
+
+                const isSendModalOpen = ref(false);
+                const selectedContact = ref(null);
+                const sendAmount = ref('');
+
+                watch(sendAmount, (val) => sendAmount.value = val.replace(/[^0-9]/gi, ''));
+                const openSendModal = (contact) => { selectedContact.value = contact; sendAmount.value = ''; isSendModalOpen.value = true; };
+                const closeSendModal = () => { isSendModalOpen.value = false; selectedContact.value = null; sendAmount.value = ''; };
+
+                const isSendFormValid = computed(() => {
+                    const amt = Number(sendAmount.value);
+                    const currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    return amt > 0 && amt <= currentBalance;
+                });
+
+                const submitSendCoins = () => {
+                    if (!isSendFormValid.value) return;
+
+                    const sendVal = parseInt(sendAmount.value);
+                    let currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    balanceCoins.value = (currentBalance - sendVal).toLocaleString('en-US');
+                    spentThisMonth.value += sendVal;
+
+                    transactions.value.unshift({
+                        id: Date.now(),
+                        title: `ارسال سکه برای ${selectedContact.value.name}`,
+                        status: 'موفق',
+                        date: 'هم‌اکنون',
+                        amount: sendVal.toLocaleString('en-US'),
+                        type: 'withdraw'
+                    });
+
+                    showNotification(`تعداد ${sendVal.toLocaleString('fa-IR')} سکه با موفقیت به حساب ${selectedContact.value.name} منتقل شد.`, 'success');
+                    closeSendModal();
+                };
+
+                const isSendByUsernameModalOpen = ref(false);
+                const friendSearchQuery = ref('');
+                const selectedTargetContact = ref(null);
+                const sendAmountByUsername = ref('');
+
+                const filteredFriendsForSelect = computed(() => {
+                    const query = friendSearchQuery.value.trim().toLowerCase();
+                    if (!query) return recentContacts.value;
+                    return recentContacts.value.filter(c => 
+                        c.name.toLowerCase().includes(query) || 
+                        c.username.toLowerCase().includes(query)
+                    );
+                });
+
+                const selectTargetFriend = (friend) => selectedTargetContact.value = friend;
+                watch(sendAmountByUsername, (val) => sendAmountByUsername.value = val.replace(/[^0-9]/gi, ''));
+
+                const openSendByUsernameModal = () => {
+                    friendSearchQuery.value = '';
+                    selectedTargetContact.value = null;
+                    sendAmountByUsername.value = '';
+                    isSendByUsernameModalOpen.value = true;
+                };
+
+                const closeSendByUsernameModal = () => {
+                    isSendByUsernameModalOpen.value = false;
+                    friendSearchQuery.value = '';
+                    selectedTargetContact.value = null;
+                    sendAmountByUsername.value = '';
+                };
+
+                const isSendByUsernameFormValid = computed(() => {
+                    const amt = Number(sendAmountByUsername.value);
+                    const currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    return selectedTargetContact.value !== null && amt > 0 && amt <= currentBalance;
+                });
+
+                const submitSendCoinsByUsername = () => {
+                    if (!isSendByUsernameFormValid.value) return;
+
+                    const sendVal = parseInt(sendAmountByUsername.value);
+                    const friend = selectedTargetContact.value;
+                    let currentBalance = parseInt(balanceCoins.value.replace(/,/g, '')) || 0;
+                    balanceCoins.value = (currentBalance - sendVal).toLocaleString('en-US');
+                    spentThisMonth.value += sendVal;
+
+                    transactions.value.unshift({
+                        id: Date.now(),
+                        title: `ارسال سکه برای ${friend.name}`,
+                        status: 'موفق',
+                        date: 'هم‌اکنون',
+                        amount: sendVal.toLocaleString('en-US'),
+                        type: 'withdraw'
+                    });
+
+                    showNotification(`تعداد ${sendVal.toLocaleString('fa-IR')} سکه با موفقیت به کاربر ${friend.name} منتقل شد.`, 'success');
+                    closeSendByUsernameModal();
+                };
+
+                const isNewFriendModalOpen = ref(false);
+                const newFriendUsernameInput = ref('');
+
+                const suggestedSystemUsers = computed(() => {
+                    const query = newFriendUsernameInput.value.trim().toLowerCase();
+                    if (!query) return [];
+                    return systemUsers.value.filter(u => 
+                        u.username.toLowerCase().includes(query) || 
+                        u.name.toLowerCase().includes(query)
+                    );
+                });
+
+                const selectSuggestedUser = (user) => newFriendUsernameInput.value = user.username;
+
+                const matchedSystemUser = computed(() => {
+                    const query = newFriendUsernameInput.value.trim().toLowerCase();
+                    if (!query) return null;
+                    return systemUsers.value.find(u => u.username.toLowerCase() === query);
+                });
+
+                const openNewFriendModal = () => { newFriendUsernameInput.value = ''; isNewFriendModalOpen.value = true; };
+                const closeNewFriendModal = () => { isNewFriendModalOpen.value = false; newFriendUsernameInput.value = ''; };
+
+                const submitFriendRequest = () => {
+                    if (!matchedSystemUser.value) return;
+                    const friend = matchedSystemUser.value;
+
+                    showNotification(`درخواست ارسال شد! درخواست دوستی برای ${friend.name} با موفقیت ثبت شد.`, 'success');
+
+                    if (!recentContacts.value.some(c => c.username === friend.username)) {
+                        recentContacts.value.unshift(friend);
+                    }
+                    closeNewFriendModal();
+                };
+
+                const handleAction = (action) => {
+                    if (action.disabled) return;
+                    if (action.id === 1) openChargeModal();
+                    else if (action.id === 2) openSendByUsernameModal();
+                    else if (action.id === 3) showNotification('بخش جدول امتیازات چالش‌ها به‌زودی در آپدیت‌های آینده در دسترس خواهد بود.', 'info');
+                };
+
+                return {
+                    // Base Returns
+                    isSidebarOpen,
+                    isDarkMode,
+                    searchQuery,
+                    hasNotifications,
+                    isProfileMenuOpen,
+                    activeTab,
+                    user,
+                    navItems,
+                    medalCategories,
+                    lockedMedals,
+                    totalMedals,
+                    toggleSidebar,
+                    toggleTheme,
+                    getMedalClass,
+                    getIconColor,
+                    getRibbonClass,
+                    getCompartmentMedals,
+                    handleNavItemClick,
+
+                    // Progress Widget Returns
+                    currentPoints,
+                    nextMedalThreshold,
+                    nextMedalName,
+                    remainingPoints,
+                    progressPercent,
+
+                    // Wallet Returns
+                    isVisible,
+                    balanceCoins,
+                    earnedThisMonth,
+                    spentThisMonth,
+                    bankCards,
+                    activeCardIndex,
+                    nextCard,
+                    prevCard,
+                    goToCard,
+                    quickActions,
+                    recentContacts,
+                    transactions,
+                    paginatedTransactions,
+                    currentPage,
+                    totalPages,
+                    nextPage,
+                    prevPage,
+                    goToPage,
+                    toggleVisibility,
+                    isCardModalOpen,
+                    newCardNumber,
+                    newCardExpiry,
+                    newCardCVV2,
+                    detectedBank,
+                    openCardModal,
+                    closeCardModal,
+                    submitNewCard,
+                    isFormValid,
+                    isChargeModalOpen,
+                    defaultAmounts,
+                    customAmount,
+                    selectDefaultAmount,
+                    openChargeModal,
+                    closeChargeModal,
+                    isChargeFormValid,
+                    formatWithCommas,
+                    submitCharge,
+                    isSendModalOpen,
+                    selectedContact,
+                    sendAmount,
+                    openSendModal,
+                    closeSendModal,
+                    isSendFormValid,
+                    submitSendCoins,
+                    isSendByUsernameModalOpen,
+                    friendSearchQuery,
+                    selectedTargetContact,
+                    filteredFriendsForSelect,
+                    selectTargetFriend,
+                    sendAmountByUsername,
+                    openSendByUsernameModal,
+                    closeSendByUsernameModal,
+                    isSendByUsernameFormValid,
+                    submitSendCoinsByUsername,
+                    isNewFriendModalOpen,
+                    newFriendUsernameInput,
+                    matchedSystemUser,
+                    suggestedSystemUsers,
+                    selectSuggestedUser,
+                    openNewFriendModal,
+                    closeNewFriendModal,
+                    submitFriendRequest,
+                    toast,
+                    showNotification,
+                    handleAction
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
