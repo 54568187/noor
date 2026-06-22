@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مرحله آموزشی - حفظ النور</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Zain", "Vazirmatn", "sans-serif"],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f1115',       
+                            surface: '#181b21',
+                            border: '#333a45',
+                            card: '#121212',       
+                            gold: '#facc15',       
+                            goldHover: '#ca8a04',  
+                            success: '#10b981',
+                            error: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: "Zain", 'Vazirmatn', sans-serif;
+            background-color: #0f1115;
+            color: #f4f4f5;
+            margin: 0;
+            overflow: hidden; /* جلوگیری از اسکرول کل صفحه در موبایل */
+            overscroll-behavior: none;
+        }
+
+        /* انیمیشن ترانزیشن بین مراحل */
+        .slide-fade-enter-active {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide-fade-leave-active {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            width: 100%;
+        }
+        .slide-fade-enter-from {
+            transform: translateX(-30px);
+            opacity: 0;
+        }
+        .slide-fade-leave-to {
+            transform: translateX(30px);
+            opacity: 0;
+        }
+
+        /* انیمیشن دکمه گزینه‌ها (شبیه به دولینگو) */
+        .option-card {
+            transition: all 0.2s ease;
+            transform: translateY(0);
+        }
+        .option-card:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+
+        /* اسکرول‌بار اختصاصی محتوا */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+
+        /* افکت نوری پس‌زمینه (الهام گرفته از لیدربورد) */
+        .bg-glow-top {
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vh;
+            background: radial-gradient(circle, rgba(250,204,21,0.12) 0%, rgba(15,17,21,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(80px);
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex justify-center bg-brand-dark relative">
+
+    <!-- افکت نوری پس‌زمینه -->
+    <div class="bg-glow-top"></div>
+
+    <!-- Container اصلی (عرض به max-w-3xl تغییر یافت و حالت شیشه‌ای گرفت) -->
+    <div id="app" class="w-full max-w-3xl h-full flex flex-col relative bg-brand-surface/80 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] sm:border-x sm:border-brand-border/60 z-10">
+        
+        <!-- صفحه پایان موفقیت‌آمیز -->
+        <div v-if="isCompleted" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-brand-dark px-6 text-center">
+            <div class="w-32 h-32 mb-6 rounded-full bg-brand-gold/20 flex items-center justify-center animate-bounce shadow-[0_0_40px_rgba(245,158,11,0.3)]">
+                <i class="fa-solid fa-trophy text-6xl text-brand-gold"></i>
+            </div>
+            <h2 class="text-4xl font-extrabold text-brand-gold mb-2">ماموریت انجام شد!</h2>
+            <p class="text-gray-400 text-lg mb-8">+۵۰ امتیاز تجربه (XP) کسب کردید</p>
+            <button @click="exitLesson" class="w-full py-4 rounded-2xl bg-brand-gold text-black font-bold text-2xl border-b-4 border-brand-goldHover hover:translate-y-1 hover:border-b-0 transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+                بازگشت به نقشه
+            </button>
+        </div>
+
+        <template v-else>
+            <!-- هدر: نوار پیشرفت و خروج -->
+            <header class="flex items-center gap-4 px-5 py-4 shrink-0 z-10">
+                <button @click="exitLesson" class="text-gray-500 hover:text-gray-300 transition-colors">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+                
+                <!-- Progress Bar -->
+                <div class="flex-1 h-4 bg-gray-800 rounded-full overflow-hidden relative">
+                    <div class="absolute top-0 right-0 h-full bg-brand-gold rounded-full transition-all duration-500 ease-out"
+                         :style="{ width: progressPercentage + '%' }">
+                        <!-- افکت درخشش روی نوار -->
+                        <div class="absolute top-1 right-2 bottom-1 left-4 bg-white/30 rounded-full"></div>     
+                    </div>
+                </div>
+
+                <!-- قلب / جان کاربر -->
+                <div class="flex items-center gap-1.5 font-bold text-xl transition-colors duration-300"
+                     :class="lives > 0 ? 'text-brand-error' : 'text-gray-600'">
+                    <span>{{ lives }}</span>
+                    <i class="fa-solid fa-heart" :class="{'animate-pulse': lives === 1}"></i>
+                </div>
+            </header>
+
+            <!-- بخش اصلی محتوا -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar px-5 pb-32 relative">
+                <transition name="slide-fade">
+                    <div :key="currentStepIndex" class="w-full pt-4 pb-10">
+                        
+                        <!-- نوع ۱: توضیحات و معرفی (Practice/Text) -->
+                        <div v-if="currentStep.type === 'practice'" class="flex flex-col items-center mt-4 px-2 md:px-8">
+                            <div class="w-32 h-32 rounded-3xl bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(59,130,246,0.15)]">
+                                <i class="fa-solid text-7xl text-blue-400" :class="currentStep.icon || 'fa-book-open'"></i>
+                            </div>
+                            <h2 class="text-3xl font-extrabold mb-4 text-center">{{ currentStep.title }}</h2>
+                            <div class="w-full bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 text-gray-300 leading-relaxed text-lg text-justify">
+                                {{ currentStep.content }}
+                            </div>
+                        </div>
+
+                        <!-- نوع ۲: ویدیو (Video) -->
+                        <div v-if="currentStep.type === 'video'" class="flex flex-col mt-2 px-2 md:px-8">
+                            <h2 class="text-2xl font-bold mb-5">{{ currentStep.title }}</h2>
+                            <!-- Placeholder برای ویدیو پلیر -->
+                            <div class="w-full aspect-video bg-black rounded-2xl border-2 border-gray-700 flex items-center justify-center relative overflow-hidden mb-6 group cursor-pointer shadow-lg">
+                                <img v-if="currentStep.thumbnail" :src="currentStep.thumbnail" alt="Video Thumbnail" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity">
+                                <div class="w-16 h-16 rounded-full bg-brand-gold flex items-center justify-center z-10 pl-1 shadow-[0_0_20px_rgba(245,158,11,0.5)] group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-play text-2xl text-black"></i>
+                                </div>
+                                <!-- Progress Bar فیک ویدیو -->
+                                <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-800">
+                                    <div class="h-full bg-brand-gold w-1/3"></div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-800/30 p-5 rounded-2xl border border-gray-800">
+                                <p class="text-gray-300 text-lg leading-relaxed">{{ currentStep.content }}</p>
+                            </div>
+                        </div>
+
+                        <!-- نوع ۳: آزمون (Quiz) -->
+                        <div v-if="currentStep.type === 'quiz'" class="flex flex-col h-full mt-2 px-2 md:px-8">
+                            <h2 class="text-2xl md:text-3xl font-bold mb-8 leading-tight">{{ currentStep.question }}</h2>
+                            
+                            <div class="flex flex-col gap-4">
+                                <button v-for="(option, index) in currentStep.options" :key="index"
+                                        @click="selectOption(index)"
+                                        :disabled="isAnswerChecked"
+                                        class="option-card w-full text-right p-5 rounded-2xl border-2 font-bold text-xl flex justify-between items-center bg-gray-800/40"
+                                        :class="getOptionClasses(index)">
+                                    <span>{{ option.text }}</span>
+                                    
+                                    <!-- تصحیح آیکون‌های صحیح/غلط با حذف بک‌گراند سفید و تنظیم صحیح رنگ -->
+                                    <div v-if="isAnswerChecked && index === selectedOptionIndex">
+                                        <i v-if="option.isCorrect" class="fa-solid fa-circle-check text-3xl text-brand-success drop-shadow-md"></i>
+                                        <i v-else class="fa-solid fa-circle-xmark text-3xl text-brand-error drop-shadow-md"></i>
+                                    </div>
+                                    <div v-else-if="isAnswerChecked && option.isCorrect" class="animate-bounce">
+                                        <i class="fa-solid fa-circle-check text-3xl text-brand-success drop-shadow-md"></i>
+                                    </div>
+                                    <!-- دایره انتخاب نشده -->
+                                    <div v-else class="w-7 h-7 rounded-full border-2 border-gray-500 transition-colors duration-200" :class="{'border-brand-gold bg-brand-gold/20': selectedOptionIndex === index}"></div>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </transition>
+            </main>
+
+            <!-- نوار ابزار پایین (Action Bar) -->
+            <!-- با تغییر وضعیت، رنگ پس‌زمینه تغییر می‌کند -->
+            <footer class="absolute bottom-0 w-full px-5 py-4 border-t-2 transition-colors duration-300 z-20"
+                    :class="footerBackgroundClass">
+                
+                <!-- پیام بازخورد در آزمون -->
+                <div v-if="isAnswerChecked && currentStep.type === 'quiz'" class="mb-4 flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-white shadow-lg">
+                        <i class="fa-solid text-2xl" :class="isCorrectAnswer ? 'fa-check text-brand-success' : 'fa-xmark text-brand-error'"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-2xl mb-1 text-white">
+                            {{ isCorrectAnswer ? 'عالی بود!' : 'پاسخ اشتباه بود' }}
+                        </h3>
+                        <p v-if="!isCorrectAnswer && currentStep.explanation" class="text-white/90 text-sm font-medium">
+                            راهنمایی: {{ currentStep.explanation }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- دکمه اصلی -->
+                <button @click="handleActionClick" 
+                        class="w-full md:w-3/4 mx-auto block py-4 rounded-2xl font-extrabold text-xl transition-all border-b-4"
+                        :class="actionButtonClass"
+                        :disabled="currentStep.type === 'quiz' && selectedOptionIndex === null && !isAnswerChecked">
+                    {{ actionButtonText }}
+                </button>
+            </footer>
+        </template>
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+
+        createApp({
+            setup() {
+                // این آرایه باید در لاراول از طریق دیتابیس (گره‌های یک مرحله) پُر شود
+                const steps = ref([
+                    {
+                        type: 'practice',
+                        title: 'مقدمه‌ای بر ماجراجویی',
+                        content: 'به مرحله اول خوش آمدید. در این مسیر قرار است با اصول اولیه آشنا شوید. دقت کنید که هر مرحله ترکیبی از آموزش و آزمون است و شما باید با دقت مطالب را مطالعه کنید.',
+                        icon: 'fa-compass'
+                    },
+                    {
+                        type: 'video',
+                        title: 'استراتژی پیروزی',
+                        content: 'این ویدیو را با دقت تماشا کنید تا ترفندهای مخفی عبور از چالش‌ها را یاد بگیرید. پس از مشاهده ویدیو آماده پاسخگویی به سوالات باشید.',
+                        thumbnail: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop'
+                    },
+                    {
+                        type: 'quiz',
+                        question: 'مهم‌ترین قانون در هنگام برخورد با چالش‌های جدید چیست؟',
+                        explanation: 'شما باید همیشه قبل از اقدام، استراتژی خود را بررسی کنید. حمله بدون فکر باعث از دست رفتن جان‌ها می‌شود.',
+                        options: [
+                            { text: 'عقب‌نشینی سریع', isCorrect: false },
+                            { text: 'بررسی و تدوین استراتژی', isCorrect: true },
+                            { text: 'حمله بدون فکر', isCorrect: false },
+                        ]
+                    },
+                    {
+                        type: 'practice',
+                        title: 'نکته طلایی',
+                        content: 'شما فوق‌العاده‌اید! فراموش نکنید که امتیازات (XP) کسب شده در اینجا، در کیف پول دیجیتال شما ذخیره شده و می‌توانید از آن‌ها برای ارتقاء استفاده کنید.',
+                        icon: 'fa-coins'
+                    }
+                ]);
+
+                const currentStepIndex = ref(0);
+                const lives = ref(3);
+                
+                // State های مربوط به آزمون
+                const selectedOptionIndex = ref(null);
+                const isAnswerChecked = ref(false);
+                const isCorrectAnswer = ref(false);
+                const isCompleted = ref(false);
+
+                const currentStep = computed(() => steps.value[currentStepIndex.value]);
+                
+                const progressPercentage = computed(() => {
+                    // محاسبه درصد پیشرفت بر اساس گام‌ها
+                    return ((currentStepIndex.value) / steps.value.length) * 100;
+                });
+
+                // استایل‌دهی داینامیک گزینه‌های آزمون (شبیه به Duolingo)
+                const getOptionClasses = (index) => {
+                    if (!isAnswerChecked.value) {
+                        return selectedOptionIndex.value === index 
+                            ? 'border-brand-gold bg-brand-gold/10 text-brand-gold border-b-[4px] border-b-brand-gold/50' 
+                            : 'border-gray-700 text-gray-300 hover:bg-gray-800 border-b-[4px] border-b-gray-800';
+                    }
+
+                    // حالت بعد از بررسی جواب
+                    const option = currentStep.value.options[index];
+                    if (index === selectedOptionIndex.value) {
+                        return option.isCorrect 
+                            ? 'border-brand-success bg-brand-success/10 text-brand-success border-b-[4px] border-b-brand-success/50' 
+                            : 'border-brand-error bg-brand-error/10 text-brand-error border-b-[4px] border-b-brand-error/50';
+                    } else if (option.isCorrect) {
+                        // برجسته کردن جواب درست وقتی کاربر اشتباه پاسخ داده
+                        return 'border-brand-success bg-brand-success/20 text-brand-success border-b-[4px] border-b-brand-success/50 animate-pulse';
+                    }
+                    return 'border-gray-800 text-gray-600 opacity-40 border-b-[4px] border-b-gray-900';
+                };
+
+                // تغییر رنگ نوار پایین صفحه بعد از پاسخ
+                const footerBackgroundClass = computed(() => {
+                    if (currentStep.value.type !== 'quiz' || !isAnswerChecked.value) {
+                        return 'bg-brand-surface/90 backdrop-blur-md border-brand-border/50';
+                    }
+                    return isCorrectAnswer.value ? 'bg-brand-success border-brand-success' : 'bg-brand-error border-brand-error';
+                });
+
+                // استایل دکمه اصلی (ادامه / بررسی)
+                const actionButtonClass = computed(() => {
+                    if (currentStep.value.type === 'quiz' && !isAnswerChecked.value) {
+                        return selectedOptionIndex.value === null 
+                            ? 'bg-gray-800 text-gray-500 border-gray-900 cursor-not-allowed' 
+                            : 'bg-brand-gold text-black border-brand-goldHover hover:bg-brand-goldHover hover:translate-y-[2px] hover:border-b-2';
+                    }
+                    if (currentStep.value.type === 'quiz' && isAnswerChecked.value) {
+                         // در حالت سبز یا قرمز، دکمه سفید می‌شود
+                         return 'bg-white text-black border-gray-300 hover:bg-gray-100 hover:translate-y-[2px] hover:border-b-2 shadow-lg';
+                    }
+                    // برای صفحات Practice و Video
+                    return 'bg-brand-gold text-black border-brand-goldHover hover:bg-brand-goldHover hover:translate-y-[2px] hover:border-b-2 shadow-[0_0_15px_rgba(245,158,11,0.2)]';
+                });
+
+                const actionButtonText = computed(() => {
+                    if (currentStep.value.type === 'quiz') {
+                        if (!isAnswerChecked.value) return 'بررسی پاسخ';
+                        return isCorrectAnswer.value ? 'ادامه دهید' : 'متوجه شدم';
+                    }
+                    return 'ادامه';
+                });
+
+                const selectOption = (index) => {
+                    if (isAnswerChecked.value) return;
+                    selectedOptionIndex.value = index;
+                };
+
+                const handleActionClick = () => {
+                    // ۱. در مرحله کوئیز و هنوز بررسی نشده
+                    if (currentStep.value.type === 'quiz' && !isAnswerChecked.value) {
+                        if (selectedOptionIndex.value === null) return;
+                        
+                        isAnswerChecked.value = true;
+                        isCorrectAnswer.value = currentStep.value.options[selectedOptionIndex.value].isCorrect;
+                        
+                        if (!isCorrectAnswer.value) {
+                            lives.value = Math.max(0, lives.value - 1);
+                            // اگر جان صفر شد می‌توانیم کاربر را به منو برگردانیم یا جریمه کنیم
+                        }
+                        return;
+                    }
+
+                    // ۲. رفتن به مرحله بعد
+                    nextStep();
+                };
+
+                const nextStep = () => {
+                    // ریست کردن استیت آزمون
+                    selectedOptionIndex.value = null;
+                    isAnswerChecked.value = false;
+                    isCorrectAnswer.value = false;
+
+                    if (currentStepIndex.value < steps.value.length - 1) {
+                        currentStepIndex.value++;
+                    } else {
+                        // تمام مراحل با موفقیت تمام شد
+                        progressPercentage.value = 100; // پر کردن نوار
+                        setTimeout(() => {
+                            isCompleted.value = true;
+                        }, 400);
+                    }
+                };
+
+                const exitLesson = () => {
+                    // بازگشت به نقشه راه
+                    window.location.href = 'roadmap.html'; 
+                };
+
+                return {
+                    steps, currentStepIndex, currentStep, lives, progressPercentage,
+                    selectedOptionIndex, isAnswerChecked, isCorrectAnswer, isCompleted,
+                    getOptionClasses, footerBackgroundClass, actionButtonClass, actionButtonText,
+                    selectOption, handleActionClick, exitLesson
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
