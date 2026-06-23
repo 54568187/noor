@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>پلتفرم چالش‌های نور - پنل مدیریت سازندگان</title>
+
+    <!-- FontAwesome برای آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Zain Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Zain", "Vazirmatn", "sans-serif"],
+                    },
+                    colors: {
+                        darkBase: '#09090b',
+                        darkPanel: '#121212',
+                        darkPanelHover: '#18181b',
+                        darkBorder: '#27272a',
+                        goldPrimary: '#f59e0b',
+                        goldHover: '#d97706',
+                        textMain: '#ffffff',
+                        textMuted: '#a1a1aa',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(245, 158, 11, 0.15)',
+                        'glow-strong': '0 0 25px rgba(245, 158, 11, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #09090b;
+            color: #ffffff;
+            font-family: 'Zain', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+        /* انیمیشن‌ها */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        
+        .modal-enter-active, .modal-leave-active { transition: all 0.3s ease; }
+        .modal-enter-from, .modal-leave-to { opacity: 0; transform: scale(0.95); }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen selection:bg-goldPrimary selection:text-black relative">
+    <div id="app" class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 space-y-8 px-4">
+
+        <!-- هدر پنل مدیریت -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-darkPanel p-5 rounded-2xl border border-darkBorder shadow-lg gap-4 md:gap-0">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-goldPrimary/10 border border-goldPrimary/30 rounded-xl flex items-center justify-center text-goldPrimary text-2xl shadow-glow">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-white">داشبورد <span class="text-goldPrimary">مدیریت چالش‌ها</span></h1>
+                    <p class="text-sm text-textMuted mt-0.5">کارگاه سازندگان موسسه نورالمبین</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="flex items-center gap-2 bg-darkBase px-4 py-2 rounded-xl border border-darkBorder text-sm font-bold flex-1 md:flex-none justify-center">
+                    <span class="text-textMuted font-normal">موجودی:</span>
+                    <span class="text-goldPrimary">{{ formatNumber(creatorStats.totalTokens) }}</span>
+                    <i class="fa-solid fa-coins text-goldPrimary"></i>
+                </div>
+                <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-goldPrimary hover:bg-goldHover text-black text-sm font-bold rounded-xl shadow-glow transition-all hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>بوم طراحی جدید</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- کارت‌های آماری کلی (۵ کارت) -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            
+            <div class="bg-darkPanel border border-darkBorder rounded-2xl p-5 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 text-white/[0.02] text-7xl group-hover:text-goldPrimary/[0.05] transition-colors"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <p class="text-xs text-textMuted font-bold mb-1">کل چالش‌های من</p>
+                        <h3 class="text-2xl font-black text-white">{{ creatorStats.totalChallenges }}</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg border border-blue-500/20">
+                        <i class="fa-solid fa-shapes"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-darkPanel border border-darkBorder rounded-2xl p-5 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 text-white/[0.02] text-7xl group-hover:text-goldPrimary/[0.05] transition-colors"><i class="fa-solid fa-users"></i></div>
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <p class="text-xs text-textMuted font-bold mb-1">کل دانشجویان</p>
+                        <h3 class="text-2xl font-black text-white">{{ formatNumber(creatorStats.totalStudents) }}</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/20">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-darkPanel border border-darkBorder rounded-2xl p-5 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 text-white/[0.02] text-7xl group-hover:text-goldPrimary/[0.05] transition-colors"><i class="fa-solid fa-star"></i></div>
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <p class="text-xs text-textMuted font-bold mb-1">میانگین امتیازات</p>
+                        <h3 class="text-2xl font-black text-white flex items-center gap-1">
+                            {{ creatorStats.avgRating }}
+                            <span class="text-xs text-goldPrimary font-normal">/ ۵.۰</span>
+                        </h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-goldPrimary/10 text-goldPrimary flex items-center justify-center text-lg border border-goldPrimary/20">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-darkPanel border border-darkBorder rounded-2xl p-5 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 text-white/[0.02] text-7xl group-hover:text-goldPrimary/[0.05] transition-colors"><i class="fa-solid fa-check-double"></i></div>
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <p class="text-xs text-textMuted font-bold mb-1">تکمیل شده‌ها</p>
+                        <h3 class="text-2xl font-black text-white">{{ formatNumber(creatorStats.totalCompletions) }}</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-darkPanel border border-darkBorder rounded-2xl p-5 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 text-white/[0.02] text-7xl group-hover:text-red-500/[0.05] transition-colors"><i class="fa-regular fa-comments"></i></div>
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <p class="text-xs text-textMuted font-bold mb-1">نظرات بی‌پاسخ</p>
+                        <h3 class="text-2xl font-black text-white">{{ creatorStats.unansweredComments }}</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center text-lg border border-red-500/20">
+                        <i class="fa-regular fa-comment-dots"></i>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- بخش مدیریت چالش‌ها -->
+        <div class="bg-darkPanel rounded-2xl border border-darkBorder shadow-lg overflow-hidden">
+            
+            <!-- نوار ابزار و جستجو -->
+            <div class="p-5 border-b border-darkBorder flex flex-col md:flex-row justify-between items-center gap-4 bg-darkPanelHover/50">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-goldPrimary"></i> لیست چالش‌های منتشر شده و پیش‌نویس
+                </h2>
+                
+                <div class="relative w-full md:w-80">
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-textMuted">
+                        <i class="fa-solid fa-search text-xs"></i>
+                    </div>
+                    <input type="text" v-model="searchQuery"
+                        placeholder="جستجو در نام چالش..."
+                        class="w-full bg-darkBase border border-darkBorder rounded-xl py-2.5 pr-9 pl-4 text-sm text-white placeholder-textMuted focus:outline-none focus:border-goldPrimary transition-colors">
+                </div>
+            </div>
+
+            <!-- لیست چالش‌ها -->
+            <div class="p-5">
+                <div class="space-y-4">
+                    <div v-if="filteredChallenges.length === 0" class="text-center py-12 text-textMuted">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3 opacity-50"></i>
+                        <p>چالشی با این عنوان یافت نشد.</p>
+                    </div>
+
+                    <!-- آیتم چالش -->
+                    <div v-for="challenge in filteredChallenges" :key="challenge.id"
+                         class="flex flex-col lg:flex-row items-center gap-5 p-4 rounded-2xl bg-darkBase border border-darkBorder transition-colors relative">
+                        
+                        <!-- تصویر و وضعیت -->
+                        <div class="relative shrink-0 w-full lg:w-32 h-32 lg:h-28 rounded-xl overflow-hidden group">
+                            <img :src="challenge.image" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            
+                            <div class="absolute top-2 right-2 flex gap-1">
+                                <span v-if="challenge.status === 'published'" class="bg-emerald-500/90 text-black text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm shadow-sm">منتشر شده</span>
+                                <span v-else class="bg-gray-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm shadow-sm">پیش‌نویس</span>
+                            </div>
+                        </div>
+
+                        <!-- اطلاعات اصلی -->
+                        <div class="flex-1 min-w-0 w-full text-center lg:text-right">
+                            <h3 class="text-base font-bold text-white mb-1 truncate" :title="challenge.title">{{ challenge.title }}</h3>
+                            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs text-textMuted mt-2">
+                                <span class="flex items-center gap-1.5 bg-darkPanel px-2 py-1 rounded-lg border border-darkBorder">
+                                    <i class="fa-solid fa-users text-goldPrimary/70"></i> {{ formatNumber(challenge.participants) }} شرکت‌کننده
+                                </span>
+                                <span class="flex items-center gap-1.5 bg-darkPanel px-2 py-1 rounded-lg border border-darkBorder">
+                                    <i class="fa-solid fa-check-double text-emerald-400/70"></i> {{ formatNumber(challenge.completions) }} تکمیل
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- آمار مالی و امتیاز -->
+                        <div class="flex flex-row lg:flex-col items-center justify-center gap-4 lg:gap-2 w-full lg:w-auto border-y lg:border-y-0 lg:border-r border-darkBorder py-3 lg:py-0 lg:pr-5">
+                            <div class="text-center">
+                                <p class="text-[10px] text-textMuted mb-0.5">درآمد چالش</p>
+                                <p class="text-sm font-bold text-goldPrimary flex items-center justify-center gap-1">
+                                    {{ formatNumber(challenge.revenue) }} <i class="fa-solid fa-coins text-[10px]"></i>
+                                </p>
+                            </div>
+                            <div class="hidden lg:block w-8 h-px bg-darkBorder"></div>
+                            <div class="text-center">
+                                <p class="text-[10px] text-textMuted mb-0.5">امتیاز کاربران</p>
+                                <p class="text-sm font-bold text-white flex items-center justify-center gap-1">
+                                    {{ challenge.rating }} <i class="fa-solid fa-star text-goldPrimary text-[10px]"></i>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- دکمه‌های عملیاتی -->
+                        <div class="flex gap-2 w-full lg:w-auto shrink-0 z-10">
+                            <button @click="editChallenge(challenge)" class="flex-1 lg:flex-none px-4 py-2 bg-darkPanel hover:bg-darkPanelHover border border-darkBorder hover:border-blue-500/50 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 group">
+                                <i class="fa-solid fa-pen-to-square text-textMuted group-hover:text-blue-400 transition-colors"></i>
+                                <span>ویرایش</span>
+                            </button>
+                            <!-- دکمه حذف تغییر یافته -->
+                            <button @click="openDeleteModal(challenge)" class="flex-1 lg:flex-none px-4 py-2 bg-darkPanel hover:bg-darkPanelHover border border-darkBorder hover:border-red-500/50 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 group">
+                                <i class="fa-solid fa-trash text-textMuted group-hover:text-red-400 transition-colors"></i>
+                                <span>حذف</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- مدال سفارشی حذف چالش -->
+        <transition name="fade">
+            <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                <!-- جلوگیری از بسته شدن با کلیک روی خود مدال -->
+                <transition name="modal">
+                    <div v-if="isModalOpen" @click.stop class="bg-darkPanel border border-darkBorder rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+                        
+                        <div class="p-6 text-center relative">
+                            <!-- دکمه بستن در گوشه -->
+                            <button @click="closeModal" class="absolute top-4 left-4 text-textMuted hover:text-white transition-colors">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                            
+                            <div class="w-16 h-16 mx-auto bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mb-4 text-3xl text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-white mb-2">حذف چالش</h3>
+                            
+                            <p class="text-sm text-textMuted leading-relaxed">
+                                آیا از حذف چالش 
+                                <span v-if="challengeToDelete" class="text-white font-bold inline-block mx-1">«{{ challengeToDelete.title }}»</span> 
+                                اطمینان دارید؟
+                                <br/>
+                                <span class="text-red-400 text-xs mt-2 block">این عمل غیرقابل بازگشت است و تمام اطلاعات آن پاک خواهد شد.</span>
+                            </p>
+                        </div>
+                        
+                        <div class="flex gap-3 p-4 bg-darkPanelHover/50 border-t border-darkBorder">
+                            <button @click="closeModal" class="flex-1 px-4 py-2.5 bg-darkBase border border-darkBorder text-white text-sm font-bold rounded-xl hover:bg-darkBorder transition-colors">
+                                انصراف
+                            </button>
+                            <button @click="confirmDelete" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.3)] transition-colors">
+                                بله، حذف کن
+                            </button>
+                        </div>
+                        
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+
+        createApp({
+            setup() {
+                // آمار کلی
+                const creatorStats = ref({
+                    totalTokens: 45800,
+                    totalChallenges: 8,
+                    totalStudents: 12450,
+                    avgRating: 4.8,
+                    totalCompletions: 8920,
+                    unansweredComments: 14
+                });
+
+                const searchQuery = ref('');
+
+                // لیست چالش‌ها
+                const myChallenges = ref([
+                    {
+                        id: 1,
+                        title: 'چالش جامع حفظ جزء ۳۰ (کودکان و نوجوانان)',
+                        image: 'https://images.unsplash.com/photo-1609599006353-e629aaab31f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+                        status: 'published',
+                        participants: 3250,
+                        completions: 2100,
+                        rating: 4.9,
+                        revenue: 15000,
+                    },
+                    {
+                        id: 2,
+                        title: 'آموزش گام به گام تجوید مصور مینی‌مال',
+                        image: 'https://images.unsplash.com/photo-1585036156171-384164a8c675?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+                        status: 'published',
+                        participants: 8400,
+                        completions: 6200,
+                        rating: 4.7,
+                        revenue: 28000,
+                    }
+                ]);
+
+                const filteredChallenges = computed(() => {
+                    if (!searchQuery.value) return myChallenges.value;
+                    const query = searchQuery.value.toLowerCase();
+                    return myChallenges.value.filter(c => c.title.toLowerCase().includes(query));
+                });
+
+                // متغیرهای مربوط به مدال حذف
+                const isModalOpen = ref(false);
+                const challengeToDelete = ref(null);
+
+                // باز کردن مدال و ذخیره چالش انتخاب شده
+                const openDeleteModal = (challenge) => {
+                    challengeToDelete.value = challenge;
+                    isModalOpen.value = true;
+                    // جلوگیری از اسکرول شدن صفحه پس زمینه
+                    document.body.style.overflow = 'hidden';
+                };
+
+                // بستن مدال
+                const closeModal = () => {
+                    isModalOpen.value = false;
+                    // بازگرداندن اسکرول صفحه به حالت عادی بعد از انیمیشن
+                    setTimeout(() => {
+                        challengeToDelete.value = null;
+                        document.body.style.overflow = 'auto';
+                    }, 300);
+                };
+
+                // تایید نهایی حذف چالش
+                const confirmDelete = () => {
+                    if (challengeToDelete.value) {
+                        myChallenges.value = myChallenges.value.filter(c => c.id !== challengeToDelete.value.id);
+                        
+                        // در اینجا می‌توانید درخواست API برای حذف را ارسال کنید
+                        // axios.delete(`/api/challenges/${challengeToDelete.value.id}`)
+                    }
+                    closeModal();
+                };
+
+                const editChallenge = (challenge) => {
+                    window.location.href = 'create.html?id=' + challenge.id;
+                };
+
+                const formatNumber = (num) => {
+                    return num.toLocaleString('fa-IR');
+                };
+
+                return {
+                    creatorStats,
+                    searchQuery,
+                    filteredChallenges,
+                    editChallenge,
+                    formatNumber,
+                    // خروجی توابع و متغیرهای مدال
+                    isModalOpen,
+                    challengeToDelete,
+                    openDeleteModal,
+                    closeModal,
+                    confirmDelete
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
