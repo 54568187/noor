@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مرحله آموزشی - حفظ النور</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
+    <title>جزئیات مرحله و آموزش تعاملی - حفظ النور</title>
+
+    <!-- FontAwesome برای آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Fonts -->
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Zain Font & Vazirmatn -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 
     <script>
         tailwind.config = {
@@ -28,6 +29,14 @@
                         sans: ["Zain", "Vazirmatn", "sans-serif"],
                     },
                     colors: {
+                        darkBase: '#09090b',
+                        darkPanel: '#121212',
+                        darkPanelHover: '#18181b',
+                        darkBorder: '#27272a',
+                        goldPrimary: '#f59e0b',
+                        goldHover: '#d97706',
+                        textMain: '#ffffff',
+                        textMuted: '#a1a1aa',
                         brand: {
                             dark: '#0f1115',       
                             surface: '#181b21',
@@ -38,6 +47,11 @@
                             success: '#10b981',
                             error: '#ef4444'
                         }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(245, 158, 11, 0.15)',
+                        'glow-strong': '0 0 25px rgba(245, 158, 11, 0.3)',
+                        'glow-success': '0 0 20px rgba(16, 185, 129, 0.25)',
                     }
                 }
             }
@@ -46,15 +60,30 @@
 
     <style>
         body {
-            font-family: "Zain", 'Vazirmatn', sans-serif;
-            background-color: #0f1115;
-            color: #f4f4f5;
-            margin: 0;
-            overflow: hidden; /* جلوگیری از اسکرول کل صفحه در موبایل */
+            background-color: #09090b;
+            color: #ffffff;
+            font-family: 'Zain', 'Vazirmatn', sans-serif;
+            overflow: hidden; /* پیشگیری از اسکرول کل صفحه برای کنترل بهتر فریم ورک دو پنلی */
             overscroll-behavior: none;
         }
 
-        /* انیمیشن ترانزیشن بین مراحل */
+        /* استایل اسکرول‌بار سفارشی */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        /* پنهان کردن اسکرول برای لیست‌های افقی موبایل */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* انیمیشن ترانزیشن بین مراحل دقیقاً طبق level.html فابریک */
         .slide-fade-enter-active {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -82,13 +111,8 @@
             box-shadow: none !important;
         }
 
-        /* اسکرول‌بار اختصاصی محتوا */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-
-        /* افکت نوری پس‌زمینه (الهام گرفته از لیدربورد) */
-        .bg-glow-top {
+        /* افکت نوری پس‌زمینه فابریک لول */
+        .bg-glow-top-level {
             position: absolute;
             top: -10%;
             right: -10%;
@@ -102,200 +126,580 @@
         }
     </style>
 </head>
-<body class="h-screen w-full flex justify-center bg-brand-dark relative">
 
-    <!-- افکت نوری پس‌زمینه -->
-    <div class="bg-glow-top"></div>
-
-    <!-- Container اصلی (عرض به max-w-3xl تغییر یافت و حالت شیشه‌ای گرفت) -->
-    <div id="app" class="w-full max-w-3xl h-full flex flex-col relative bg-brand-surface/80 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] sm:border-x sm:border-brand-border/60 z-10">
+<body class="antialiased min-h-screen selection:bg-goldPrimary selection:text-black flex flex-col h-screen overflow-hidden">
+    <div id="app" class="flex flex-col h-full w-full max-w-[1600px] mx-auto relative bg-darkBase">
         
-        <!-- صفحه پایان موفقیت‌آمیز -->
-        <div v-if="isCompleted" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-brand-dark px-6 text-center">
-            <div class="w-32 h-32 mb-6 rounded-full bg-brand-gold/20 flex items-center justify-center animate-bounce shadow-[0_0_40px_rgba(245,158,11,0.3)]">
-                <i class="fa-solid fa-trophy text-6xl text-brand-gold"></i>
-            </div>
-            <h2 class="text-4xl font-extrabold text-brand-gold mb-2">ماموریت انجام شد!</h2>
-            <p class="text-gray-400 text-lg mb-8">+۵۰ امتیاز تجربه (XP) کسب کردید</p>
-            <button @click="exitLesson" class="w-full py-4 rounded-2xl bg-brand-gold text-black font-bold text-2xl border-b-4 border-brand-goldHover hover:translate-y-1 hover:border-b-0 transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                بازگشت به نقشه
-            </button>
+        <!-- اعلان موقت سفارشی (Toast Notification) به جای alert اصلی -->
+        <div v-if="toastMessage" class="fixed top-6 right-6 left-6 sm:left-auto sm:w-96 bg-darkPanel border-2 border-goldPrimary text-white px-5 py-4 rounded-2xl shadow-glow-strong z-50 flex items-center gap-3 transition-all duration-300 animate-bounce">
+            <i class="fa-solid fa-circle-info text-goldPrimary text-xl"></i>
+            <span class="text-sm font-bold leading-relaxed">{{ toastMessage }}</span>
         </div>
 
-        <template v-else>
-            <!-- هدر: نوار پیشرفت و خروج -->
-            <header class="flex items-center gap-4 px-5 py-4 shrink-0 z-10">
-                <button @click="exitLesson" class="text-gray-500 hover:text-gray-300 transition-colors">
-                    <i class="fa-solid fa-xmark text-2xl"></i>
+        <!-- سوییچر سگمنتد مدرن برای موبایل (پنهان در دسکتاپ) -->
+        <div class="lg:hidden px-4 py-3 bg-darkPanel/40 border-b border-darkBorder shrink-0 z-30">
+            <div class="bg-darkBase/90 border border-darkBorder rounded-xl p-1 flex">
+                <button @click="activeTab = 'activities'" 
+                        class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5"
+                        :class="activeTab === 'activities' ? 'bg-goldPrimary text-black shadow-sm' : 'text-textMuted hover:text-white'">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>لیست فعالیت‌ها</span>
                 </button>
+                <button @click="activeTab = 'interactive'" 
+                        class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 relative"
+                        :class="activeTab === 'interactive' ? 'bg-goldPrimary text-black shadow-sm' : 'text-textMuted hover:text-white'">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <span>بخش تعاملی</span>
+                    <span v-if="activeActivity" class="absolute top-1 right-3 w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- محتوای اصلی دو پنلی -->
+        <main class="flex-1 flex overflow-hidden relative">
+            
+            <!-- چیدمان گرید در دسکتاپ، کنترل تب در موبایل -->
+            <div class="w-full h-full grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
                 
-                <!-- Progress Bar -->
-                <div class="flex-1 h-4 bg-gray-800 rounded-full overflow-hidden relative">
-                    <div class="absolute top-0 right-0 h-full bg-brand-gold rounded-full transition-all duration-500 ease-out"
-                         :style="{ width: progressPercentage + '%' }">
-                        <!-- افکت درخشش روی نوار -->
-                        <div class="absolute top-1 right-2 bottom-1 left-4 bg-white/30 rounded-full"></div>     
-                    </div>
-                </div>
-
-                <!-- قلب / جان کاربر -->
-                <div class="flex items-center gap-1.5 font-bold text-xl transition-colors duration-300"
-                     :class="lives > 0 ? 'text-brand-error' : 'text-gray-600'">
-                    <span>{{ lives }}</span>
-                    <i class="fa-solid fa-heart" :class="{'animate-pulse': lives === 1}"></i>
-                </div>
-            </header>
-
-            <!-- بخش اصلی محتوا -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar px-5 pb-32 relative">
-                <transition name="slide-fade">
-                    <div :key="currentStepIndex" class="w-full pt-4 pb-10">
-                        
-                        <!-- نوع ۱: توضیحات و معرفی (Practice/Text) -->
-                        <div v-if="currentStep.type === 'practice'" class="flex flex-col items-center mt-4 px-2 md:px-8">
-                            <div class="w-32 h-32 rounded-3xl bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(59,130,246,0.15)]">
-                                <i class="fa-solid text-7xl text-blue-400" :class="currentStep.icon || 'fa-book-open'"></i>
-                            </div>
-                            <h2 class="text-3xl font-extrabold mb-4 text-center">{{ currentStep.title }}</h2>
-                            <div class="w-full bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 text-gray-300 leading-relaxed text-lg text-justify">
-                                {{ currentStep.content }}
+                <!-- ================= پنل سمت راست (اول در چیدمان RTL دسکتاپ): لیست فعالیت‌های گام جاری ================= -->
+                <!-- سهم در دسکتاپ: ۵ ستون • سمت راست قرار می‌گیرد • هماهنگ با پس زمینه تیره اصلی -->
+                <div class="h-full overflow-y-auto p-4 md:p-6 lg:col-span-5 space-y-5 pb-24 border-l border-darkBorder bg-darkBase custom-scrollbar"
+                     :class="activeTab === 'activities' ? 'block' : 'hidden lg:block'">
+                    
+                    <!-- معرفی اجمالی گام -->
+                    <div class="bg-darkPanel border border-darkBorder p-4 rounded-2xl relative overflow-hidden shadow-glow">
+                        <div class="absolute -top-10 -left-10 w-24 h-24 bg-goldPrimary/5 rounded-full blur-xl"></div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-white text-base font-black">گام {{ currentStep.id }}: {{ currentStep.title }}</h3>
+                            <div class="bg-darkBase border border-darkBorder px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                <i class="fa-solid fa-gem text-blue-400 text-xs"></i>
+                                <span class="text-xs font-bold">{{ currentStep.rewardXP }} XP</span>
                             </div>
                         </div>
-
-                        <!-- نوع ۲: ویدیو (Video) -->
-                        <div v-if="currentStep.type === 'video'" class="flex flex-col mt-2 px-2 md:px-8">
-                            <h2 class="text-2xl font-bold mb-5">{{ currentStep.title }}</h2>
-                            <!-- Placeholder برای ویدیو پلیر -->
-                            <div class="w-full aspect-video bg-black rounded-2xl border-2 border-gray-700 flex items-center justify-center relative overflow-hidden mb-6 group cursor-pointer shadow-lg">
-                                <img v-if="currentStep.thumbnail" :src="currentStep.thumbnail" alt="Video Thumbnail" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity">
-                                <div class="w-16 h-16 rounded-full bg-brand-gold flex items-center justify-center z-10 pl-1 shadow-[0_0_20px_rgba(245,158,11,0.5)] group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-play text-2xl text-black"></i>
-                                </div>
-                                <!-- Progress Bar فیک ویدیو -->
-                                <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-800">
-                                    <div class="h-full bg-brand-gold w-1/3"></div>
-                                </div>
-                            </div>
-                            <div class="bg-gray-800/30 p-5 rounded-2xl border border-gray-800">
-                                <p class="text-gray-300 text-lg leading-relaxed">{{ currentStep.content }}</p>
-                            </div>
-                        </div>
-
-                        <!-- نوع ۳: آزمون (Quiz) -->
-                        <div v-if="currentStep.type === 'quiz'" class="flex flex-col h-full mt-2 px-2 md:px-8">
-                            <h2 class="text-2xl md:text-3xl font-bold mb-8 leading-tight">{{ currentStep.question }}</h2>
-                            
-                            <div class="flex flex-col gap-4">
-                                <button v-for="(option, index) in currentStep.options" :key="index"
-                                        @click="selectOption(index)"
-                                        :disabled="isAnswerChecked"
-                                        class="option-card w-full text-right p-5 rounded-2xl border-2 font-bold text-xl flex justify-between items-center bg-gray-800/40"
-                                        :class="getOptionClasses(index)">
-                                    <span>{{ option.text }}</span>
-                                    
-                                    <!-- تصحیح آیکون‌های صحیح/غلط با حذف بک‌گراند سفید و تنظیم صحیح رنگ -->
-                                    <div v-if="isAnswerChecked && index === selectedOptionIndex">
-                                        <i v-if="option.isCorrect" class="fa-solid fa-circle-check text-3xl text-brand-success drop-shadow-md"></i>
-                                        <i v-else class="fa-solid fa-circle-xmark text-3xl text-brand-error drop-shadow-md"></i>
-                                    </div>
-                                    <div v-else-if="isAnswerChecked && option.isCorrect" class="animate-bounce">
-                                        <i class="fa-solid fa-circle-check text-3xl text-brand-success drop-shadow-md"></i>
-                                    </div>
-                                    <!-- دایره انتخاب نشده -->
-                                    <div v-else class="w-7 h-7 rounded-full border-2 border-gray-500 transition-colors duration-200" :class="{'border-brand-gold bg-brand-gold/20': selectedOptionIndex === index}"></div>
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </transition>
-            </main>
-
-            <!-- نوار ابزار پایین (Action Bar) -->
-            <!-- با تغییر وضعیت، رنگ پس‌زمینه تغییر می‌کند -->
-            <footer class="absolute bottom-0 w-full px-5 py-4 border-t-2 transition-colors duration-300 z-20"
-                    :class="footerBackgroundClass">
-                
-                <!-- پیام بازخورد در آزمون -->
-                <div v-if="isAnswerChecked && currentStep.type === 'quiz'" class="mb-4 flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-white shadow-lg">
-                        <i class="fa-solid text-2xl" :class="isCorrectAnswer ? 'fa-check text-brand-success' : 'fa-xmark text-brand-error'"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-black text-2xl mb-1 text-white">
-                            {{ isCorrectAnswer ? 'عالی بود!' : 'پاسخ اشتباه بود' }}
-                        </h3>
-                        <p v-if="!isCorrectAnswer && currentStep.explanation" class="text-white/90 text-sm font-medium">
-                            راهنمایی: {{ currentStep.explanation }}
+                        <p class="text-textMuted text-xs leading-relaxed mb-3">
+                            {{ currentStep.description }}
                         </p>
+                        <!-- میزان پیشرفت گام -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-textMuted whitespace-nowrap">پیشرفت کل گام:</span>
+                            <div class="flex-1 h-2 bg-darkBorder rounded-full overflow-hidden">
+                                <div class="h-full bg-goldPrimary transition-all duration-500" :style="{ width: stageProgress + '%' }"></div>
+                            </div>
+                            <span class="text-xs font-bold text-goldPrimary">{{ stageProgress }}%</span>
+                        </div>
+                    </div>
+
+                    <!-- بخش ۱: محتوای آموزشی (ویدیو و متون) -->
+                    <section v-if="groupedActivities.learning.length">
+                        <h2 class="text-xs font-bold text-white mb-2.5 flex items-center gap-2 border-r-4 border-purple-500 pr-2">
+                            <i class="fa-solid fa-book-open text-purple-400"></i> محتوای آموزشی
+                        </h2>
+                        <div class="space-y-2">
+                            <div v-for="act in groupedActivities.learning" :key="act.id" 
+                                 class="bg-darkPanel border border-darkBorder rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-3 transition-all hover:border-purple-500/40"
+                                 :class="{'border-purple-500/30 bg-purple-500/[0.02]': activeActivity && activeActivity.id === act.id}">
+                                
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                     :class="act.type === 'video' ? 'bg-purple-500/10 text-purple-400' : 'bg-blue-500/10 text-blue-400'">
+                                    <i class="fa-solid text-base" :class="act.type === 'video' ? 'fa-play' : 'fa-file-lines'"></i>
+                                </div>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-bold text-white text-xs sm:text-sm truncate">{{ act.title }}</h3>
+                                    <p class="text-[10px] text-textMuted mt-0.5"><i class="fa-regular fa-clock ml-1"></i> زمان: {{ act.duration }} دقیقه</p>
+                                </div>
+                                
+                                <button v-if="act.status === 'pending'" @click="startActivity(act)" 
+                                        class="w-full sm:w-auto px-3 py-1.5 bg-darkBase border border-darkBorder hover:border-purple-500/50 hover:bg-purple-500/10 text-purple-400 text-xs font-bold rounded-lg transition-all text-center">
+                                    شروع یادگیری
+                                </button>
+                                <div v-else @click="startActivity(act)" class="w-full sm:w-auto px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 cursor-pointer hover:bg-emerald-500/20">
+                                    <i class="fa-solid fa-check text-[10px]"></i> مرور مجدد
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- بخش ۲: آزمون‌های تاییدیه مهارت -->
+                    <section v-if="groupedActivities.quiz.length">
+                        <h2 class="text-xs font-bold text-white mb-2.5 flex items-center gap-2 border-r-4 border-blue-500 pr-2">
+                            <i class="fa-solid fa-clipboard-question text-blue-400"></i> سنجش مهارت و آزمون‌ها
+                        </h2>
+                        <div class="space-y-2">
+                            <div v-for="act in groupedActivities.quiz" :key="act.id" 
+                                 class="bg-darkPanel border border-darkBorder rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-3 transition-all hover:border-blue-500/40"
+                                 :class="{'border-blue-500/30 bg-blue-500/[0.02]': activeActivity && activeActivity.id === act.id}">
+                                
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-spell-check text-base"></i>
+                                </div>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-bold text-white text-xs sm:text-sm truncate">{{ act.title }}</h3>
+                                    <div class="flex gap-2.5 text-[10px] text-textMuted mt-0.5">
+                                        <span><i class="fa-solid fa-list-ol ml-0.5"></i> {{ act.questionsCount }} سوال</span>
+                                        <span><i class="fa-solid fa-star text-goldPrimary ml-0.5 animate-pulse"></i> {{ act.minScore }}</span>
+                                    </div>
+                                </div>
+                                
+                                <button v-if="act.status === 'pending'" @click="startActivity(act)" :disabled="!isPrerequisitesMet(act)"
+                                        class="w-full sm:w-auto px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-center"
+                                        :class="isPrerequisitesMet(act) ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20' : 'bg-darkBase border border-darkBorder text-gray-600 cursor-not-allowed'">
+                                    <i v-if="!isPrerequisitesMet(act)" class="fa-solid fa-lock ml-0.5 text-[10px]"></i>
+                                    {{ isPrerequisitesMet(act) ? 'شروع آزمون' : 'قفل' }}
+                                </button>
+                                <div v-else @click="startActivity(act)" class="w-full sm:w-auto px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 cursor-pointer hover:bg-emerald-500/20">
+                                    <i class="fa-solid fa-check text-[10px]"></i> آزمون مجدد
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- بخش ۳: ارسال تکالیف عملی -->
+                    <section v-if="groupedActivities.practice.length">
+                        <h2 class="text-xs font-bold text-white mb-2.5 flex items-center gap-2 border-r-4 border-emerald-500 pr-2">
+                            <i class="fa-solid fa-microphone-lines text-emerald-400"></i> تکالیف تلاوت صوتی
+                        </h2>
+                        <div class="space-y-2">
+                            <div v-for="act in groupedActivities.practice" :key="act.id" 
+                                 class="bg-darkPanel border border-darkBorder rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-3 transition-all hover:border-emerald-500/40"
+                                 :class="{'border-emerald-500/30 bg-emerald-500/[0.02]': activeActivity && activeActivity.id === act.id}">
+                                
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-microphone-lines text-base"></i>
+                                </div>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-bold text-white text-xs sm:text-sm truncate">{{ act.title }}</h3>
+                                    <p class="text-[10px] text-textMuted mt-0.5">ارزیابی صوتی مربی</p>
+                                </div>
+                                
+                                <button v-if="act.status === 'pending'" @click="startActivity(act)"
+                                        class="w-full sm:w-auto px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-black text-xs font-bold rounded-lg transition-all text-center">
+                                    ضبط صدا
+                                </button>
+                                <div v-else-if="act.status === 'reviewing'" @click="startActivity(act)" class="w-full sm:w-auto px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 cursor-pointer hover:bg-yellow-500/20">
+                                    <i class="fa-solid fa-hourglass-half animate-spin text-[10px]"></i> بررسی مربی
+                                </div>
+                                <div v-else-if="act.status === 'done'" class="w-full sm:w-auto px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 cursor-default">
+                                    <i class="fa-solid fa-circle-check text-[10px]"></i> تایید نهایی
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- ================= پنل سمت چپ (دوم در چیدمان RTL دسکتاپ): آموزش و آزمون تعاملی (Level Player) ================= -->
+                <!-- سهم در دسکتاپ: ۷ ستون • همرنگ با پس‌زمینه راست (bg-darkBase) • بدون پدینگ بالا و پایین در دسکتاپ (lg:py-0) -->
+                <div class="h-full flex flex-col overflow-hidden relative lg:col-span-7 bg-darkBase lg:py-0 p-3 sm:p-4 flex items-center justify-center"
+                     :class="activeTab === 'interactive' ? 'block' : 'hidden lg:flex'">
+                    
+                    <!-- افکت نوری اختصاصی زرد/طلایی بالای لول -->
+                    <div class="bg-glow-top-level"></div>
+
+                    <!-- قاب شیشه‌ای فابریک level.html • در دسکتاپ بدون انحنای بالا/پایین و مرزها چسبیده به سقف و کف (lg:rounded-none lg:border-y-0) • سایه عمیق تقویت شده با هاله نرم طلایی -->
+                    <div class="w-full max-w-3xl h-full flex flex-col relative bg-brand-surface/90 border-x border-brand-border/60 lg:border-y-0 lg:rounded-none rounded-t-3xl rounded-b-3xl shadow-[0_0_60px_rgba(0,0,0,0.9),0_0_30px_rgba(245,158,11,0.06)] backdrop-blur-2xl overflow-hidden z-10">
+
+                        <!-- صفحه پایان موفقیت‌آمیز فعالیت تعاملی جاری (Trohpy Screen) -->
+                        <div v-if="isCompleted" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-brand-dark px-6 text-center">
+                            <div class="w-28 h-28 mb-6 rounded-full bg-brand-gold/20 flex items-center justify-center animate-bounce shadow-[0_0_40px_rgba(245,158,11,0.3)]">
+                                <i class="fa-solid fa-trophy text-5xl text-brand-gold"></i>
+                            </div>
+                            <h2 class="text-3xl font-extrabold text-brand-gold mb-2">ماموریت انجام شد!</h2>
+                            <p class="text-gray-400 text-base mb-8">+{{ activeActivity ? activeActivity.xpAward : 50 }} امتیاز تجربه (XP) کسب کردید</p>
+                            <button @click="completeAndSaveActivity" class="w-full max-w-xs py-3.5 rounded-2xl bg-brand-gold text-black font-bold text-lg border-b-4 border-brand-goldHover hover:translate-y-1 hover:border-b-0 transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+                                ثبت نهایی و بازگشت
+                            </button>
+                        </div>
+
+                        <!-- در صورت عدم انتخاب فعالیت تعاملی -->
+                        <div v-else-if="!activeActivity" class="flex flex-col items-center justify-center h-full text-center py-10 my-auto px-6">
+                            <div class="w-16 h-16 rounded-full bg-darkPanel border border-darkBorder flex items-center justify-center mb-4 text-goldPrimary text-2xl animate-bounce">
+                                <i class="fa-solid fa-circle-play"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-white mb-1">آماده شروع یادگیری هستید؟</h3>
+                            <p class="text-xs text-textMuted max-w-xs leading-relaxed">یکی از کارت‌های آموزشی، آزمون یا تکالیف صوتی را از لیست فعالیت‌های سمت راست انتخاب کنید تا ماجراجویی تعاملی آغاز شود.</p>
+                        </div>
+
+                        <template v-else>
+                            <!-- هدر فابریک level.html: دکمه خروج، نوار پیشرفت درخشان، قلبها -->
+                            <header class="flex items-center gap-4 px-5 py-4 shrink-0 z-10">
+                                <button @click="closeActiveActivity" class="text-gray-500 hover:text-gray-300 transition-colors">
+                                    <i class="fa-solid fa-xmark text-2xl"></i>
+                                </button>
+                                
+                                <!-- نوار پیشرفت با افکت درخشش فابریک -->
+                                <div class="flex-1 h-4 bg-gray-800 rounded-full overflow-hidden relative">
+                                    <div class="absolute top-0 right-0 h-full bg-brand-gold rounded-full transition-all duration-500 ease-out"
+                                         :style="{ width: progressPercentage + '%' }">
+                                        <!-- افکت درخشش روی نوار -->
+                                        <div class="absolute top-1 right-2 bottom-1 left-4 bg-white/30 rounded-full"></div>     
+                                    </div>
+                                </div>
+
+                                <!-- قلب / جان کاربر فابریک -->
+                                <div v-if="activeActivity.type === 'quiz'" class="flex items-center gap-1.5 font-bold text-xl transition-colors duration-300"
+                                     :class="lives > 0 ? 'text-brand-error' : 'text-gray-600'">
+                                    <span>{{ lives }}</span>
+                                    <i class="fa-solid fa-heart" :class="{'animate-pulse': lives === 1}"></i>
+                                </div>
+                            </header>
+
+                            <!-- بخش اصلی محتوای آموزشی تعاملی فابریک -->
+                            <main class="flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar px-5 pb-32 relative">
+                                <transition name="slide-fade">
+                                    <div :key="currentStepIndex" class="w-full pt-4 pb-10">
+                                        
+                                        <!-- نوع ۱: توضیحات و معرفی فابریک (Practice/Text) -->
+                                        <div v-if="currentStepActive.type === 'practice'" class="flex flex-col items-center mt-4 px-2 md:px-8">
+                                            <div class="w-32 h-32 rounded-3xl bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(59,130,246,0.15)]">
+                                                <i class="fa-solid text-7xl text-blue-400" :class="currentStepActive.icon || 'fa-book-open'"></i>
+                                            </div>
+                                            <h2 class="text-3xl font-extrabold mb-4 text-center">{{ currentStepActive.title }}</h2>
+                                            <div class="w-full bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 text-gray-300 leading-relaxed text-lg text-justify">
+                                                {{ currentStepActive.content }}
+                                            </div>
+                                        </div>
+
+                                        <!-- نوع ۲: ویدیو فابریک (Video) -->
+                                        <div v-if="currentStepActive.type === 'video'" class="flex flex-col mt-2 px-2 md:px-8">
+                                            <h2 class="text-2xl font-bold mb-5">{{ currentStepActive.title }}</h2>
+                                            <!-- ویدیو پلیر شبیه‌سازی شده فابریک -->
+                                            <div class="w-full aspect-video bg-black rounded-2xl border-2 border-gray-700 flex items-center justify-center relative overflow-hidden mb-6 group cursor-pointer shadow-lg"
+                                                 @click="videoPlaying = !videoPlaying">
+                                                
+                                                <img v-if="currentStepActive.thumbnail" :src="currentStepActive.thumbnail" alt="Video Thumbnail" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity">
+                                                
+                                                <!-- لودینگ در حال پخش -->
+                                                <div v-if="videoPlaying" class="absolute inset-0 bg-black/90 flex flex-col items-center justify-center p-3 text-center z-10">
+                                                    <i class="fa-solid fa-spinner animate-spin text-4xl text-goldPrimary mb-2"></i>
+                                                    <p class="text-base font-bold text-white">در حال پخش ویدیوی آموزشی...</p>
+                                                    <span class="text-xs text-gray-400 mt-1">جهت توقف ضربه بزنید</span>
+                                                </div>
+
+                                                <div v-else class="w-16 h-16 rounded-full bg-brand-gold flex items-center justify-center z-10 pl-1 shadow-[0_0_20px_rgba(245,158,11,0.5)] group-hover:scale-110 transition-transform">
+                                                    <i class="fa-solid fa-play text-2xl text-black"></i>
+                                                </div>
+                                                <!-- Progress Bar فیک ویدیو -->
+                                                <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-800">
+                                                    <div class="h-full bg-brand-gold transition-all duration-1000" :style="{ width: videoPlaying ? '90%' : '20%' }"></div>
+                                                </div>
+                                            </div>
+                                            <div class="bg-gray-800/30 p-5 rounded-2xl border border-gray-800">
+                                                <p class="text-gray-300 text-lg leading-relaxed">{{ currentStepActive.content }}</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- نوع ۳: آزمون فابریک (Quiz) -->
+                                        <div v-if="currentStepActive.type === 'quiz'" class="flex flex-col h-full mt-2 px-2 md:px-8">
+                                            <h2 class="text-2xl md:text-3xl font-bold mb-8 leading-tight">{{ currentStepActive.question }}</h2>
+                                            
+                                            <div class="flex flex-col gap-4">
+                                                <button v-for="(option, index) in currentStepActive.options" :key="index"
+                                                        @click="selectOption(index)"
+                                                        :disabled="isAnswerChecked"
+                                                        class="option-card w-full text-right p-5 rounded-2xl border-2 font-bold text-xl flex justify-between items-center bg-gray-800/40"
+                                                        :class="getOptionClasses(index)">
+                                                    <span>{{ option.text }}</span>
+                                                    
+                                                    <!-- تصحیح آیکون‌ها دقیقاً با همان افکت‌های تصویری فابریک -->
+                                                    <div v-if="isAnswerChecked && index === selectedOptionIndex">
+                                                        <i v-if="option.isCorrect" class="fa-solid fa-circle-check text-3xl text-brand-success drop-shadow-md"></i>
+                                                        <i v-else class="fa-solid fa-circle-xmark text-3xl text-brand-error drop-shadow-md"></i>
+                                                    </div>
+                                                    <div v-else-if="isAnswerChecked && option.isCorrect" class="animate-bounce">
+                                                        <i class="fa-solid fa-circle-check text-3xl text-brand-success drop-shadow-md"></i>
+                                                    </div>
+                                                    <!-- دایره انتخاب نشده -->
+                                                    <div v-else class="w-7 h-7 rounded-full border-2 border-gray-500 transition-colors duration-200 shrink-0" :class="{'border-brand-gold bg-brand-gold/20': selectedOptionIndex === index}"></div>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- نوع ۴: تکلیف ضبط صوت عملی صوتی (با طراحی ادغام شده با سیستم فابریک لول) -->
+                                        <div v-if="currentStepActive.type === 'audio_practice'" class="flex flex-col items-center mt-4 px-2 md:px-8">
+                                            <div class="w-32 h-32 rounded-3xl bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+                                                <i class="fa-solid text-7xl text-emerald-400" :class="'fa-microphone-lines'"></i>
+                                            </div>
+                                            <h2 class="text-3xl font-extrabold mb-4 text-center">{{ currentStepActive.title }}</h2>
+                                            <p class="text-gray-400 text-center text-lg mb-6 leading-relaxed">لطفا دکمه میکروفون زیر را لمس کرده و آیات را با تلاوت روان قرائت فرمایید.</p>
+                                            
+                                            <!-- باکس شبیه‌ساز ضبط صدا به سبک لول -->
+                                            <div class="w-full bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 flex flex-col items-center justify-center">
+                                                
+                                                <!-- موج‌های صوتی تعاملی متحرک -->
+                                                <div class="h-16 flex items-center justify-center gap-1.5 mb-6 w-full" v-if="isRecording">
+                                                    <div v-for="bar in 15" :key="bar" 
+                                                         class="w-1.5 bg-emerald-500 rounded-full transition-all duration-300 animate-pulse"
+                                                         :style="{ height: Math.max(10, Math.floor(Math.random() * 50)) + 'px' }">
+                                                    </div>
+                                                </div>
+                                                <div class="h-16 flex items-center justify-center text-gray-400 text-lg mb-6" v-else>
+                                                    <i class="fa-solid fa-microphone-slash ml-2 text-2xl"></i>
+                                                    <span>میکروفون در حالت آماده‌باش است</span>
+                                                </div>
+
+                                                <div class="flex items-center gap-4">
+                                                    <button @click="toggleRecording" 
+                                                            class="w-16 h-16 rounded-full flex items-center justify-center font-bold transition-all shadow-lg hover:scale-105"
+                                                            :class="isRecording ? 'bg-red-500 text-white animate-pulse shadow-red-500/30' : 'bg-emerald-500 text-black shadow-emerald-500/30'">
+                                                        <i class="fa-solid text-2xl" :class="isRecording ? 'fa-stop' : 'fa-microphone'"></i>
+                                                    </button>
+                                                </div>
+
+                                                <p class="text-sm mt-4 text-gray-400">
+                                                    {{ isRecording ? 'در حال ضبط صدا...' : 'جهت ضبط تلاوت لمس کنید' }}
+                                                </p>
+
+                                                <!-- نمایش صوت ضبط شده برای تایید -->
+                                                <div v-if="recordedAudio" class="w-full mt-6 pt-6 border-t border-gray-700 flex items-center gap-4">
+                                                    <button class="w-10 h-10 rounded-full bg-brand-gold text-black flex items-center justify-center hover:scale-105 transition-transform shrink-0">
+                                                        <i class="fa-solid fa-play ml-0.5 text-lg"></i>
+                                                    </button>
+                                                    <div class="flex-1">
+                                                        <div class="h-2 bg-gray-700 rounded-full w-full relative">
+                                                            <div class="absolute h-full bg-brand-gold w-1/3 rounded-full"></div>
+                                                        </div>
+                                                        <span class="text-xs text-gray-400 block mt-1 text-right">۰:۱۸ ضبط شد</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </transition>
+                            </main>
+
+                            <!-- نوار ابزار پایین فابریک level.html (Action Bar) با تطابق کامل رنگ و دکمه فابریک لول -->
+                            <footer class="absolute bottom-0 w-full px-5 py-4 border-t-2 transition-colors duration-300 z-20"
+                                    :class="footerBackgroundClass">
+                                
+                                <!-- پیام بازخورد فابریک آزمون -->
+                                <div v-if="isAnswerChecked && currentStepActive.type === 'quiz'" class="mb-4 flex items-start gap-4">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-white shadow-lg">
+                                        <i class="fa-solid text-2xl" :class="isCorrectAnswer ? 'fa-check text-brand-success' : 'fa-xmark text-brand-error'"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-black text-2xl mb-1 text-white">
+                                            {{ isCorrectAnswer ? 'عالی بود!' : 'پاسخ اشتباه بود' }}
+                                        </h3>
+                                        <p v-if="!isCorrectAnswer && currentStepActive.explanation" class="text-white/90 text-sm font-medium">
+                                            راهنمایی: {{ currentStepActive.explanation }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- دکمه اصلی عملیات تعاملی لول فابریک -->
+                                <button @click="handleActionClick" 
+                                        class="w-full md:w-3/4 mx-auto block py-4 rounded-2xl font-extrabold text-xl transition-all border-b-4"
+                                        :class="actionButtonClass"
+                                        :disabled="currentStepActive.type === 'quiz' && selectedOptionIndex === null && !isAnswerChecked">
+                                    {{ actionButtonText }}
+                                </button>
+                            </footer>
+                        </template>
+
                     </div>
                 </div>
 
-                <!-- دکمه اصلی -->
-                <button @click="handleActionClick" 
-                        class="w-full md:w-3/4 mx-auto block py-4 rounded-2xl font-extrabold text-xl transition-all border-b-4"
-                        :class="actionButtonClass"
-                        :disabled="currentStep.type === 'quiz' && selectedOptionIndex === null && !isAnswerChecked">
-                    {{ actionButtonText }}
-                </button>
-            </footer>
-        </template>
+            </div>
+        </main>
     </div>
 
+    <!-- اسکریپت جاوا اسکریپت پیاده سازی شده بر بستر Vue 3 -->
     <script>
-        const { createApp, ref, computed } = Vue;
+        const { createApp, ref, computed, nextTick } = Vue;
 
         createApp({
             setup() {
-                // این آرایه باید در لاراول از طریق دیتابیس (گره‌های یک مرحله) پُر شود
-                const steps = ref([
-                    {
-                        type: 'practice',
-                        title: 'مقدمه‌ای بر ماجراجویی',
-                        content: 'به مرحله اول خوش آمدید. در این مسیر قرار است با اصول اولیه آشنا شوید. دقت کنید که هر مرحله ترکیبی از آموزش و آزمون است و شما باید با دقت مطالب را مطالعه کنید.',
-                        icon: 'fa-compass'
-                    },
-                    {
-                        type: 'video',
-                        title: 'استراتژی پیروزی',
-                        content: 'این ویدیو را با دقت تماشا کنید تا ترفندهای مخفی عبور از چالش‌ها را یاد بگیرید. پس از مشاهده ویدیو آماده پاسخگویی به سوالات باشید.',
-                        thumbnail: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop'
-                    },
-                    {
-                        type: 'quiz',
-                        question: 'مهم‌ترین قانون در هنگام برخورد با چالش‌های جدید چیست؟',
-                        explanation: 'شما باید همیشه قبل از اقدام، استراتژی خود را بررسی کنید. حمله بدون فکر باعث از دست رفتن جان‌ها می‌شود.',
-                        options: [
-                            { text: 'عقب‌نشینی سریع', isCorrect: false },
-                            { text: 'بررسی و تدوین استراتژی', isCorrect: true },
-                            { text: 'حمله بدون فکر', isCorrect: false },
-                        ]
-                    },
-                    {
-                        type: 'practice',
-                        title: 'نکته طلایی',
-                        content: 'شما فوق‌العاده‌اید! فراموش نکنید که امتیازات (XP) کسب شده در اینجا، در کیف پول دیجیتال شما ذخیره شده و می‌توانید از آن‌ها برای ارتقاء استفاده کنید.',
-                        icon: 'fa-coins'
-                    }
-                ]);
+                // هماهنگ سازی تب‌های موبایل
+                const activeTab = ref('activities'); 
+                const toastMessage = ref('');
 
+                // گام تعاملی فعلی (ثابت روی گام ۳ و غیرقابل جابه‌جایی توسط نوار ناوبری حذف‌شده)
+                const currentStepDetails = ref({
+                    id: 3,
+                    title: "کشف رازهای نهان تجوید",
+                    description: "در این گام باید مفاهیم اولیه قواعد نون ساکنه را مطالعه کرده و پس از مشاهده ویدیوی آموزشی، در آزمون تئوری شرکت کنید.",
+                    rewardXP: 50,
+                    activities: [
+                        { 
+                            id: 301, 
+                            type: 'video', 
+                            title: 'ویدیوی آموزشی: قواعد نون ساکنه', 
+                            duration: 15, 
+                            status: 'done',
+                            xpAward: 15,
+                            rawContent: [
+                                {
+                                    type: 'video',
+                                    title: 'مشاهده ویدیوی قواعد نون ساکنه و تنوین',
+                                    content: 'آموزش احکام چهارگانه نون ساکنه و تنوین شامل اظهار، ادغام، اقلاب و اخفاء توسط برجسته ترین اساتید تجوید.',
+                                    thumbnail: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop'
+                                }
+                            ]
+                        },
+                        { 
+                            id: 302, 
+                            type: 'text', 
+                            title: 'جزوه خلاصه: انواع ادغام در قرآن', 
+                            duration: 10, 
+                            status: 'pending',
+                            xpAward: 20,
+                            rawContent: [
+                                {
+                                    type: 'practice',
+                                    title: 'بخش اول: معرفی ادغام',
+                                    content: 'ادغام در لغت به معنای وارد کردن چیزی در چیز دیگر است. در تجوید یعنی حذف نون ساکنه و وارد کردن آن در یکی از حروف «یرملون».',
+                                    icon: 'fa-book-quran'
+                                },
+                                {
+                                    type: 'practice',
+                                    title: 'اقسام ادغام',
+                                    content: 'ادغام به دو نوع عمده تقسیم می‌شود: ۱) ادغام با غنه (در حروف ی، ن، م، و) ۲) ادغام بدون غنه (در حروف ل، ر).',
+                                    icon: 'fa-circle-info'
+                                }
+                            ]
+                        },
+                        { 
+                            id: 303, 
+                            type: 'quiz', 
+                            title: 'آزمون تئوری قواعد نون ساکنه', 
+                            questionsCount: 2, 
+                            minScore: 70, 
+                            status: 'pending', 
+                            requires: [301, 302],
+                            xpAward: 40,
+                            rawContent: [
+                                {
+                                    type: 'quiz',
+                                    question: 'کدام یک از حروف زیر متعلق به حروف ادغام (یرملون) است؟',
+                                    explanation: 'حروف یرملون شامل (ی، ر، م، ل، و، ن) هستند که نون ساکنه در آنها ادغام می‌شود.',
+                                    options: [
+                                        { text: 'الف و ب', isCorrect: false },
+                                        { text: 'یاء و میم', isCorrect: true },
+                                        { text: 'حاء و خاء', isCorrect: false },
+                                    ]
+                                },
+                                {
+                                    type: 'quiz',
+                                    question: 'ادغام بدون غنه در کدام حروف رخ می‌دهد؟',
+                                    explanation: 'ادغام بدون غنه فقط در دو حرف (ل) و (ر) اتفاق می‌افتد.',
+                                    options: [
+                                        { text: 'لام و راء', isCorrect: true },
+                                        { text: 'میم و نون', isCorrect: false },
+                                        { text: 'واو و یاء', isCorrect: false },
+                                    ]
+                                }
+                            ]
+                        },
+                        { 
+                            id: 304, 
+                            type: 'practice', 
+                            title: 'ارسال صوت: تلاوت سوره فجر با رعایت قواعد', 
+                            status: 'pending',
+                            xpAward: 50,
+                            rawContent: [
+                                {
+                                    type: 'audio_practice',
+                                    title: 'تلاوت سوره فجر (آیات ۱ تا ۵)',
+                                    content: 'لطفاً با آرامش کامل تلاوت آیه اول تا پنجم سوره فجر را ضبط کرده و سپس دکمه ارسال را بزنید.'
+                                }
+                            ]
+                        }
+                    ]
+                });
+
+                const currentStep = computed(() => currentStepDetails.value);
+
+                // فعالیت‌ها
+                const currentActivities = computed(() => {
+                    return currentStepDetails.value.activities || [];
+                });
+
+                // محاسبه پیشرفت گام با انیمیشن
+                const stageProgress = computed(() => {
+                    const total = currentActivities.value.length;
+                    if (total === 0) return 0;
+                    const completed = currentActivities.value.filter(a => a.status === 'done').length;
+                    return Math.round((completed / total) * 100);
+                });
+
+                // دسته بندی کارهای فعال برای نمایش در سمت راست
+                const groupedActivities = computed(() => {
+                    const acts = currentActivities.value;
+                    return {
+                        learning: acts.filter(a => a.type === 'video' || a.type === 'text'),
+                        quiz: acts.filter(a => a.type === 'quiz'),
+                        practice: acts.filter(a => a.type === 'practice')
+                    }
+                });
+
+                // بررسی پیش نیازهای هر کوئیز
+                const isPrerequisitesMet = (act) => {
+                    if (!act.requires) return true;
+                    return act.requires.every(reqId => {
+                        const pr = currentActivities.value.find(a => a.id === reqId);
+                        return pr && pr.status === 'done';
+                    });
+                };
+
+                // سیستم مدیریت هاب تعاملی فعال (Level Player) منطبق بر level.html
+                const activeActivity = ref(null);
+                const steps = ref([]);
                 const currentStepIndex = ref(0);
                 const lives = ref(3);
-                
-                // State های مربوط به آزمون
+                const isCompleted = ref(false);
+
+                // متغیرهای حالت پخش فیلم
+                const videoPlaying = ref(false);
+
+                // متغیرهای حالت تعاملی کوئیز
                 const selectedOptionIndex = ref(null);
                 const isAnswerChecked = ref(false);
                 const isCorrectAnswer = ref(false);
-                const isCompleted = ref(false);
 
-                const currentStep = computed(() => steps.value[currentStepIndex.value]);
-                
+                // متغیرهای ضبط صدا
+                const isRecording = ref(false);
+                const recordedAudio = ref(false);
+
+                // گام تعاملی فعلی
+                const currentStepActive = computed(() => {
+                    return steps.value[currentStepIndex.value] || {};
+                });
+
+                // محاسبه درصد پیشرفت بر اساس گام‌های تعاملی لول فعال
                 const progressPercentage = computed(() => {
-                    // محاسبه درصد پیشرفت بر اساس گام‌ها
+                    if (steps.value.length === 0) return 0;
                     return ((currentStepIndex.value) / steps.value.length) * 100;
                 });
 
-                // استایل‌دهی داینامیک گزینه‌های آزمون (شبیه به Duolingo)
+                // اجرای فعالیت جدید از پنل سمت راست به پنل تعاملی سمت چپ
+                const startActivity = (activity) => {
+                    if (activity.type === 'quiz' && !isPrerequisitesMet(activity)) return;
+
+                    activeActivity.value = activity;
+                    steps.value = activity.rawContent || [];
+                    currentStepIndex.value = 0;
+                    lives.value = 3;
+                    isCompleted.value = false;
+                    videoPlaying.value = false;
+
+                    // ریست کوئیز
+                    selectedOptionIndex.value = null;
+                    isAnswerChecked.value = false;
+                    isCorrectAnswer.value = false;
+
+                    // ریست صدا
+                    isRecording.value = false;
+                    recordedAudio.value = false;
+
+                    // در موبایل اتوماتیک برو روی تب بخش تعاملی
+                    activeTab.value = 'interactive';
+                };
+
+                // استایل‌دهی داینامیک گزینه‌های آزمون (دقیقاً مشابه لول اصلی)
                 const getOptionClasses = (index) => {
                     if (!isAnswerChecked.value) {
                         return selectedOptionIndex.value === index 
@@ -304,13 +708,12 @@
                     }
 
                     // حالت بعد از بررسی جواب
-                    const option = currentStep.value.options[index];
+                    const option = currentStepActive.value.options[index];
                     if (index === selectedOptionIndex.value) {
                         return option.isCorrect 
                             ? 'border-brand-success bg-brand-success/10 text-brand-success border-b-[4px] border-b-brand-success/50' 
                             : 'border-brand-error bg-brand-error/10 text-brand-error border-b-[4px] border-b-brand-error/50';
                     } else if (option.isCorrect) {
-                        // برجسته کردن جواب درست وقتی کاربر اشتباه پاسخ داده
                         return 'border-brand-success bg-brand-success/20 text-brand-success border-b-[4px] border-b-brand-success/50 animate-pulse';
                     }
                     return 'border-gray-800 text-gray-600 opacity-40 border-b-[4px] border-b-gray-900';
@@ -318,31 +721,32 @@
 
                 // تغییر رنگ نوار پایین صفحه بعد از پاسخ
                 const footerBackgroundClass = computed(() => {
-                    if (currentStep.value.type !== 'quiz' || !isAnswerChecked.value) {
+                    if (currentStepActive.value.type !== 'quiz' || !isAnswerChecked.value) {
                         return 'bg-brand-surface/90 backdrop-blur-md border-brand-border/50';
                     }
                     return isCorrectAnswer.value ? 'bg-brand-success border-brand-success' : 'bg-brand-error border-brand-error';
                 });
 
-                // استایل دکمه اصلی (ادامه / بررسی)
+                // استایل دکمه اصلی (ادامه / بررسی) با پدینگ و فونت‌سایز اصلی لول
                 const actionButtonClass = computed(() => {
-                    if (currentStep.value.type === 'quiz' && !isAnswerChecked.value) {
+                    if (currentStepActive.value.type === 'quiz' && !isAnswerChecked.value) {
                         return selectedOptionIndex.value === null 
                             ? 'bg-gray-800 text-gray-500 border-gray-900 cursor-not-allowed' 
                             : 'bg-brand-gold text-black border-brand-goldHover hover:bg-brand-goldHover hover:translate-y-[2px] hover:border-b-2';
                     }
-                    if (currentStep.value.type === 'quiz' && isAnswerChecked.value) {
-                         // در حالت سبز یا قرمز، دکمه سفید می‌شود
+                    if (currentStepActive.value.type === 'quiz' && isAnswerChecked.value) {
                          return 'bg-white text-black border-gray-300 hover:bg-gray-100 hover:translate-y-[2px] hover:border-b-2 shadow-lg';
                     }
-                    // برای صفحات Practice و Video
                     return 'bg-brand-gold text-black border-brand-goldHover hover:bg-brand-goldHover hover:translate-y-[2px] hover:border-b-2 shadow-[0_0_15px_rgba(245,158,11,0.2)]';
                 });
 
                 const actionButtonText = computed(() => {
-                    if (currentStep.value.type === 'quiz') {
+                    if (currentStepActive.value.type === 'quiz') {
                         if (!isAnswerChecked.value) return 'بررسی پاسخ';
                         return isCorrectAnswer.value ? 'ادامه دهید' : 'متوجه شدم';
+                    }
+                    if (currentStepActive.value.type === 'audio_practice') {
+                        return 'ثبت و ارسال فایل صوتی';
                     }
                     return 'ادامه';
                 });
@@ -352,27 +756,32 @@
                     selectedOptionIndex.value = index;
                 };
 
+                // هندلر دکمه اکشن بار پایینی لول تعاملی
                 const handleActionClick = () => {
-                    // ۱. در مرحله کوئیز و هنوز بررسی نشده
-                    if (currentStep.value.type === 'quiz' && !isAnswerChecked.value) {
+                    const stepType = currentStepActive.value.type;
+
+                    if (stepType === 'quiz' && !isAnswerChecked.value) {
                         if (selectedOptionIndex.value === null) return;
                         
                         isAnswerChecked.value = true;
-                        isCorrectAnswer.value = currentStep.value.options[selectedOptionIndex.value].isCorrect;
+                        isCorrectAnswer.value = currentStepActive.value.options[selectedOptionIndex.value].isCorrect;
                         
                         if (!isCorrectAnswer.value) {
                             lives.value = Math.max(0, lives.value - 1);
-                            // اگر جان صفر شد می‌توانیم کاربر را به منو برگردانیم یا جریمه کنیم
                         }
                         return;
                     }
 
-                    // ۲. رفتن به مرحله بعد
+                    if (stepType === 'audio_practice' && !recordedAudio.value) {
+                        recordedAudio.value = true;
+                        isRecording.value = false;
+                        return;
+                    }
+
                     nextStep();
                 };
 
                 const nextStep = () => {
-                    // ریست کردن استیت آزمون
                     selectedOptionIndex.value = null;
                     isAnswerChecked.value = false;
                     isCorrectAnswer.value = false;
@@ -380,27 +789,104 @@
                     if (currentStepIndex.value < steps.value.length - 1) {
                         currentStepIndex.value++;
                     } else {
-                        // تمام مراحل با موفقیت تمام شد
-                        progressPercentage.value = 100; // پر کردن نوار
+                        // تمام مراحل این فعالیت با موفقیت تمام شد
+                        progressPercentage.value = 100;
                         setTimeout(() => {
                             isCompleted.value = true;
                         }, 400);
                     }
                 };
 
+                // سیستم ذخیره پیشرفت نهایی فعالیت پس از تایید تروفی
+                const completeAndSaveActivity = () => {
+                    if (activeActivity.value) {
+                        if (activeActivity.value.type === 'practice') {
+                            activeActivity.value.status = 'reviewing'; // تکالیف عملی برای مربی فرستاده میشوند
+                        } else {
+                            activeActivity.value.status = 'done';
+                        }
+                    }
+                    activeActivity.value = null;
+                    isCompleted.value = false;
+                    // در دسکتاپ برگرد به لیست فعالیت‌ها
+                    activeTab.value = 'activities';
+                    showNotification('پیشرفت فعالیت با موفقیت ثبت شد!');
+                };
+
+                const resetCurrentSession = () => {
+                    if (activeActivity.value) {
+                        startActivity(activeActivity.value);
+                    }
+                };
+
+                const closeActiveActivity = () => {
+                    activeActivity.value = null;
+                    isCompleted.value = false;
+                    activeTab.value = 'activities';
+                };
+
+                // شبیه‌ساز ضبط صدا
+                const toggleRecording = () => {
+                    if (isRecording.value) {
+                        isRecording.value = false;
+                        recordedAudio.value = true;
+                    } else {
+                        isRecording.value = true;
+                        recordedAudio.value = false;
+                    }
+                };
+
+                // نمایش پیام نوتیفیکیشن سفارشی داخل برنامه
+                const showNotification = (message) => {
+                    toastMessage.value = message;
+                    setTimeout(() => {
+                        toastMessage.value = '';
+                    }, 3500);
+                };
+
                 const exitLesson = () => {
-                    // بازگشت به نقشه راه
-                    window.location.href = 'roadmap.html'; 
+                    showNotification('شبیه‌ساز خروج: در حال هدایت به نقشه راه قرآن النور...');
                 };
 
                 return {
-                    steps, currentStepIndex, currentStep, lives, progressPercentage,
-                    selectedOptionIndex, isAnswerChecked, isCorrectAnswer, isCompleted,
-                    getOptionClasses, footerBackgroundClass, actionButtonClass, actionButtonText,
-                    selectOption, handleActionClick, exitLesson
-                };
+                    activeTab,
+                    toastMessage,
+                    currentStep,
+                    groupedActivities,
+                    stageProgress,
+                    isPrerequisitesMet,
+                    exitLesson,
+
+                    // کنترلر های هاب تعاملی
+                    activeActivity,
+                    steps,
+                    currentStepIndex,
+                    currentStepActive,
+                    startActivity,
+                    lives,
+                    isCompleted,
+                    videoPlaying,
+                    selectedOptionIndex,
+                    isAnswerChecked,
+                    isCorrectAnswer,
+                    isRecording,
+                    recordedAudio,
+                    toggleRecording,
+                    getOptionClasses,
+                    footerBackgroundClass,
+                    actionButtonClass,
+                    actionButtonText,
+                    selectOption,
+                    handleActionClick,
+                    completeAndSaveActivity,
+                    resetCurrentSession,
+                    closeActiveActivity,
+                    progressPercentage,
+                    showNotification
+                }
             }
-        }).mount('#app');
+        }).mount('#app')
     </script>
 </body>
+
 </html>
